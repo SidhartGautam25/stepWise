@@ -1,10 +1,19 @@
 import { runChallenge } from "@repo/challenge-runner";
 import { NodeTester } from "@repo/tester-node";
-import { readLocalTestCommandConfig } from "./test-config";
+import {
+  getLocalTestHelpText,
+  readLocalTestCommandConfig,
+} from "./test-config";
 import { requestStartAttempt, submitRunnerResult } from "./test-api";
 
 async function main() {
   const config = readLocalTestCommandConfig();
+
+  if (config.helpRequested) {
+    console.log(getLocalTestHelpText());
+    return;
+  }
+
   const tester = new NodeTester();
 
   const startedAttempt = await requestStartAttempt({

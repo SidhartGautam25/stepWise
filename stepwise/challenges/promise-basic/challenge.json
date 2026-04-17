@@ -1,18 +1,26 @@
 {
   "schemaVersion": 1,
   "id": "promise-basic",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "title": "Promise Basics",
   "language": "javascript",
   "runtime": "node",
-  "entrypoint": "index.js",
   "defaultTimeoutMs": 2000,
   "steps": [
     {
       "id": "return-42",
       "title": "Return 42",
+      "entrypoint": "solutions/return-42.js",
       "tests": {
         "visible": "steps/return-42/tests/visible.test.js"
+      }
+    },
+    {
+      "id": "sum-two",
+      "title": "Sum Two Numbers",
+      "entrypoint": "solutions/sum-two.js",
+      "tests": {
+        "visible": "steps/sum-two/tests/visible.test.js"
       }
     }
   ]

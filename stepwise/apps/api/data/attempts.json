@@ -109,6 +109,102 @@
           }
         ]
       }
+    },
+    {
+      "attemptId": "0615c53b-aea6-498b-99a4-63110b5092d1",
+      "userId": "student-progression-1",
+      "challengeId": "promise-basic",
+      "challengeVersion": "0.2.0",
+      "stepId": "return-42",
+      "mode": "local",
+      "status": "submitted",
+      "startedAt": "2026-04-17T17:48:32.205Z",
+      "submittedAt": "2026-04-17T17:48:32.229Z",
+      "outcome": "passed",
+      "result": {
+        "challengeId": "promise-basic",
+        "challengeVersion": "0.2.0",
+        "stepId": "return-42",
+        "mode": "local",
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "executionTime": 6,
+        "results": [
+          {
+            "name": "returns 42",
+            "status": "pass",
+            "duration": 1,
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "attemptId": "821871fb-af56-4ad1-a19e-4e0d1d0b89a0",
+      "userId": "student-progression-1",
+      "challengeId": "promise-basic",
+      "challengeVersion": "0.2.0",
+      "stepId": "return-42",
+      "mode": "local",
+      "status": "submitted",
+      "startedAt": "2026-04-17T17:48:32.211Z",
+      "submittedAt": "2026-04-17T17:48:32.232Z",
+      "outcome": "passed",
+      "result": {
+        "challengeId": "promise-basic",
+        "challengeVersion": "0.2.0",
+        "stepId": "return-42",
+        "mode": "local",
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "executionTime": 4,
+        "results": [
+          {
+            "name": "returns 42",
+            "status": "pass",
+            "duration": 1,
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "attemptId": "bda55c51-d0cb-4675-8ea8-3636d7923537",
+      "userId": "student-progression-1",
+      "challengeId": "promise-basic",
+      "challengeVersion": "0.2.0",
+      "stepId": "sum-two",
+      "mode": "local",
+      "status": "submitted",
+      "startedAt": "2026-04-17T17:48:38.882Z",
+      "submittedAt": "2026-04-17T17:48:38.901Z",
+      "outcome": "passed",
+      "result": {
+        "challengeId": "promise-basic",
+        "challengeVersion": "0.2.0",
+        "stepId": "sum-two",
+        "mode": "local",
+        "total": 2,
+        "passed": 2,
+        "failed": 0,
+        "executionTime": 5,
+        "results": [
+          {
+            "name": "adds two positive numbers",
+            "status": "pass",
+            "duration": 1,
+            "visibility": "visible"
+          },
+          {
+            "name": "adds a negative and positive number",
+            "status": "pass",
+            "duration": 0,
+            "visibility": "visible"
+          }
+        ]
+      }
     }
   ],
   "progress": [
@@ -157,6 +253,17 @@
       ],
       "challengeCompleted": true,
       "updatedAt": "2026-04-17T17:43:27.691Z"
+    },
+    {
+      "userId": "student-progression-1",
+      "challengeId": "promise-basic",
+      "currentStepId": "sum-two",
+      "completedStepIds": [
+        "return-42",
+        "sum-two"
+      ],
+      "challengeCompleted": true,
+      "updatedAt": "2026-04-17T17:48:38.901Z"
     }
   ]
 }
