@@ -10,7 +10,11 @@
     {
       "id": "return-42",
       "title": "Return 42",
-      "entrypoint": "solutions/return-42.js",
+      "workspace": {
+        "root": "steps/return-42/workspace",
+        "starter": "steps/return-42/starter",
+        "entrypoint": "index.js"
+      },
       "tests": {
         "visible": "steps/return-42/tests/visible.test.js"
       }
@@ -18,7 +22,11 @@
     {
       "id": "sum-two",
       "title": "Sum Two Numbers",
-      "entrypoint": "solutions/sum-two.js",
+      "workspace": {
+        "root": "steps/sum-two/workspace",
+        "starter": "steps/sum-two/starter",
+        "entrypoint": "index.js"
+      },
       "tests": {
         "visible": "steps/sum-two/tests/visible.test.js"
       }

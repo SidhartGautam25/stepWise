@@ -7,6 +7,7 @@ export interface LocalTestCommandConfig {
   stepId?: string;
   challengePath: string;
   userCodePath?: string;
+  jsonOutput: boolean;
   helpRequested: boolean;
 }
 
@@ -21,6 +22,7 @@ Options:
   --code <path>             Override user code path for the selected step
   --step <id>               Explicit step id to run
   --user <id>               User id. Default: student-local
+  --json                    Print raw JSON output instead of student-facing text
   --help                    Show this help message
 `.trim();
 
@@ -37,6 +39,7 @@ export function readLocalTestCommandConfig(): LocalTestCommandConfig {
       args["challenge-path"] ??
       path.resolve(__dirname, `../../../../challenges/${challengeId}`),
     userCodePath: args.code,
+    jsonOutput: args.json === "true",
     helpRequested: args.help === "true",
   };
 }
@@ -59,6 +62,11 @@ function parseArgs(argv: string[]): Record<string, string> {
 
     if (key === "help") {
       parsed.help = "true";
+      continue;
+    }
+
+    if (key === "json") {
+      parsed.json = "true";
       continue;
     }
 

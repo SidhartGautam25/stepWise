@@ -21,6 +21,11 @@ export interface ChallengeStepManifest {
     visible: string;
     hidden?: string;
   };
+  workspace?: {
+    root: string;
+    starter?: string;
+    entrypoint?: string;
+  };
   entrypoint?: string;
   timeoutMs?: number;
 }
@@ -49,7 +54,9 @@ export interface ResolvedChallengeStep {
   stepTitle: string;
   testFilePath: string;
   hiddenTestFilePath?: string;
-  defaultEntrypoint?: string;
+  workspacePath: string;
+  starterPath?: string;
+  defaultUserCodePath?: string;
   timeoutMs: number;
 }
 

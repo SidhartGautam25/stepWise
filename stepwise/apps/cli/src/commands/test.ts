@@ -5,6 +5,7 @@ import {
   readLocalTestCommandConfig,
 } from "./test-config";
 import { requestStartAttempt, submitRunnerResult } from "./test-api";
+import { renderStudentFacingResult } from "./test-output";
 
 async function main() {
   const config = readLocalTestCommandConfig();
@@ -39,17 +40,18 @@ async function main() {
     result,
   });
 
-  console.log(
-    JSON.stringify(
-      {
-        attempt: startedAttempt,
-        result,
-        progression: submittedResult,
-      },
-      null,
-      2,
-    ),
-  );
+  const output = {
+    attempt: startedAttempt,
+    result,
+    progression: submittedResult,
+  };
+
+  if (config.jsonOutput) {
+    console.log(JSON.stringify(output, null, 2));
+    return;
+  }
+
+  console.log(renderStudentFacingResult(output));
 }
 
 main().catch((error) => {

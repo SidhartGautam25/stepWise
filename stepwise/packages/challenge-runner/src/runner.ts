@@ -85,7 +85,7 @@ export async function runChallenge(
     attemptId,
   } = input;
   const challenge = resolveChallengeStep(challengePath, stepId, timeout);
-  const resolvedUserCodePath = userCodePath ?? challenge.defaultEntrypoint;
+  const resolvedUserCodePath = userCodePath ?? challenge.defaultUserCodePath;
 
   if (!resolvedUserCodePath) {
     throw new Error("A userCodePath is required to run this challenge");

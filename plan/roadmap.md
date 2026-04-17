@@ -289,3 +289,7 @@ At minimum, add these entities:
 - never let local execution be the only source of truth without server-issued attempt tracking
 - make every execution replayable enough to debug
 - optimize for clarity and deterministic behavior before adding more challenge types
+
+
+
+<!-- also our main vision for local is that student dont have to worry about the setup , versioning and all regarding completing the challenge , as i want my application to handle these thing so that the user who is completing the challenge in our application should not worry about anything other than coding , so how we will handle this issue and how we will build our application so that it will handle this problem and then go ahead and provision each step’s starter/ into a student-owned local workspace directory before execution, instead of running directly against the challenge’s checked-in workspace/ folder so that this feel like “build a real small product locally and submit progress,” not just “run tests against repo-owned files.” -->

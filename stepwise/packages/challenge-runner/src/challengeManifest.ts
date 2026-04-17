@@ -31,6 +31,8 @@ function parseStep(step: unknown, index: number): ChallengeStepManifest {
     throw new Error(`Invalid challenge manifest tests for step ${index}`);
   }
 
+  const workspace = step.workspace;
+
   return {
     id: assertString(step.id, `steps[${index}].id`),
     title: assertString(step.title, `steps[${index}].title`),
@@ -45,6 +47,21 @@ function parseStep(step: unknown, index: number): ChallengeStepManifest {
           ? tests.hidden
           : undefined,
     },
+    workspace: isRecord(workspace)
+      ? {
+          root: assertString(workspace.root, `steps[${index}].workspace.root`),
+          starter:
+            typeof workspace.starter === "string" &&
+            workspace.starter.length > 0
+              ? workspace.starter
+              : undefined,
+          entrypoint:
+            typeof workspace.entrypoint === "string" &&
+            workspace.entrypoint.length > 0
+              ? workspace.entrypoint
+              : undefined,
+        }
+      : undefined,
     entrypoint:
       typeof step.entrypoint === "string" && step.entrypoint.length > 0
         ? step.entrypoint
@@ -130,9 +147,17 @@ export function resolveChallengeStep(
     hiddenTestFilePath: step.tests.hidden
       ? path.resolve(resolvedChallengePath, step.tests.hidden)
       : undefined,
-    defaultEntrypoint: path.resolve(
+    workspacePath: path.resolve(
       resolvedChallengePath,
-      step.entrypoint ?? manifest.entrypoint ?? "index.js",
+      step.workspace?.root ?? ".",
+    ),
+    starterPath: step.workspace?.starter
+      ? path.resolve(resolvedChallengePath, step.workspace.starter)
+      : undefined,
+    defaultUserCodePath: path.resolve(
+      resolvedChallengePath,
+      step.workspace?.root ?? ".",
+      step.workspace?.entrypoint ?? step.entrypoint ?? manifest.entrypoint ?? "index.js",
     ),
     timeoutMs:
       timeoutOverride ??

@@ -205,6 +205,106 @@
           }
         ]
       }
+    },
+    {
+      "attemptId": "49fcbac3-3869-4e21-8f59-63ae07d0399d",
+      "userId": "lock-check-user",
+      "challengeId": "promise-basic",
+      "challengeVersion": "0.2.0",
+      "stepId": "return-42",
+      "mode": "local",
+      "status": "started",
+      "startedAt": "2026-04-17T17:54:09.015Z"
+    },
+    {
+      "attemptId": "a8cfc02f-0e70-44cc-858c-a535af74e6cf",
+      "userId": "student-facing-user",
+      "challengeId": "promise-basic",
+      "challengeVersion": "0.2.0",
+      "stepId": "return-42",
+      "mode": "local",
+      "status": "submitted",
+      "startedAt": "2026-04-17T17:54:24.490Z",
+      "submittedAt": "2026-04-17T17:54:24.511Z",
+      "outcome": "passed",
+      "result": {
+        "challengeId": "promise-basic",
+        "challengeVersion": "0.2.0",
+        "stepId": "return-42",
+        "mode": "local",
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "executionTime": 3,
+        "results": [
+          {
+            "name": "returns 42",
+            "status": "pass",
+            "duration": 0,
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "attemptId": "a07f4b46-d0d3-43ce-9b4f-7bf101162ae2",
+      "userId": "student-facing-json",
+      "challengeId": "promise-basic",
+      "challengeVersion": "0.2.0",
+      "stepId": "return-42",
+      "mode": "local",
+      "status": "submitted",
+      "startedAt": "2026-04-17T17:54:24.496Z",
+      "submittedAt": "2026-04-17T17:54:24.515Z",
+      "outcome": "passed",
+      "result": {
+        "challengeId": "promise-basic",
+        "challengeVersion": "0.2.0",
+        "stepId": "return-42",
+        "mode": "local",
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "executionTime": 4,
+        "results": [
+          {
+            "name": "returns 42",
+            "status": "pass",
+            "duration": 1,
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "attemptId": "bf15a288-f0ed-415a-8e5e-d1c7ee2c84f2",
+      "userId": "workspace-manifest-user",
+      "challengeId": "promise-basic",
+      "challengeVersion": "0.2.0",
+      "stepId": "return-42",
+      "mode": "local",
+      "status": "submitted",
+      "startedAt": "2026-04-17T17:59:54.003Z",
+      "submittedAt": "2026-04-17T17:59:54.023Z",
+      "outcome": "passed",
+      "result": {
+        "challengeId": "promise-basic",
+        "challengeVersion": "0.2.0",
+        "stepId": "return-42",
+        "mode": "local",
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "executionTime": 4,
+        "results": [
+          {
+            "name": "returns 42",
+            "status": "pass",
+            "duration": 0,
+            "visibility": "visible"
+          }
+        ]
+      }
     }
   ],
   "progress": [
@@ -264,6 +364,44 @@
       ],
       "challengeCompleted": true,
       "updatedAt": "2026-04-17T17:48:38.901Z"
+    },
+    {
+      "userId": "lock-check-user",
+      "challengeId": "promise-basic",
+      "currentStepId": "return-42",
+      "completedStepIds": [],
+      "challengeCompleted": false,
+      "updatedAt": "2026-04-17T17:54:09.015Z"
+    },
+    {
+      "userId": "student-facing-user",
+      "challengeId": "promise-basic",
+      "currentStepId": "sum-two",
+      "completedStepIds": [
+        "return-42"
+      ],
+      "challengeCompleted": false,
+      "updatedAt": "2026-04-17T17:54:24.511Z"
+    },
+    {
+      "userId": "student-facing-json",
+      "challengeId": "promise-basic",
+      "currentStepId": "sum-two",
+      "completedStepIds": [
+        "return-42"
+      ],
+      "challengeCompleted": false,
+      "updatedAt": "2026-04-17T17:54:24.515Z"
+    },
+    {
+      "userId": "workspace-manifest-user",
+      "challengeId": "promise-basic",
+      "currentStepId": "sum-two",
+      "completedStepIds": [
+        "return-42"
+      ],
+      "challengeCompleted": false,
+      "updatedAt": "2026-04-17T17:59:54.023Z"
     }
   ]
 }

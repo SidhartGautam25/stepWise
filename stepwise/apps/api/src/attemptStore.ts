@@ -84,6 +84,20 @@ export function getAttempt(attemptId: string): StoredAttempt | undefined {
   return store.attempts.find((attempt) => attempt.attemptId === attemptId);
 }
 
+export function getActiveAttempt(
+  userId: string,
+  challengeId: string,
+): StoredAttempt | undefined {
+  const store = ensureStore();
+
+  return store.attempts.find(
+    (attempt) =>
+      attempt.userId === userId &&
+      attempt.challengeId === challengeId &&
+      attempt.status === "started",
+  );
+}
+
 export function getProgress(
   userId: string,
   challengeId: string,

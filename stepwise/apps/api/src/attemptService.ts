@@ -13,6 +13,7 @@ import {
 import {
   ChallengeProgress,
   createAttempt,
+  getActiveAttempt,
   getAttempt,
   getProgress,
   updateAttempt,
@@ -23,6 +24,14 @@ export function startAttempt(
   payload: StartAttemptRequest,
 ): StartAttemptResponse {
   const challenge = getChallengeInfo(payload.challengeId);
+  const activeAttempt = getActiveAttempt(payload.userId, payload.challengeId);
+
+  if (activeAttempt) {
+    throw new Error(
+      `An active attempt already exists for challenge "${payload.challengeId}". Submit or finish attempt "${activeAttempt.attemptId}" before starting another one.`,
+    );
+  }
+
   const existingProgress = getProgress(payload.userId, payload.challengeId);
   const fallbackStepId =
     existingProgress?.challengeCompleted === true
