@@ -40,11 +40,11 @@ export function createApp() {
 if (require.main === module) {
   const app = createApp();
 
-  app.listen({ port: 4000 }, (error) => {
+  app.listen({ host: "127.0.0.1", port: 4000 }, (error) => {
     if (error) {
       throw error;
     }
 
-    console.log("API running on http://localhost:4000");
+    console.log("API running on http://127.0.0.1:4000");
   });
 }

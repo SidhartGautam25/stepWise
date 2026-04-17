@@ -79,6 +79,36 @@
           }
         ]
       }
+    },
+    {
+      "attemptId": "ee191ee4-0d88-40c6-b770-66d027ae938b",
+      "userId": "student-local",
+      "challengeId": "promise-basic",
+      "challengeVersion": "0.1.0",
+      "stepId": "return-42",
+      "mode": "local",
+      "status": "submitted",
+      "startedAt": "2026-04-17T17:43:27.666Z",
+      "submittedAt": "2026-04-17T17:43:27.691Z",
+      "outcome": "passed",
+      "result": {
+        "challengeId": "promise-basic",
+        "challengeVersion": "0.1.0",
+        "stepId": "return-42",
+        "mode": "local",
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "executionTime": 5,
+        "results": [
+          {
+            "name": "returns 42",
+            "status": "pass",
+            "duration": 1,
+            "visibility": "visible"
+          }
+        ]
+      }
     }
   ],
   "progress": [
@@ -117,6 +147,16 @@
       ],
       "challengeCompleted": true,
       "updatedAt": "2026-04-17T17:38:43.573Z"
+    },
+    {
+      "userId": "student-local",
+      "challengeId": "promise-basic",
+      "currentStepId": "return-42",
+      "completedStepIds": [
+        "return-42"
+      ],
+      "challengeCompleted": true,
+      "updatedAt": "2026-04-17T17:43:27.691Z"
     }
   ]
 }

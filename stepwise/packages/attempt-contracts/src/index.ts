@@ -66,6 +66,30 @@ export interface SubmitResultResponse {
   challengeCompleted: boolean;
 }
 
+function readBoolean(value: unknown, field: string): boolean {
+  if (typeof value !== "boolean") {
+    throw new Error(`Invalid ${field}`);
+  }
+
+  return value;
+}
+
+function readAttemptStatus(value: unknown, field: string): AttemptStatus {
+  if (value !== "started" && value !== "submitted") {
+    throw new Error(`Invalid ${field}`);
+  }
+
+  return value;
+}
+
+function readAttemptOutcome(value: unknown, field: string): AttemptOutcome {
+  if (value !== "passed" && value !== "failed") {
+    throw new Error(`Invalid ${field}`);
+  }
+
+  return value;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
@@ -140,6 +164,38 @@ export function parseStartAttemptRequest(
   };
 }
 
+export function parseStartAttemptResponse(
+  payload: unknown,
+): StartAttemptResponse {
+  if (!isRecord(payload)) {
+    throw new Error("Invalid start attempt response");
+  }
+
+  const step = payload.step;
+
+  if (!isRecord(step)) {
+    throw new Error("Invalid start attempt step");
+  }
+
+  return {
+    attemptId: readString(payload.attemptId, "attemptId"),
+    userId: readString(payload.userId, "userId"),
+    challengeId: readString(payload.challengeId, "challengeId"),
+    challengeVersion: readString(payload.challengeVersion, "challengeVersion"),
+    mode: readAttemptMode(payload.mode, "mode"),
+    status: readAttemptStatus(payload.status, "status"),
+    startedAt: readString(payload.startedAt, "startedAt"),
+    step: {
+      id: readString(step.id, "step.id"),
+      title: readString(step.title, "step.title"),
+    },
+    nextStepId:
+      payload.nextStepId === undefined
+        ? undefined
+        : readString(payload.nextStepId, "nextStepId"),
+  };
+}
+
 export function parseAttemptExecutionResult(
   payload: unknown,
 ): AttemptExecutionResult {
@@ -205,5 +261,31 @@ export function parseSubmitResultRequest(payload: unknown): SubmitResultRequest 
     attemptId: readString(payload.attemptId, "attemptId"),
     userId: readString(payload.userId, "userId"),
     result: parseAttemptExecutionResult(payload.result),
+  };
+}
+
+export function parseSubmitResultResponse(
+  payload: unknown,
+): SubmitResultResponse {
+  if (!isRecord(payload)) {
+    throw new Error("Invalid submit result response");
+  }
+
+  return {
+    attemptId: readString(payload.attemptId, "attemptId"),
+    userId: readString(payload.userId, "userId"),
+    challengeId: readString(payload.challengeId, "challengeId"),
+    challengeVersion: readString(payload.challengeVersion, "challengeVersion"),
+    stepId: readString(payload.stepId, "stepId"),
+    outcome: readAttemptOutcome(payload.outcome, "outcome"),
+    submittedAt: readString(payload.submittedAt, "submittedAt"),
+    nextStepId:
+      payload.nextStepId === undefined
+        ? undefined
+        : readString(payload.nextStepId, "nextStepId"),
+    challengeCompleted: readBoolean(
+      payload.challengeCompleted,
+      "challengeCompleted",
+    ),
   };
 }
