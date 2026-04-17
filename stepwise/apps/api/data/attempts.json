@@ -1,0 +1,122 @@
+{
+  "attempts": [
+    {
+      "attemptId": "722e3c16-9149-4ad2-9c93-3146853197b0",
+      "userId": "student-submit",
+      "challengeId": "promise-basic",
+      "challengeVersion": "0.1.0",
+      "stepId": "return-42",
+      "mode": "local",
+      "status": "submitted",
+      "startedAt": "2026-04-17T17:37:53.869Z",
+      "submittedAt": "2026-04-17T17:37:53.871Z",
+      "outcome": "passed",
+      "result": {
+        "challengeId": "promise-basic",
+        "challengeVersion": "0.1.0",
+        "stepId": "return-42",
+        "mode": "local",
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "executionTime": 15,
+        "results": [
+          {
+            "name": "returns 42",
+            "status": "pass",
+            "duration": 1,
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "attemptId": "4b12e61d-2270-4d7e-8faf-277d4906c4fa",
+      "userId": "student-1",
+      "challengeId": "promise-basic",
+      "challengeVersion": "0.1.0",
+      "stepId": "return-42",
+      "mode": "local",
+      "status": "started",
+      "startedAt": "2026-04-17T17:37:53.874Z"
+    },
+    {
+      "attemptId": "c310e6a0-40b0-476c-b394-b648f0d2d7c0",
+      "userId": "inject-user",
+      "challengeId": "promise-basic",
+      "challengeVersion": "0.1.0",
+      "stepId": "return-42",
+      "mode": "local",
+      "status": "started",
+      "startedAt": "2026-04-17T17:38:43.559Z"
+    },
+    {
+      "attemptId": "5e20b5fa-9eb3-4691-8185-24476745ce7f",
+      "userId": "inject-submit",
+      "challengeId": "promise-basic",
+      "challengeVersion": "0.1.0",
+      "stepId": "return-42",
+      "mode": "local",
+      "status": "submitted",
+      "startedAt": "2026-04-17T17:38:43.560Z",
+      "submittedAt": "2026-04-17T17:38:43.573Z",
+      "outcome": "passed",
+      "result": {
+        "challengeId": "promise-basic",
+        "challengeVersion": "0.1.0",
+        "stepId": "return-42",
+        "mode": "local",
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "executionTime": 10,
+        "results": [
+          {
+            "name": "returns 42",
+            "status": "pass",
+            "duration": 1,
+            "visibility": "visible"
+          }
+        ]
+      }
+    }
+  ],
+  "progress": [
+    {
+      "userId": "student-submit",
+      "challengeId": "promise-basic",
+      "currentStepId": "return-42",
+      "completedStepIds": [
+        "return-42"
+      ],
+      "challengeCompleted": true,
+      "updatedAt": "2026-04-17T17:37:53.871Z"
+    },
+    {
+      "userId": "student-1",
+      "challengeId": "promise-basic",
+      "currentStepId": "return-42",
+      "completedStepIds": [],
+      "challengeCompleted": false,
+      "updatedAt": "2026-04-17T17:37:53.874Z"
+    },
+    {
+      "userId": "inject-user",
+      "challengeId": "promise-basic",
+      "currentStepId": "return-42",
+      "completedStepIds": [],
+      "challengeCompleted": false,
+      "updatedAt": "2026-04-17T17:38:43.559Z"
+    },
+    {
+      "userId": "inject-submit",
+      "challengeId": "promise-basic",
+      "currentStepId": "return-42",
+      "completedStepIds": [
+        "return-42"
+      ],
+      "challengeCompleted": true,
+      "updatedAt": "2026-04-17T17:38:43.573Z"
+    }
+  ]
+}
