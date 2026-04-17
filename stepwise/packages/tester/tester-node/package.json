@@ -6,7 +6,8 @@
   "types": "src/index.ts",
   "exports": "./src/index.ts",
   "dependencies": {
-    "@repo/challenge-runner": "workspace:^"
+    "@repo/challenge-runner": "workspace:^",
+    "tsx": "^4.21.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",

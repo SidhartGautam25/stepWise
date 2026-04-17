@@ -1,35 +1,54 @@
 import path from "path";
+import {
+  registerWorkspaceAliases,
+  runWithTimeout,
+} from "@repo/challenge-runner";
 
 async function main() {
   const userCodePath = process.argv[2];
-  const challengePath = process.argv[3];
+  const testFilePath = process.argv[3];
+  const timeoutArg = process.argv[4];
+  const timeoutMs = timeoutArg ? Number(timeoutArg) : 2000;
 
-  // ✅ validate inputs (important for production)
-  if (!userCodePath || !challengePath) {
-    console.error("Missing arguments: userCodePath or challengePath");
+  if (!userCodePath || !testFilePath) {
+    console.error("Missing arguments: userCodePath or testFilePath");
     process.exit(1);
   }
 
   try {
-    const userModule = require(path.resolve(userCodePath));
-    const tests = require(path.resolve(challengePath, "tests/visible.test.js"));
+    registerWorkspaceAliases();
 
+    const userModule = require(path.resolve(userCodePath));
+    const tests = require(path.resolve(testFilePath));
     const results = [];
 
     for (const test of tests) {
+      const testStart = Date.now();
+
       try {
-        await test.fn(userModule);
-        results.push({ name: test.name, status: "pass" });
+        await runWithTimeout(
+          Promise.resolve(test.fn(userModule)),
+          test.timeout ?? timeoutMs,
+        );
+
+        results.push({
+          name: test.name,
+          status: "pass",
+          duration: Date.now() - testStart,
+          visibility: "visible",
+        });
       } catch (err: any) {
         results.push({
           name: test.name,
-          status: "fail",
+          status: err.message === "TIMEOUT" ? "timeout" : "fail",
           error: err.message,
+          duration: Date.now() - testStart,
+          visibility: "visible",
         });
       }
     }
 
-    console.log(JSON.stringify({ results }));
+    console.log(JSON.stringify({ results, logs: { stdout: "", stderr: "" } }));
     process.exit(0);
   } catch (err: any) {
     console.error(err.message);

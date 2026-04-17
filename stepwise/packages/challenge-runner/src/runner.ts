@@ -1,6 +1,12 @@
-import { RunChallengeInput, RunChallengeResult, TestResult } from "./types";
+import { resolveChallengeStep } from "./challengeManifest";
 import { loadTests } from "./testLoader";
 import { runWithTimeout } from "./utils/timeout";
+import {
+  BulkTester,
+  RunChallengeInput,
+  RunChallengeResult,
+  TestResult,
+} from "./types";
 
 // export async function runChallenge(
 //   input: RunChallengeInput,
@@ -69,13 +75,34 @@ export async function runChallenge(
 ): Promise<RunChallengeResult> {
   const startTime = Date.now();
 
-  const { tester, userCodePath, challengePath, timeout = 2000 } = input;
+  const {
+    tester,
+    challengePath,
+    userCodePath,
+    stepId,
+    timeout,
+    mode = "local",
+    attemptId,
+  } = input;
+  const challenge = resolveChallengeStep(challengePath, stepId, timeout);
+  const resolvedUserCodePath = userCodePath ?? challenge.defaultEntrypoint;
 
-  // 🚨 NEW: bulk execution path (sandbox)
+  if (!resolvedUserCodePath) {
+    throw new Error("A userCodePath is required to run this challenge");
+  }
+
   if ("runAllTests" in tester && typeof tester.runAllTests === "function") {
-    const results = await tester.runAllTests(userCodePath, challengePath);
+    const results = await (tester as BulkTester).runAllTests({
+      userCodePath: resolvedUserCodePath,
+      challenge,
+    });
 
     return {
+      attemptId,
+      challengeId: challenge.challengeId,
+      challengeVersion: challenge.challengeVersion,
+      stepId: challenge.stepId,
+      mode,
       total: results.length,
       passed: results.filter((r: any) => r.status === "pass").length,
       failed: results.filter((r: any) => r.status !== "pass").length,
@@ -84,27 +111,35 @@ export async function runChallenge(
     };
   }
 
-  // 👇 OLD fallback (non-sandbox mode)
-  const tests = loadTests(challengePath);
-  const context = await tester.prepare(userCodePath);
+  const tests = loadTests(challenge.testFilePath);
+  const context = await tester.prepare(resolvedUserCodePath);
 
   const results: TestResult[] = [];
 
   for (const test of tests) {
+    const testStart = Date.now();
+
     try {
-      await tester.execute(test, context);
+      await runWithTimeout(
+        tester.execute(test, context),
+        test.timeout ?? challenge.timeoutMs,
+      );
 
       results.push({
         name: test.name,
         status: "pass",
-        duration: 0,
+        duration: Date.now() - testStart,
+        visibility: "visible",
       });
     } catch (err: any) {
+      const status = err.message === "TIMEOUT" ? "timeout" : "fail";
+
       results.push({
         name: test.name,
-        status: "fail",
+        status,
         error: err.message,
-        duration: 0,
+        duration: Date.now() - testStart,
+        visibility: "visible",
       });
     }
   }
@@ -112,6 +147,11 @@ export async function runChallenge(
   await tester.cleanup(context);
 
   return {
+    attemptId,
+    challengeId: challenge.challengeId,
+    challengeVersion: challenge.challengeVersion,
+    stepId: challenge.stepId,
+    mode,
     total: results.length,
     passed: results.filter((r) => r.status === "pass").length,
     failed: results.filter((r) => r.status !== "pass").length,

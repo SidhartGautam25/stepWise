@@ -1,9 +1,10 @@
-import path from "path";
+import { TestCase } from "./types";
+import { registerWorkspaceAliases } from "./workspaceAlias";
 
-export function loadTests(challengePath: string) {
-  const testFile = path.join(challengePath, "tests", "visible.test.js");
+export function loadTests(testFilePath: string): TestCase[] {
+  registerWorkspaceAliases();
 
-  const tests = require(testFile);
+  const tests = require(testFilePath);
 
   if (!Array.isArray(tests)) {
     throw new Error("Tests must export an array");

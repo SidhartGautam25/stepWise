@@ -1,14 +1,18 @@
 import { runChallenge } from "@repo/challenge-runner";
 import { NodeTester } from "@repo/tester-node";
+import path from "path";
 
 async function main() {
   const tester = new NodeTester();
+  const challengePath = path.resolve(
+    __dirname,
+    "../../../../challenges/promise-basic",
+  );
 
   const result = await runChallenge({
-    userCodePath: "../../challenges/promise-basic/index.js",
-    challengePath: "../../challenges/promise-basic",
+    challengePath,
     tester,
-    timeout: 2000,
+    mode: "local",
   });
 
   console.log(JSON.stringify(result, null, 2));
