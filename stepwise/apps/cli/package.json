@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@repo/challenge-runner": "workspace:^",
+    "@repo/tester-node": "workspace:^",
     "oclif": "^4.23.0"
   },
   "devDependencies": {

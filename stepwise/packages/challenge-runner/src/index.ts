@@ -1,3 +1,2 @@
-export function runChallenge() {
-  console.log("Running challenge...");
-}
+export { runChallenge } from "./runner";
+export * from "./types";
