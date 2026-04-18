@@ -5,9 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "echo 'CLI ready'",
-    "start": "tsx src/commands/test.ts",
+    "dev": "tsx src/index.ts",
+    "start": "tsx src/index.ts",
     "build": "tsc"
+  },
+  "bin": {
+    "stepwise": "src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +18,10 @@
   "dependencies": {
     "@repo/challenge-runner": "workspace:^",
     "@repo/tester-node": "workspace:^",
-    "oclif": "^4.23.0"
+    "@repo/types": "workspace:^",
+    "@repo/auth": "workspace:^",
+    "oclif": "^4.23.0",
+    "picocolors": "^1.1.1"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",

@@ -5,19 +5,39 @@ import {
   SubmitResultResponse,
 } from "../../../../packages/attempt-contracts/src";
 import { RunChallengeResult } from "@repo/challenge-runner";
+import { getStoredCredentials } from "../credentials";
 
 interface StartAttemptInput {
   apiBaseUrl: string;
   challengeId: string;
-  userId: string;
+  userId: string;   // kept for type compat; API overrides from JWT
   stepId?: string;
 }
 
 interface SubmitResultInput {
   apiBaseUrl: string;
   attemptId: string;
-  userId: string;
+  userId: string;   // kept for type compat; API overrides from JWT
   result: RunChallengeResult;
+}
+
+/**
+ * Returns the Authorization header value from stored credentials.
+ * Throws with a clear CLI message if not logged in.
+ */
+function getAuthHeader(): string {
+  const creds = getStoredCredentials();
+
+  if (!creds) {
+    throw new Error("Not logged in. Run `stepwise login` first.");
+  }
+
+  const expiresAt = new Date(creds.expiresAt).getTime();
+  if (Date.now() > expiresAt) {
+    throw new Error("Your session has expired. Run `stepwise login` to refresh.");
+  }
+
+  return `Bearer ${creds.token}`;
 }
 
 export async function requestStartAttempt(
@@ -27,10 +47,11 @@ export async function requestStartAttempt(
     method: "POST",
     headers: {
       "content-type": "application/json",
+      "authorization": getAuthHeader(),
     },
     body: JSON.stringify({
       challengeId: input.challengeId,
-      userId: input.userId,
+      userId: input.userId,   // API ignores this, uses JWT sub instead
       mode: "local",
       stepId: input.stepId,
     }),
@@ -46,10 +67,11 @@ export async function submitRunnerResult(
     method: "POST",
     headers: {
       "content-type": "application/json",
+      "authorization": getAuthHeader(),
     },
     body: JSON.stringify({
       attemptId: input.attemptId,
-      userId: input.userId,
+      userId: input.userId,   // API ignores this, uses JWT sub instead
       result: input.result,
     }),
   });
@@ -65,9 +87,9 @@ async function readApiResponse(response: Response): Promise<unknown> {
       typeof payload === "object" &&
       payload !== null &&
       "error" in payload &&
-      typeof payload.error === "string"
+      typeof (payload as Record<string, unknown>).error === "string"
     ) {
-      throw new Error(payload.error);
+      throw new Error((payload as Record<string, unknown>).error as string);
     }
 
     throw new Error(`API request failed with status ${response.status}`);

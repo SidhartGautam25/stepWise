@@ -1,38 +1,27 @@
+/**
+ * API Entry Point — app factory and server bootstrap only.
+ * All routes are in routes/index.ts.
+ */
+
 import Fastify from "fastify";
-import {
-  parseStartAttemptRequest,
-  parseSubmitResultRequest,
-} from "../../../packages/attempt-contracts/src";
-import { startAttempt, submitResult } from "./attemptService";
+import cors from "@fastify/cors";
+import { registerRoutes } from "./routes/index";
 
 export function createApp() {
-  const app = Fastify();
-
-  app.get("/health", async () => {
-    return { status: "ok" };
+  const app = Fastify({
+    logger: process.env.NODE_ENV === "development",
   });
 
-  app.post("/attempts/start", async (request, reply) => {
-    try {
-      const payload = parseStartAttemptRequest(request.body);
-      return startAttempt(payload);
-    } catch (error) {
-      return reply.status(400).send({
-        error: error instanceof Error ? error.message : "Invalid request",
-      });
-    }
+  // Allow web dashboard (and any localhost origin in dev) to call the API
+  app.register(cors, {
+    origin: process.env.NODE_ENV === "production"
+      ? ["https://stepwise.dev"] // restrict in prod
+      : true,                    // allow all in dev
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   });
 
-  app.post("/attempts/submit-result", async (request, reply) => {
-    try {
-      const payload = parseSubmitResultRequest(request.body);
-      return submitResult(payload);
-    } catch (error) {
-      return reply.status(400).send({
-        error: error instanceof Error ? error.message : "Invalid request",
-      });
-    }
-  });
+  registerRoutes(app);
 
   return app;
 }
@@ -41,10 +30,7 @@ if (require.main === module) {
   const app = createApp();
 
   app.listen({ host: "127.0.0.1", port: 4000 }, (error) => {
-    if (error) {
-      throw error;
-    }
-
-    console.log("API running on http://127.0.0.1:4000");
+    if (error) throw error;
+    console.log("✓ API running on http://127.0.0.1:4000");
   });
 }

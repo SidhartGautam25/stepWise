@@ -10,6 +10,7 @@
     {
       "id": "return-42",
       "title": "Return 42",
+      "prompt": "prompt.md",
       "workspace": {
         "root": "steps/return-42/workspace",
         "starter": "steps/return-42/starter",
@@ -22,6 +23,7 @@
     {
       "id": "sum-two",
       "title": "Sum Two Numbers",
+      "prompt": "prompt.md",
       "workspace": {
         "root": "steps/sum-two/workspace",
         "starter": "steps/sum-two/starter",

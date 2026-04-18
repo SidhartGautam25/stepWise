@@ -1,0 +1,152 @@
+// StepWise Database Schema
+// Hosted on Neon (Postgres), managed by Prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Users ────────────────────────────────────────────────────────────────────
+// Minimal user model. Auth details added in Phase 3 (NextAuth / GitHub OAuth).
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String?  @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  attempts  Attempt[]
+  progress  UserProgress[]
+  otpTokens OtpToken[]
+
+  @@map("users")
+}
+
+// ─── OTP Tokens ───────────────────────────────────────────────────────────────
+// Used for the email-based login flow (CLI "stepwise login").
+// One OTP is generated per request; it expires in 10 minutes and is single-use.
+
+model OtpToken {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  code      String                        // 6-digit numeric string
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("otp_tokens")
+}
+
+// ─── Challenges ───────────────────────────────────────────────────────────────
+// Represents the challenge metadata seeded from challenge.json manifests.
+// Content (test files, starter files) remains on disk; only metadata lives in DB.
+
+model Challenge {
+  id          String   @id              // matches challenge.json "id", e.g. "promise-basic"
+  version     String                    // semver, e.g. "0.2.0"
+  title       String
+  language    String                    // e.g. "javascript"
+  runtime     String                    // e.g. "node"
+  isPublished Boolean  @default(false) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  steps       ChallengeStep[]
+  attempts    Attempt[]
+  progress    UserProgress[]
+
+  @@map("challenges")
+}
+
+// ─── Challenge Steps ──────────────────────────────────────────────────────────
+
+model ChallengeStep {
+  id          String    @id @default(cuid())
+  challengeId String    @map("challenge_id")
+  stepKey     String    @map("step_key")     // matches step "id" in manifest, e.g. "return-42"
+  title       String
+  position    Int                            // 1-based ordering within the challenge
+  promptPath  String?   @map("prompt_path")  // relative path to prompt.md from challenge root
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  attempts    Attempt[]
+
+  @@unique([challengeId, stepKey])
+  @@index([challengeId, position])
+  @@map("challenge_steps")
+}
+
+// ─── Attempts ─────────────────────────────────────────────────────────────────
+// One attempt = one run of one step.
+// A student can have multiple attempts per step (retries), but only one "started" at a time.
+
+model Attempt {
+  id               String          @id @default(cuid())
+  userId           String          @map("user_id")
+  challengeId      String          @map("challenge_id")
+  challengeVersion String          @map("challenge_version")
+  stepId           String          @map("step_id")           // FK to ChallengeStep.id
+  stepKey          String          @map("step_key")          // denormalized for fast lookup
+  mode             AttemptMode     @default(LOCAL)
+  status           AttemptStatus   @default(STARTED)
+  outcome          AttemptOutcome?
+  startedAt        DateTime        @default(now()) @map("started_at")
+  submittedAt      DateTime?       @map("submitted_at")
+
+  // Full execution result stored as JSON (test-by-test breakdown, timings, logs)
+  resultJson       Json?           @map("result_json")
+
+  user             User            @relation(fields: [userId], references: [id])
+  challenge        Challenge       @relation(fields: [challengeId], references: [id])
+  step             ChallengeStep   @relation(fields: [stepId], references: [id])
+
+  @@index([userId, challengeId, status])
+  @@index([userId, challengeId, stepKey])
+  @@map("attempts")
+}
+
+// ─── User Progress ────────────────────────────────────────────────────────────
+// One row per (user, challenge). Tracks current step and completed steps.
+// This is the source of truth for step unlocking.
+
+model UserProgress {
+  id                 String    @id @default(cuid())
+  userId             String    @map("user_id")
+  challengeId        String    @map("challenge_id")
+  currentStepKey     String    @map("current_step_key")    // step_key the student is on
+  completedStepKeys  String[]  @map("completed_step_keys") // ordered list of passed step_keys
+  challengeCompleted Boolean   @default(false) @map("challenge_completed")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  user               User      @relation(fields: [userId], references: [id])
+  challenge          Challenge @relation(fields: [challengeId], references: [id])
+
+  @@unique([userId, challengeId])
+  @@map("user_progress")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum AttemptMode {
+  LOCAL
+  SERVER
+}
+
+enum AttemptStatus {
+  STARTED
+  SUBMITTED
+}
+
+enum AttemptOutcome {
+  PASSED
+  FAILED
+}
