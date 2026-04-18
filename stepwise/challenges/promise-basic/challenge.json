@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "promise-basic",
+  "version": "0.2.0",
+  "title": "Promise Basics",
+  "language": "javascript",
+  "runtime": "node",
+  "defaultTimeoutMs": 2000,
+  "steps": [
+    {
+      "id": "return-42",
+      "title": "Return 42",
+      "prompt": "prompt.md",
+      "workspace": {
+        "root": "steps/return-42/workspace",
+        "starter": "steps/return-42/starter",
+        "entrypoint": "index.js"
+      },
+      "tests": {
+        "visible": "steps/return-42/tests/visible.test.js"
+      }
+    },
+    {
+      "id": "sum-two",
+      "title": "Sum Two Numbers",
+      "prompt": "prompt.md",
+      "workspace": {
+        "root": "steps/sum-two/workspace",
+        "starter": "steps/sum-two/starter",
+        "entrypoint": "index.js"
+      },
+      "tests": {
+        "visible": "steps/sum-two/tests/visible.test.js"
+      }
+    }
+  ]
+}

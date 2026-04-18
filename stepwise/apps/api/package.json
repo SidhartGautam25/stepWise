@@ -9,6 +9,10 @@
     "build": "tsc"
   },
   "dependencies": {
+    "@fastify/cors": "^11.2.0",
+    "@repo/attempt-contracts": "workspace:^",
+    "@repo/auth": "workspace:^",
+    "@repo/db": "workspace:^",
     "fastify": "^5.8.5"
   },
   "devDependencies": {

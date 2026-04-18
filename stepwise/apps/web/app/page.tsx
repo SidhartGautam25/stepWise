@@ -1,101 +1,148 @@
-import Image, { type ImageProps } from "next/image";
-import { Button } from "@repo/ui/button";
-import styles from "./page.module.css";
+import Link from "next/link";
+import { fetchChallenges } from "@/lib/api";
 
-type Props = Omit<ImageProps, "src"> & {
-  srcLight: string;
-  srcDark: string;
-};
+export const revalidate = 60; // ISR — refresh every minute
 
-const ThemeImage = (props: Props) => {
-  const { srcLight, srcDark, ...rest } = props;
+export default async function HomePage() {
+  let challenges: Awaited<ReturnType<typeof fetchChallenges>> = [];
+  try { challenges = await fetchChallenges(); } catch { /* API offline */ }
 
   return (
-    <>
-      <Image {...rest} src={srcLight} className="imgLight" />
-      <Image {...rest} src={srcDark} className="imgDark" />
-    </>
-  );
-};
+    <div style={{ minHeight: "100vh" }}>
+      {/* Hero */}
+      <section style={{
+        paddingTop: 180, paddingBottom: 100,
+        textAlign: "center", position: "relative", overflow: "hidden",
+        maxWidth: 900, margin: "0 auto", padding: "180px 24px 100px",
+      }}>
+        {/* Glow orbs */}
+        <div style={{
+          position: "fixed", top: "20%", left: "50%", transform: "translate(-50%, -50%)",
+          width: 600, height: 600, borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(108,99,255,0.1) 0%, transparent 70%)",
+          pointerEvents: "none", zIndex: 0,
+        }} />
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <ThemeImage
-          className={styles.logo}
-          srcLight="turborepo-dark.svg"
-          srcDark="turborepo-light.svg"
-          alt="Turborepo logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>apps/web/app/page.tsx</code>
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <div className="badge badge-indigo" style={{ margin: "0 auto 24px", width: "fit-content" }}>
+            ✦ Zero setup required
+          </div>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new/clone?demo-description=Learn+to+implement+a+monorepo+with+a+two+Next.js+sites+that+has+installed+three+local+packages.&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F4K8ZISWAzJ8X1504ca0zmC%2F0b21a1c6246add355e55816278ef54bc%2FBasic.png&demo-title=Monorepo+with+Turborepo&demo-url=https%3A%2F%2Fexamples-basic-web.vercel.sh%2F&from=templates&project-name=Monorepo+with+Turborepo&repository-name=monorepo-turborepo&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fturborepo%2Ftree%2Fmain%2Fexamples%2Fbasic&root-directory=apps%2Fdocs&skippable-integrations=1&teamSlug=vercel&utm_source=create-turbo"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://turborepo.dev/docs?utm_source"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+          <h1 style={{
+            fontSize: "clamp(48px, 7vw, 84px)", fontWeight: 900,
+            lineHeight: 1.05, letterSpacing: "-0.04em", marginBottom: 24,
+            color: "#e8e8f0",
+          }}>
+            Learn by{" "}
+            <span className="gradient-text">Building.</span>
+            <br />Not by Watching.
+          </h1>
+
+          <p style={{
+            fontSize: 18, color: "#666680", maxWidth: 560, margin: "0 auto 48px",
+            lineHeight: 1.7,
+          }}>
+            StepWise is a code challenge platform where you build real projects step by step,
+            run tests locally, and get immediate feedback — no browser sandbox, no toy problems.
+          </p>
+
+          <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
+            <Link href="/challenges" className="btn btn-primary" style={{ fontSize: 15, padding: "12px 28px" }}>
+              Browse Challenges →
+            </Link>
+            <Link href="/login" className="btn btn-ghost" style={{ fontSize: 15, padding: "12px 28px" }}>
+              Sign in
+            </Link>
+          </div>
         </div>
-        <Button appName="web" className={styles.secondary}>
-          Open alert
-        </Button>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com/templates?search=turborepo&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://turborepo.dev?utm_source=create-turbo"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to turborepo.dev →
-        </a>
+      </section>
+
+      {/* How it works */}
+      <section style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 100px" }}>
+        <h2 style={{ textAlign: "center", fontSize: 28, fontWeight: 700, marginBottom: 48, color: "#e8e8f0" }}>
+          How it works
+        </h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20 }}>
+          {[
+            {
+              step: "1", icon: "⚡", title: "Install the CLI",
+              desc: "One command. No accounts required to start.",
+              code: "npx stepwise --help",
+            },
+            {
+              step: "2", icon: "📦", title: "Init a challenge",
+              desc: "Workspace created with starter files and instructions.",
+              code: "stepwise init promise-basic",
+            },
+            {
+              step: "3", icon: "🧪", title: "Write code & test",
+              desc: "Run tests locally. Results go to the server automatically.",
+              code: "stepwise test",
+            },
+            {
+              step: "4", icon: "🚀", title: "Advance automatically",
+              desc: "Pass all checks and the next step is unlocked instantly.",
+              code: "→ Next step ready: sum-two",
+            },
+          ].map(({ step, icon, title, desc, code }) => (
+            <div key={step} className="glass" style={{ padding: 28 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10,
+                  background: "rgba(108, 99, 255, 0.15)",
+                  border: "1px solid rgba(108, 99, 255, 0.2)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 18,
+                }}>{icon}</div>
+                <span style={{ fontSize: 12, color: "#6c63ff", fontWeight: 600 }}>STEP {step}</span>
+              </div>
+              <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 8, color: "#e8e8f0" }}>{title}</h3>
+              <p style={{ fontSize: 14, color: "#666680", marginBottom: 16, lineHeight: 1.6 }}>{desc}</p>
+              <div className="terminal" style={{ padding: "10px 14px", fontSize: 12 }}>
+                <span className="prompt">$ </span>
+                <span className="cmd">{code}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Challenge preview */}
+      {challenges.length > 0 && (
+        <section style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 120px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 32 }}>
+            <h2 style={{ fontSize: 28, fontWeight: 700, color: "#e8e8f0" }}>Challenges</h2>
+            <Link href="/challenges" style={{ fontSize: 14, color: "#6c63ff", textDecoration: "none" }}>
+              View all →
+            </Link>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 20 }}>
+            {challenges.slice(0, 3).map((c) => (
+              <Link key={c.id} href={`/challenges/${c.id}`} style={{ textDecoration: "none" }}>
+                <div className="glass card-hover" style={{ padding: 28 }}>
+                  <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+                    <span className="badge badge-indigo">{c.language}</span>
+                    <span className="badge" style={{ background: "rgba(255,255,255,0.05)", color: "#666680", border: "1px solid rgba(255,255,255,0.07)" }}>
+                      {c.stepCount} steps
+                    </span>
+                  </div>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8e8f0", marginBottom: 8 }}>{c.title}</h3>
+                  <p style={{ fontSize: 13, color: "#666680" }}>v{c.version}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Footer */}
+      <footer style={{
+        borderTop: "1px solid rgba(255,255,255,0.06)",
+        padding: "40px 24px",
+        textAlign: "center",
+        color: "#333350", fontSize: 13,
+      }}>
+        Built with ♥ · StepWise {new Date().getFullYear()}
       </footer>
     </div>
   );

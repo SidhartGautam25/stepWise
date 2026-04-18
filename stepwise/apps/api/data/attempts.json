@@ -1,0 +1,77 @@
+{
+  "attempts": [
+    {
+      "attemptId": "54483c1f-17b2-411a-ba5f-bbbce6983661",
+      "userId": "student-local",
+      "challengeId": "promise-basic",
+      "challengeVersion": "0.2.0",
+      "stepId": "return-42",
+      "mode": "local",
+      "status": "submitted",
+      "startedAt": "2026-04-18T20:20:25.699Z",
+      "submittedAt": "2026-04-18T20:20:25.708Z",
+      "outcome": "failed",
+      "result": {
+        "challengeId": "promise-basic",
+        "challengeVersion": "0.2.0",
+        "stepId": "return-42",
+        "mode": "local",
+        "total": 1,
+        "passed": 0,
+        "failed": 1,
+        "executionTime": 3,
+        "results": [
+          {
+            "name": "returns 42",
+            "status": "fail",
+            "error": "Expected 42",
+            "duration": 0,
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "attemptId": "d30574aa-e9c6-4545-89a8-94ac7b0dbc65",
+      "userId": "student-local",
+      "challengeId": "promise-basic",
+      "challengeVersion": "0.2.0",
+      "stepId": "return-42",
+      "mode": "local",
+      "status": "submitted",
+      "startedAt": "2026-04-18T20:20:44.414Z",
+      "submittedAt": "2026-04-18T20:20:44.423Z",
+      "outcome": "passed",
+      "result": {
+        "challengeId": "promise-basic",
+        "challengeVersion": "0.2.0",
+        "stepId": "return-42",
+        "mode": "local",
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "executionTime": 3,
+        "results": [
+          {
+            "name": "returns 42",
+            "status": "pass",
+            "duration": 0,
+            "visibility": "visible"
+          }
+        ]
+      }
+    }
+  ],
+  "progress": [
+    {
+      "userId": "student-local",
+      "challengeId": "promise-basic",
+      "currentStepId": "sum-two",
+      "completedStepIds": [
+        "return-42"
+      ],
+      "challengeCompleted": false,
+      "updatedAt": "2026-04-18T20:20:44.423Z"
+    }
+  ]
+}
