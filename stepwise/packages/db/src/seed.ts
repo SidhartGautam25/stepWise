@@ -24,6 +24,10 @@ interface ChallengeManifest {
   title: string;
   language: string;
   runtime: string;
+  type?: string;
+  description?: string;
+  difficulty?: string;
+  tags?: string[];
   steps: ManifestStep[];
 }
 
@@ -45,6 +49,12 @@ function loadManifest(challengeDir: string): ChallengeManifest | null {
       title: String(raw.title),
       language: String(raw.language),
       runtime: String(raw.runtime),
+      type: typeof raw.type === "string" ? raw.type : undefined,
+      description: typeof raw.description === "string" ? raw.description : undefined,
+      difficulty: typeof raw.difficulty === "string" ? raw.difficulty : undefined,
+      tags: Array.isArray(raw.tags)
+        ? (raw.tags as unknown[]).filter((t): t is string => typeof t === "string")
+        : [],
       steps: (raw.steps as unknown[]).map((s, i) => {
         if (!isRecord(s)) throw new Error(`Invalid step at index ${i}`);
         return {
@@ -89,12 +99,20 @@ async function seed() {
         title: manifest.title,
         language: manifest.language,
         runtime: manifest.runtime,
+        challengeType: manifest.type ?? "function",
+        description: manifest.description,
+        difficulty: manifest.difficulty,
+        tags: JSON.stringify(manifest.tags ?? []),
       },
       update: {
         version: manifest.version,
         title: manifest.title,
         language: manifest.language,
         runtime: manifest.runtime,
+        challengeType: manifest.type ?? "function",
+        description: manifest.description,
+        difficulty: manifest.difficulty,
+        tags: JSON.stringify(manifest.tags ?? []),
       },
     });
 

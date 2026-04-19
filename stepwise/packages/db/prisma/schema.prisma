@@ -50,11 +50,15 @@ model OtpToken {
 // Content (test files, starter files) remains on disk; only metadata lives in DB.
 
 model Challenge {
-  id          String   @id              // matches challenge.json "id", e.g. "promise-basic"
-  version     String                    // semver, e.g. "0.2.0"
-  title       String
-  language    String                    // e.g. "javascript"
-  runtime     String                    // e.g. "node"
+  id              String   @id              // matches challenge.json "id", e.g. "promise-basic"
+  version         String                    // semver, e.g. "0.2.0"
+  title           String
+  language        String                    // e.g. "javascript"
+  runtime         String                    // e.g. "node"
+  challengeType   String   @default("function") @map("challenge_type") // "function" | "server"
+  description     String?
+  difficulty      String?                   // "beginner" | "intermediate" | "advanced"
+  tags            String   @default("[]")   // JSON array stored as string
   isPublished Boolean  @default(false) @map("is_published")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")

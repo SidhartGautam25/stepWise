@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "id": "node-crud",
+  "version": "1.0.0",
+  "title": "Pure Node.js CRUD API",
+  "language": "javascript",
+  "runtime": "node",
+  "type": "server",
+  "description": "Build a complete REST CRUD API using only Node.js built-ins — no Express, no npm packages, just you and the standard library. Seven progressive steps, each building on the last.",
+  "difficulty": "beginner",
+  "tags": ["node", "http", "rest", "crud", "backend"],
+  "defaultTimeoutMs": 10000,
+  "steps": [
+    {
+      "id": "01-setup",
+      "title": "Boot the Server",
+      "prompt": "steps/01-setup/prompt.md",
+      "free": true,
+      "workspace": {
+        "starter": "steps/01-setup/starter",
+        "entrypoint": "server.js"
+      },
+      "tests": {
+        "visible": "steps/01-setup/tests/visible.test.js"
+      }
+    },
+    {
+      "id": "02-list",
+      "title": "List All Items",
+      "prompt": "steps/02-list/prompt.md",
+      "free": true,
+      "workspace": {
+        "starter": "steps/02-list/starter",
+        "entrypoint": "server.js"
+      },
+      "tests": {
+        "visible": "steps/02-list/tests/visible.test.js"
+      }
+    },
+    {
+      "id": "03-create",
+      "title": "Create an Item",
+      "prompt": "steps/03-create/prompt.md",
+      "free": true,
+      "workspace": {
+        "starter": "steps/03-create/starter",
+        "entrypoint": "server.js"
+      },
+      "tests": {
+        "visible": "steps/03-create/tests/visible.test.js"
+      }
+    },
+    {
+      "id": "04-get-item",
+      "title": "Get Item by ID",
+      "prompt": "steps/04-get-item/prompt.md",
+      "free": true,
+      "workspace": {
+        "starter": "steps/04-get-item/starter",
+        "entrypoint": "server.js"
+      },
+      "tests": {
+        "visible": "steps/04-get-item/tests/visible.test.js"
+      }
+    },
+    {
+      "id": "05-update",
+      "title": "Update an Item",
+      "prompt": "steps/05-update/prompt.md",
+      "free": true,
+      "workspace": {
+        "starter": "steps/05-update/starter",
+        "entrypoint": "server.js"
+      },
+      "tests": {
+        "visible": "steps/05-update/tests/visible.test.js"
+      }
+    },
+    {
+      "id": "06-delete",
+      "title": "Delete an Item",
+      "prompt": "steps/06-delete/prompt.md",
+      "free": true,
+      "workspace": {
+        "starter": "steps/06-delete/starter",
+        "entrypoint": "server.js"
+      },
+      "tests": {
+        "visible": "steps/06-delete/tests/visible.test.js"
+      }
+    },
+    {
+      "id": "07-persist",
+      "title": "Persist Data to Disk",
+      "prompt": "steps/07-persist/prompt.md",
+      "free": true,
+      "workspace": {
+        "starter": "steps/07-persist/starter",
+        "entrypoint": "server.js"
+      },
+      "tests": {
+        "visible": "steps/07-persist/tests/visible.test.js"
+      },
+      "timeoutMs": 15000
+    }
+  ]
+}
