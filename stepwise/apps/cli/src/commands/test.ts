@@ -1,8 +1,9 @@
 import path from "path";
 import fs from "fs";
 import pc from "picocolors";
-import { runChallenge } from "@repo/challenge-runner";
+import { runChallenge, loadChallengeManifest } from "@repo/challenge-runner";
 import { NodeTester } from "@repo/tester-node";
+import { ServerTester } from "@repo/tester-server";
 import {
   getLocalTestHelpText,
   readLocalTestCommandConfig,
@@ -44,7 +45,10 @@ async function main() {
     challengePath = challengeInfo.challengePath;
   }
 
-  const tester = new NodeTester();
+  // ── Pick tester based on challenge type ──────────────────────────────────
+  const manifest = loadChallengeManifest(challengePath);
+  const isServerChallenge = manifest.type === "server";
+  const tester = isServerChallenge ? new ServerTester() : new NodeTester();
 
   const startedAttempt = await requestStartAttempt({
     apiBaseUrl: config.apiBaseUrl,
@@ -53,11 +57,12 @@ async function main() {
     stepId: config.stepId,
   });
 
-  // Resolve user code path: use explicit --code flag, or fall back to index.js in the workspace dir
+  // For server challenges: pass the workspace DIRECTORY (ServerTester uses it to
+  //   find server.js and start the process). For function challenges: path to index.js.
   const baseDir = config.workspaceDir ?? getInvocationDir();
-  const userCodePath =
-    config.userCodePath ??
-    path.resolve(baseDir, "index.js");
+  const userCodePath = isServerChallenge
+    ? baseDir  // ServerTester resolves server.js within this directory
+    : (config.userCodePath ?? path.resolve(baseDir, "index.js"));
 
   const result = await runChallenge({
     attemptId: startedAttempt.attemptId,

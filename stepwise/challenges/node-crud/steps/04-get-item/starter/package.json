@@ -1,0 +1,8 @@
+{
+  "name": "node-crud",
+  "version": "1.0.0",
+  "description": "Pure Node.js CRUD API — StepWise challenge",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

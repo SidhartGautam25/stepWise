@@ -20,6 +20,16 @@ function assertString(value: unknown, field: string): string {
   return value;
 }
 
+function parseServerConfig(value: unknown): import("./types").ServerConfig | undefined {
+  if (!isRecord(value)) return undefined;
+  return {
+    startScript: typeof value.startScript === "string" ? value.startScript : undefined,
+    portEnvVar: typeof value.portEnvVar === "string" ? value.portEnvVar : undefined,
+    readyEndpoint: typeof value.readyEndpoint === "string" ? value.readyEndpoint : undefined,
+    startupTimeoutMs: typeof value.startupTimeoutMs === "number" ? value.startupTimeoutMs : undefined,
+  };
+}
+
 function parseStep(step: unknown, index: number): ChallengeStepManifest {
   if (!isRecord(step)) {
     throw new Error(`Invalid challenge manifest step at index ${index}`);
@@ -40,6 +50,7 @@ function parseStep(step: unknown, index: number): ChallengeStepManifest {
       typeof step.prompt === "string" && step.prompt.length > 0
         ? step.prompt
         : undefined,
+    free: typeof step.free === "boolean" ? step.free : true,
     tests: {
       visible: assertString(tests.visible, `steps[${index}].tests.visible`),
       hidden:
@@ -70,6 +81,7 @@ function parseStep(step: unknown, index: number): ChallengeStepManifest {
       typeof step.timeoutMs === "number" && Number.isFinite(step.timeoutMs)
         ? step.timeoutMs
         : undefined,
+    server: parseServerConfig(step.server),
   };
 }
 
@@ -101,6 +113,17 @@ export function loadChallengeManifest(challengePath: string): ChallengeManifest 
     title: assertString(manifest.title, "title"),
     language: assertString(manifest.language, "language"),
     runtime: assertString(manifest.runtime, "runtime"),
+    type: manifest.type === "server" ? "server" : "function",
+    description: typeof manifest.description === "string" ? manifest.description : undefined,
+    difficulty:
+      manifest.difficulty === "beginner" ||
+      manifest.difficulty === "intermediate" ||
+      manifest.difficulty === "advanced"
+        ? manifest.difficulty
+        : undefined,
+    tags: Array.isArray(manifest.tags)
+      ? (manifest.tags as unknown[]).filter((t): t is string => typeof t === "string")
+      : undefined,
     entrypoint:
       typeof manifest.entrypoint === "string" && manifest.entrypoint.length > 0
         ? manifest.entrypoint
@@ -110,6 +133,7 @@ export function loadChallengeManifest(challengePath: string): ChallengeManifest 
       Number.isFinite(manifest.defaultTimeoutMs)
         ? manifest.defaultTimeoutMs
         : undefined,
+    server: parseServerConfig(manifest.server),
     steps: rawSteps.map(parseStep),
   };
 }
@@ -141,6 +165,7 @@ export function resolveChallengeStep(
     challengeTitle: manifest.title,
     language: manifest.language,
     runtime: manifest.runtime,
+    challengeType: manifest.type ?? "function",
     stepId: step.id,
     stepTitle: step.title,
     testFilePath: path.resolve(resolvedChallengePath, step.tests.visible),
@@ -164,5 +189,10 @@ export function resolveChallengeStep(
       step.timeoutMs ??
       manifest.defaultTimeoutMs ??
       DEFAULT_TIMEOUT_MS,
+    // Merge manifest-level server config with step-level overrides
+    serverConfig:
+      manifest.type === "server"
+        ? { ...manifest.server, ...step.server }
+        : undefined,
   };
 }

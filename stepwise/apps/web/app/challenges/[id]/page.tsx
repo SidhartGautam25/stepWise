@@ -48,7 +48,7 @@ export default async function ChallengePage({ params }: { params: Promise<{ id: 
 
       {/* Quick start */}
       <div className="glass" style={{ padding: 28, marginBottom: 32 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: "#a78bfa", marginBottom: 16, textTransform: "uppercase", fontSize: "12px", letterSpacing: "0.08em" }}>
+        <h2 style={{ fontSize: 12, fontWeight: 700, color: "#a78bfa", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.08em" }}>
           ⚡ Quick Start
         </h2>
         <div className="terminal">
