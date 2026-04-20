@@ -8,7 +8,13 @@
   "type": "server",
   "description": "Build a complete REST CRUD API using only Node.js built-ins — no Express, no npm packages, just you and the standard library. Seven progressive steps, each building on the last.",
   "difficulty": "beginner",
-  "tags": ["node", "http", "rest", "crud", "backend"],
+  "tags": [
+    "node",
+    "http",
+    "rest",
+    "crud",
+    "backend"
+  ],
   "defaultTimeoutMs": 10000,
   "steps": [
     {
@@ -18,7 +24,8 @@
       "free": true,
       "workspace": {
         "starter": "steps/01-setup/starter",
-        "entrypoint": "server.js"
+        "entrypoint": "server.js",
+        "root": "steps/01-setup/workspace"
       },
       "tests": {
         "visible": "steps/01-setup/tests/visible.test.js"
@@ -31,7 +38,8 @@
       "free": true,
       "workspace": {
         "starter": "steps/02-list/starter",
-        "entrypoint": "server.js"
+        "entrypoint": "server.js",
+        "root": "steps/02-list/workspace"
       },
       "tests": {
         "visible": "steps/02-list/tests/visible.test.js"
@@ -44,7 +52,8 @@
       "free": true,
       "workspace": {
         "starter": "steps/03-create/starter",
-        "entrypoint": "server.js"
+        "entrypoint": "server.js",
+        "root": "steps/03-create/workspace"
       },
       "tests": {
         "visible": "steps/03-create/tests/visible.test.js"
@@ -57,7 +66,8 @@
       "free": true,
       "workspace": {
         "starter": "steps/04-get-item/starter",
-        "entrypoint": "server.js"
+        "entrypoint": "server.js",
+        "root": "steps/04-get-item/workspace"
       },
       "tests": {
         "visible": "steps/04-get-item/tests/visible.test.js"
@@ -70,7 +80,8 @@
       "free": true,
       "workspace": {
         "starter": "steps/05-update/starter",
-        "entrypoint": "server.js"
+        "entrypoint": "server.js",
+        "root": "steps/05-update/workspace"
       },
       "tests": {
         "visible": "steps/05-update/tests/visible.test.js"
@@ -83,7 +94,8 @@
       "free": true,
       "workspace": {
         "starter": "steps/06-delete/starter",
-        "entrypoint": "server.js"
+        "entrypoint": "server.js",
+        "root": "steps/06-delete/workspace"
       },
       "tests": {
         "visible": "steps/06-delete/tests/visible.test.js"
@@ -96,7 +108,8 @@
       "free": true,
       "workspace": {
         "starter": "steps/07-persist/starter",
-        "entrypoint": "server.js"
+        "entrypoint": "server.js",
+        "root": "steps/07-persist/workspace"
       },
       "tests": {
         "visible": "steps/07-persist/tests/visible.test.js"
