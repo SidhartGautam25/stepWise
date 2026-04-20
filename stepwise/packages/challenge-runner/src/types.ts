@@ -94,6 +94,7 @@ export interface ResolvedChallengeStep {
 export interface BulkRunInput {
   userCodePath: string;
   challenge: ResolvedChallengeStep;
+  executablePath?: string;
 }
 
 export interface Tester {
@@ -114,6 +115,7 @@ export interface RunChallengeInput {
   timeout?: number;
   mode?: ExecutionMode;
   attemptId?: string;
+  executablePath?: string;
 }
 
 export interface TestResult {
