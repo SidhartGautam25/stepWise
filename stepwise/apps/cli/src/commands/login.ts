@@ -12,8 +12,8 @@
  *   --dev   Skip OTP, issue token immediately (dev only, fails in prod)
  */
 
-import * as readline from "readline/promises";
-import { stdin as input, stdout as output } from "process";
+import * as readline from "node:readline/promises";
+import { stdin as input, stdout as output } from "node:process";
 import pc from "picocolors";
 import { storeCredentials } from "../credentials";
 import { decodeToken } from "@repo/auth";
@@ -105,7 +105,7 @@ async function promptPassword(question: string): Promise<string> {
   });
 }
 
-async function main() {
+export async function main() {
   let config: LoginConfig;
 
   try {
@@ -184,7 +184,4 @@ function saveAndPrint(data: Record<string, unknown>, email: string) {
   console.log(pc.dim(`  Token stored in ~/.config/stepwise/credentials.json\n`));
 }
 
-main().catch((err) => {
-  console.error(pc.red(`\n✗ Unexpected error: ${err instanceof Error ? err.message : String(err)}\n`));
-  process.exit(1);
-});
+

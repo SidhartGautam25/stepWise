@@ -36,35 +36,44 @@ Run "stepwise <command> --help" for command-specific options.
   process.exit(0);
 }
 
-if (command === "init") {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  require("./commands/init");
-} else if (command === "test") {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  require("./commands/test");
-} else if (command === "login") {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  require("./commands/login");
-} else if (command === "logout") {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  require("./commands/logout");
-} else if (command === "whoami") {
-  const { getStoredCredentials } = require("./credentials") as typeof import("./credentials");
-  const pc = require("picocolors") as typeof import("picocolors");
-  const creds = getStoredCredentials();
-  if (!creds) {
-    console.log(pc.yellow("\nNot logged in. Run `stepwise login` first.\n"));
+import pc from "picocolors";
+import { getStoredCredentials } from "./credentials";
+
+async function run() {
+  if (command === "init") {
+    const { main } = await import("./commands/init");
+    await main();
+  } else if (command === "test") {
+    const { main } = await import("./commands/test");
+    await main();
+  } else if (command === "login") {
+    const { main } = await import("./commands/login");
+    await main();
+  } else if (command === "logout") {
+    const { main } = await import("./commands/logout");
+    await main();
+  } else if (command === "whoami") {
+    const creds = getStoredCredentials();
+    if (!creds) {
+      console.log(pc.yellow("\nNot logged in. Run `stepwise login` first.\n"));
+    } else {
+      const exp = new Date(creds.expiresAt);
+      console.log(`\n${pc.bold("Logged in as:")} ${pc.cyan(creds.email)}`);
+      if (creds.username) console.log(`${pc.bold("Username:")}    ${creds.username}`);
+      console.log(`${pc.bold("User ID:")}     ${creds.userId}`);
+      console.log(`${pc.bold("Expires:")}     ${exp.toLocaleString()}\n`);
+    }
   } else {
-    const exp = new Date(creds.expiresAt);
-    console.log(`\n${pc.bold("Logged in as:")} ${pc.cyan(creds.email)}`);
-    if (creds.username) console.log(`${pc.bold("Username:")}    ${creds.username}`);
-    console.log(`${pc.bold("User ID:")}     ${creds.userId}`);
-    console.log(`${pc.bold("Expires:")}     ${exp.toLocaleString()}\n`);
+    console.error(
+      `Unknown command "${command}". Run "stepwise --help" for available commands.`,
+    );
+    process.exit(1);
   }
-} else {
-  console.error(
-    `Unknown command "${command}". Run "stepwise --help" for available commands.`,
-  );
-  process.exit(1);
 }
+
+run().catch((err) => {
+  console.error(pc.red(`\n✗ Unexpected error: ${err instanceof Error ? err.message : String(err)}\n`));
+  process.exit(1);
+});
+
 
