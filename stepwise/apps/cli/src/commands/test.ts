@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 import pc from "picocolors";
-import { runChallenge, loadChallengeManifest } from "@repo/challenge-runner";
+import { runChallenge, loadChallengeManifest, installRuntime } from "@repo/challenge-runner";
 import { NodeTester } from "@repo/tester-node";
 import { ServerTester } from "@repo/tester-server";
 import {
@@ -64,6 +64,19 @@ async function main() {
     ? baseDir  // ServerTester resolves server.js within this directory
     : (config.userCodePath ?? path.resolve(baseDir, "index.js"));
 
+  // ── Isolate BYOB Runtime Environment ─────────────────────────────────────
+  let executablePath: string | undefined;
+  
+  if (manifest.language) {
+    try {
+      // Temporarily default to node v20.12.0 for all Javascript/Node testing natively.
+      const version = manifest.runtime === "node" ? "v20.12.0" : "latest";
+      executablePath = await installRuntime(manifest.runtime || "node", version);
+    } catch (err) {
+      console.warn(`\n${pc.yellow("⚠ Warning:")} Could not forcefully isolate local runtime. Proceeding with system fallback...\n`);
+    }
+  }
+
   const result = await runChallenge({
     attemptId: startedAttempt.attemptId,
     challengePath,
@@ -71,6 +84,7 @@ async function main() {
     userCodePath,
     stepId: startedAttempt.step.id,
     mode: "local",
+    executablePath,
   });
 
   const submittedResult = await submitRunnerResult({

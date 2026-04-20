@@ -44,6 +44,7 @@ model Challenge {
   difficulty      String?                   // "beginner" | "intermediate" | "advanced"
   tags            String   @default("[]")   // JSON array stored as string
   isPublished Boolean  @default(false) @map("is_published")
+  systemRequirements Json? @map("system_requirements")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 

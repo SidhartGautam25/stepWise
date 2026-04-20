@@ -42,13 +42,14 @@ interface ServerHandle {
 }
 
 function spawnServer(
+  executablePath: string,
   workspaceDir: string,
   startScript: string,
   portEnvVar: string,
   port: number,
 ): ChildProcess {
   const scriptPath = path.resolve(workspaceDir, startScript);
-  return spawn("node", [scriptPath], {
+  return spawn(executablePath, [scriptPath], {
     cwd: workspaceDir,
     env: { ...process.env, [portEnvVar]: String(port) },
     stdio: ["ignore", "pipe", "pipe"],
@@ -56,12 +57,13 @@ function spawnServer(
 }
 
 async function startServer(
+  executablePath: string,
   workspaceDir: string,
   startScript: string,
   portEnvVar: string,
   port: number,
 ): Promise<ServerHandle> {
-  const proc = spawnServer(workspaceDir, startScript, portEnvVar, port);
+  const proc = spawnServer(executablePath, workspaceDir, startScript, portEnvVar, port);
   const baseUrl = `http://127.0.0.1:${port}`;
 
   return {
@@ -145,8 +147,11 @@ export class ServerTester implements BulkTester {
     // NOT challenge.workspacePath (which is the template location in challenge repo).
     const workspaceDir = input.userCodePath;
 
+    // Fallback to "node" if executablePath is somehow missing.
+    const executablePath = input.executablePath || "node";
+
     const port = await findFreePort();
-    let handle = await startServer(workspaceDir, startScript, portEnvVar, port);
+    let handle = await startServer(executablePath, workspaceDir, startScript, portEnvVar, port);
 
     try {
       await waitForReady(handle.baseUrl, readyEndpoint, startupTimeoutMs);
@@ -172,7 +177,7 @@ export class ServerTester implements BulkTester {
         restartServer: async () => {
           await handle.kill();
           await new Promise((r) => setTimeout(r, 400));
-          handle = await startServer(workspaceDir, startScript, portEnvVar, port);
+          handle = await startServer(executablePath, workspaceDir, startScript, portEnvVar, port);
           await waitForReady(handle.baseUrl, readyEndpoint, startupTimeoutMs);
         },
       });

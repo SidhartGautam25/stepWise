@@ -8,6 +8,7 @@
 
 import fs from "fs";
 import path from "path";
+import { Prisma } from "@prisma/client";
 import { prisma } from "./client";
 
 const CHALLENGES_ROOT = path.resolve(__dirname, "../../../challenges");
@@ -28,6 +29,7 @@ interface ChallengeManifest {
   description?: string;
   difficulty?: string;
   tags?: string[];
+  systemRequirements?: Record<string, unknown>;
   steps: ManifestStep[];
 }
 
@@ -55,6 +57,7 @@ function loadManifest(challengeDir: string): ChallengeManifest | null {
       tags: Array.isArray(raw.tags)
         ? (raw.tags as unknown[]).filter((t): t is string => typeof t === "string")
         : [],
+      systemRequirements: isRecord(raw.systemRequirements) ? raw.systemRequirements : undefined,
       steps: (raw.steps as unknown[]).map((s, i) => {
         if (!isRecord(s)) throw new Error(`Invalid step at index ${i}`);
         return {
@@ -103,6 +106,7 @@ async function seed() {
         description: manifest.description,
         difficulty: manifest.difficulty,
         tags: JSON.stringify(manifest.tags ?? []),
+        systemRequirements: manifest.systemRequirements ? (manifest.systemRequirements as Prisma.InputJsonObject) : undefined,
       },
       update: {
         version: manifest.version,
@@ -113,6 +117,7 @@ async function seed() {
         description: manifest.description,
         difficulty: manifest.difficulty,
         tags: JSON.stringify(manifest.tags ?? []),
+        systemRequirements: manifest.systemRequirements ? (manifest.systemRequirements as Prisma.InputJsonObject) : undefined,
       },
     });
 

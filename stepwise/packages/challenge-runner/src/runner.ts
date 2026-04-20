@@ -95,6 +95,7 @@ export async function runChallenge(
     const results = await (tester as BulkTester).runAllTests({
       userCodePath: resolvedUserCodePath,
       challenge,
+      executablePath: input.executablePath,
     });
 
     return {

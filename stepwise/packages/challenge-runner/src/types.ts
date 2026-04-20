@@ -51,6 +51,15 @@ export interface ChallengeStepManifest {
   server?: ServerConfig;
 }
 
+export interface SystemRequirements {
+  os?: string;
+  cpu?: string;
+  ram?: string;
+  storage?: string;
+  network?: string;
+  [key: string]: unknown;
+}
+
 export interface ChallengeManifest {
   schemaVersion: 1;
   id: string;
@@ -62,6 +71,7 @@ export interface ChallengeManifest {
   type?: ChallengeType;
   description?: string;
   difficulty?: Difficulty;
+  systemRequirements?: SystemRequirements;
   tags?: string[];
   entrypoint?: string;
   defaultTimeoutMs?: number;
@@ -94,6 +104,7 @@ export interface ResolvedChallengeStep {
 export interface BulkRunInput {
   userCodePath: string;
   challenge: ResolvedChallengeStep;
+  executablePath?: string;
 }
 
 export interface Tester {
@@ -114,6 +125,7 @@ export interface RunChallengeInput {
   timeout?: number;
   mode?: ExecutionMode;
   attemptId?: string;
+  executablePath?: string;
 }
 
 export interface TestResult {
