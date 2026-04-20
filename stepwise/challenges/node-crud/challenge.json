@@ -37,6 +37,7 @@
       "id": "02-list",
       "title": "List All Items",
       "prompt": "prompt.md",
+      "explanation": "explanation.md",
       "free": true,
       "workspace": {
         "starter": "steps/02-list/starter",
@@ -51,6 +52,7 @@
       "id": "03-create",
       "title": "Create an Item",
       "prompt": "prompt.md",
+      "explanation": "explanation.md",
       "free": true,
       "workspace": {
         "starter": "steps/03-create/starter",
@@ -65,6 +67,7 @@
       "id": "04-get-item",
       "title": "Get Item by ID",
       "prompt": "prompt.md",
+      "explanation": "explanation.md",
       "free": true,
       "workspace": {
         "starter": "steps/04-get-item/starter",
@@ -79,6 +82,7 @@
       "id": "05-update",
       "title": "Update an Item",
       "prompt": "prompt.md",
+      "explanation": "explanation.md",
       "free": true,
       "workspace": {
         "starter": "steps/05-update/starter",
@@ -93,6 +97,7 @@
       "id": "06-delete",
       "title": "Delete an Item",
       "prompt": "prompt.md",
+      "explanation": "explanation.md",
       "free": true,
       "workspace": {
         "starter": "steps/06-delete/starter",
@@ -107,6 +112,7 @@
       "id": "07-persist",
       "title": "Persist Data to Disk",
       "prompt": "prompt.md",
+      "explanation": "explanation.md",
       "free": true,
       "workspace": {
         "starter": "steps/07-persist/starter",

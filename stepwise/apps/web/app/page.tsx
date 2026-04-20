@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { fetchChallenges } from "@/lib/api";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export const revalidate = 60; // ISR — refresh every minute
 
 export default async function HomePage() {
   let challenges: Awaited<ReturnType<typeof fetchChallenges>> = [];
   try { challenges = await fetchChallenges(); } catch { /* API offline */ }
+
+  const session = await getServerSession(authOptions);
 
   return (
     <div style={{ minHeight: "100vh" }}>
@@ -48,11 +52,17 @@ export default async function HomePage() {
 
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/challenges" className="btn btn-primary" style={{ fontSize: 15, padding: "12px 28px" }}>
-              Browse Challenges →
+              {session ? "Continue Learning →" : "Browse Challenges →"}
             </Link>
-            <Link href="/login" className="btn btn-ghost" style={{ fontSize: 15, padding: "12px 28px" }}>
-              Sign in
-            </Link>
+            {session ? (
+              <Link href="/dashboard" className="btn btn-ghost" style={{ fontSize: 15, padding: "12px 28px" }}>
+                Dashboard
+              </Link>
+            ) : (
+              <Link href="/login" className="btn btn-ghost" style={{ fontSize: 15, padding: "12px 28px" }}>
+                Sign in
+              </Link>
+            )}
           </div>
         </div>
       </section>

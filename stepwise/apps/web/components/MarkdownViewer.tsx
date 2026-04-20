@@ -1,7 +1,8 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
-import rehypeSanitize from "rehype-sanitize";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 
 interface MarkdownViewerProps {
   content: string;
@@ -11,7 +12,17 @@ export function MarkdownViewer({ content }: MarkdownViewerProps) {
   return (
     <div className="markdown-body">
       <ReactMarkdown
-        rehypePlugins={[rehypeSanitize]}
+        rehypePlugins={[
+          rehypeRaw,
+          [rehypeSanitize, {
+            ...defaultSchema,
+            tagNames: [...(defaultSchema.tagNames || []), "details", "summary", "style", "div", "span"],
+            attributes: {
+              ...defaultSchema.attributes,
+              "*": ["className", "style"],
+            }
+          }]
+        ]}
         components={{
           code({ node, className, children, ...props }: any) {
             const match = /language-(\w+)/.exec(className || "");
