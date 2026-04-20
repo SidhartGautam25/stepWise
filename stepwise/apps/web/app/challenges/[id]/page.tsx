@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import { fetchChallenge, type ChallengeDetail } from "@/lib/api";
+import ReactMarkdown from "react-markdown";
+import rehypeSanitize from "rehype-sanitize";
 
 export const revalidate = 60;
 
@@ -87,7 +89,7 @@ export default async function ChallengePage({ params }: { params: Promise<{ id: 
                 </div>
 
                 {/* Content */}
-                <div style={{ paddingBottom: isLast ? 0 : 32, flex: 1 }}>
+                <div style={{ paddingBottom: isLast ? 0 : 40, flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: step.prompt ? 12 : 0 }}>
                     <h3 style={{ fontSize: 16, fontWeight: 600, color: isFirst ? "#e8e8f0" : "#555570" }}>
                       {step.title}
@@ -107,12 +109,85 @@ export default async function ChallengePage({ params }: { params: Promise<{ id: 
                   {step.prompt && isFirst && (
                     <div style={{
                       background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
-                      borderRadius: 10, padding: "16px 20px", marginTop: 12,
-                      fontSize: 14, color: "#888898", lineHeight: 1.7, fontFamily: "inherit",
-                      whiteSpace: "pre-wrap",
+                      borderRadius: 12, padding: "20px 24px", marginTop: 16,
+                      fontSize: 15, color: "#d2d2d8", lineHeight: 1.7,
+                      overflow: "hidden"
                     }}>
-                      {step.prompt}
+                      <div className="markdown-body">
+                        <ReactMarkdown rehypePlugins={[rehypeSanitize]}>
+                          {step.prompt}
+                        </ReactMarkdown>
+                      </div>
                     </div>
+                  )}
+
+                  {step.explanation && isFirst && (
+                    <div style={{
+                      marginTop: 16,
+                      background: "rgba(139, 92, 246, 0.06)", 
+                      borderLeft: "3px solid #8b5cf6",
+                      borderRadius: "0 12px 12px 0",
+                      padding: "16px 24px"
+                    }}>
+                      <h4 style={{ color: "#a78bfa", fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginBottom: 8 }}>
+                        💡 Why this matters
+                      </h4>
+                      <div style={{ color: "#b4b4c0", fontSize: 14, lineHeight: 1.6 }} className="markdown-body">
+                        <ReactMarkdown rehypePlugins={[rehypeSanitize]}>
+                          {step.explanation}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
+                  )}
+
+                  {step.solution && isFirst && (
+                    <details 
+                      style={{
+                        marginTop: 16,
+                        background: "rgba(16, 185, 129, 0.04)",
+                        border: "1px solid rgba(16, 185, 129, 0.15)",
+                        borderRadius: 12,
+                        overflow: "hidden"
+                      }}
+                    >
+                      <summary 
+                        style={{ 
+                          padding: "14px 24px", 
+                          cursor: "pointer", 
+                          fontWeight: 600, 
+                          color: "#34d399",
+                          fontSize: 14,
+                          userSelect: "none",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          outline: "none",
+                          transition: "background 0.2s"
+                        }}
+                      >
+                        <span style={{ fontSize: 16 }}>👁️</span> Click to Reveal Solution
+                      </summary>
+                      <div style={{ 
+                        padding: "0 24px 24px", 
+                        borderTop: "1px solid rgba(16, 185, 129, 0.1)",
+                        marginTop: 4,
+                        paddingTop: 20
+                      }}>
+                        <div style={{
+                          background: "#0a0a0f",
+                          border: "1px solid rgba(255,255,255,0.06)",
+                          borderRadius: 8,
+                          padding: "20px",
+                          color: "#e8e8f0",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: 13,
+                          whiteSpace: "pre-wrap",
+                          overflowX: "auto"
+                        }}>
+                          {step.solution}
+                        </div>
+                      </div>
+                    </details>
                   )}
                 </div>
               </div>

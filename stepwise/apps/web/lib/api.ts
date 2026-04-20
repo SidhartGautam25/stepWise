@@ -18,6 +18,8 @@ export interface StepInfo {
   id: string;
   title: string;
   prompt?: string;
+  explanation?: string;
+  solution?: string;
   hasStarter: boolean;
   position: number;
 }

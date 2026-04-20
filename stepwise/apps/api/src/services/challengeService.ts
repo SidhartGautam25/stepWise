@@ -12,6 +12,8 @@ export interface StepInfo {
   id: string;
   title: string;
   prompt?: string;
+  explanation?: string;
+  solution?: string;
   hasStarter: boolean;
   position: number;
 }
@@ -76,10 +78,28 @@ export function getChallengeInfo(challengeId: string): ChallengeInfo {
       }
     }
 
+    let explanation: string | undefined;
+    if (typeof s.explanation === "string") {
+      const explanationPath = path.resolve(stepDir, s.explanation);
+      if (fs.existsSync(explanationPath)) {
+        explanation = fs.readFileSync(explanationPath, "utf-8");
+      }
+    }
+
+    let solution: string | undefined;
+    if (typeof s.solution === "string") {
+      const solutionPath = path.resolve(stepDir, s.solution);
+      if (fs.existsSync(solutionPath)) {
+        solution = fs.readFileSync(solutionPath, "utf-8");
+      }
+    }
+
     return {
       id: stepId,
       title: readString(s.title, `steps[${i}].title`),
       prompt,
+      explanation,
+      solution,
       hasStarter: fs.existsSync(starterDir),
       position: i + 1,
     };
