@@ -102,7 +102,7 @@ function parseInitArgs(argv: string[]): InitCommandConfig {
   };
 }
 
-async function main() {
+export async function main() {
   let config: InitCommandConfig;
 
   try {
@@ -181,9 +181,4 @@ async function main() {
   console.log(renderInitResult(challenge, provisioned, config.showPrompt));
 }
 
-main().catch((err) => {
-  console.error(
-    `\n${pc.bold(pc.red("✗ Unexpected error"))}\n\n  ${err instanceof Error ? err.message : String(err)}\n`,
-  );
-  process.exit(1);
-});
+

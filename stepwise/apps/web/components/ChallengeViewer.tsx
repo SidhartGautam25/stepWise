@@ -134,12 +134,20 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                 ⚡ Quick Start Checklist
               </h2>
               <div className="terminal">
-                <div><span className="comment"># 1. Login to stepWise in terminal</span></div>
-                <div style={{ marginBottom: 8 }}><span className="prompt">$ </span><span className="cmd">npx stepwise login</span></div>
-                <div><span className="comment"># 2. Pull down the workspace</span></div>
-                <div style={{ marginBottom: 8 }}><span className="prompt">$ </span><span className="cmd">npx stepwise init {challenge.id}</span></div>
-                <div><span className="comment"># 3. Code your solution and test!</span></div>
-                <div><span className="prompt">$ </span><span className="cmd">npx stepwise test</span></div>
+                <div><span className="comment"># 1. Install StepWise CLI (One-time only)</span></div>
+                <div><span className="comment"># For Mac / Linux:</span></div>
+                <div style={{ marginBottom: 4 }}><span className="prompt">$ </span><span className="cmd">curl -fsSL https://stepwise.run/install.sh | bash</span></div>
+                <div><span className="comment"># For Windows (Powershell):</span></div>
+                <div style={{ marginBottom: 16 }}><span className="prompt">&gt; </span><span className="cmd">iwr https://stepwise.run/install.ps1 -useb | iex</span></div>
+                
+                <div><span className="comment"># 2. Login to your terminal</span></div>
+                <div style={{ marginBottom: 8 }}><span className="prompt">$ </span><span className="cmd">stepwise login</span></div>
+                
+                <div><span className="comment"># 3. Pull down the workspace</span></div>
+                <div style={{ marginBottom: 8 }}><span className="prompt">$ </span><span className="cmd">stepwise init {challenge.id}</span></div>
+                
+                <div><span className="comment"># 4. Code your solution and test!</span></div>
+                <div><span className="prompt">$ </span><span className="cmd">stepwise test</span></div>
               </div>
             </div>
           )}

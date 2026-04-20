@@ -19,7 +19,7 @@ import {
 } from "./workspace";
 import { parseLocalWorkspaceConfig, LOCAL_WORKSPACE_CONFIG_FILENAME } from "@repo/types";
 
-async function main() {
+export async function main() {
   const config = readLocalTestCommandConfig();
 
   if (config.helpRequested) {
@@ -161,7 +161,4 @@ async function tryAdvanceWorkspace(
   }
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : "CLI execution failed");
-  process.exit(1);
-});
+
