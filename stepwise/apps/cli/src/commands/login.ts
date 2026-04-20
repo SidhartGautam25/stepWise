@@ -69,6 +69,32 @@ async function prompt(rl: readline.Interface, question: string): Promise<string>
   return answer.trim();
 }
 
+async function promptPassword(question: string): Promise<string> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  return new Promise((resolve) => {
+    // Write out the question
+    process.stdout.write(question);
+
+    // Using any to access private _writeToOutput method to mask the password
+    (rl as any)._writeToOutput = function _writeToOutput(stringToWrite: string) {
+      if (stringToWrite === "\r\n" || stringToWrite === "\n") {
+        (rl as any).output.write(stringToWrite);
+      } else if (stringToWrite !== "\x1B[2K\x1B[200D") { // Don't mask the clear line sequence
+        (rl as any).output.write("*");
+      }
+    };
+
+    rl.question("").then((answer: string) => {
+      rl.close();
+      resolve(answer.trim());
+    });
+  });
+}
+
 async function main() {
   let config: LoginConfig;
 
@@ -95,73 +121,34 @@ async function main() {
       console.error(pc.red("\n✗ A valid email is required\n"));
       process.exit(1);
     }
+    
+    // Close initial readline so we can cleanly open password prompt
+    rl.close();
 
-    // ── Dev mode: skip OTP ─────────────────────────────────────────────────
-    if (config.devMode) {
-      console.log(pc.dim("\n  Requesting dev token (no OTP required)..."));
-
-      const res = await fetch(`${config.apiBaseUrl}/auth/login/dev`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = (await res.json()) as Record<string, unknown>;
-
-      if (!res.ok) {
-        console.error(pc.red(`\n✗ ${String(data.error ?? "Dev login failed")}\n`));
-        process.exit(1);
-      }
-
-      saveAndPrint(data, email);
-      return;
-    }
-
-    // ── Step 1: Request OTP ────────────────────────────────────────────────
-    console.log(pc.dim(`\n  Sending code to ${email}...`));
-
-    const requestRes = await fetch(`${config.apiBaseUrl}/auth/login/request`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-
-    const requestData = (await requestRes.json()) as Record<string, unknown>;
-
-    if (!requestRes.ok) {
-      console.error(pc.red(`\n✗ ${String(requestData.error ?? "Failed to send code")}\n`));
+    const password = await promptPassword(pc.bold("Password: "));
+    if (!password) {
+      console.error(pc.red("\n✗ Password is required\n"));
       process.exit(1);
     }
 
-    // In dev mode the server returns the code in the response
-    const devCode = typeof requestData.devCode === "string" ? requestData.devCode : null;
+    console.log(pc.dim(`\n  Authenticating ${email}...`));
 
-    if (devCode) {
-      console.log(pc.yellow(`\n  [DEV] Your code: ${pc.bold(devCode)}\n`));
-    } else {
-      console.log(pc.dim(`\n  Code sent! Check your email. It expires in 10 minutes.\n`));
-    }
-
-    // ── Step 2: Verify OTP ─────────────────────────────────────────────────
-    const code =
-      devCode ??
-      (await prompt(rl, pc.bold("Enter 6-digit code: ")));
-
-    const verifyRes = await fetch(`${config.apiBaseUrl}/auth/login/verify`, {
+    const verifyRes = await fetch(`${config.apiBaseUrl}/auth/login/password`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ email, code }),
+      body: JSON.stringify({ email, password }),
     });
 
     const verifyData = (await verifyRes.json()) as Record<string, unknown>;
 
     if (!verifyRes.ok) {
-      console.error(pc.red(`\n✗ ${String(verifyData.error ?? "Verification failed")}\n`));
+      console.error(pc.red(`\n✗ ${String(verifyData.error ?? "Authentication failed")}\n`));
       process.exit(1);
     }
 
     saveAndPrint(verifyData, email);
   } finally {
+    // Just in case
     rl.close();
   }
 }

@@ -28,7 +28,6 @@ export type {
   Challenge,
   ChallengeStep,
   User,
-  OtpToken,
 } from "@prisma/client";
 
 // Store-specific input/output types

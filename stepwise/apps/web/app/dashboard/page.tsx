@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { fetchDashboard, type DashboardData } from "@/lib/api";
-import { getSession, getToken } from "@/lib/auth";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -12,28 +12,30 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const { data: session, status } = useSession();
+
   useEffect(() => {
-    const session = getSession();
-    if (!session) {
+    if (status === "unauthenticated") {
       router.push("/login");
       return;
     }
 
-    const token = getToken();
-    if (!token) {
-      router.push("/login");
-      return;
+    if (status === "authenticated" && session) {
+      // @ts-ignore fastifyToken is injected in nextauth route
+      const token = session.fastifyToken as string;
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      fetchDashboard(token)
+        .then(setData)
+        .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"))
+        .finally(() => setLoading(false));
     }
+  }, [router, session, status]);
 
-    fetchDashboard(token)
-      .then(setData)
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"))
-      .finally(() => setLoading(false));
-  }, [router]);
-
-  const session = typeof window !== "undefined" ? getSession() : null;
-
-  if (loading) {
+  if (loading || status === "loading") {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center" }}>
@@ -67,9 +69,9 @@ export default function DashboardPage() {
           Welcome back,
         </div>
         <h1 style={{ fontSize: 36, fontWeight: 900, letterSpacing: "-0.03em", color: "#e8e8f0", marginBottom: 4 }}>
-          {session?.username ?? session?.email?.split("@")[0] ?? "Student"}
+          {session?.user?.name ?? session?.user?.email?.split("@")[0] ?? "Student"}
         </h1>
-        <p style={{ fontSize: 14, color: "#444460" }}>{session?.email}</p>
+        <p style={{ fontSize: 14, color: "#444460" }}>{session?.user?.email}</p>
       </div>
 
       {/* Stats row */}

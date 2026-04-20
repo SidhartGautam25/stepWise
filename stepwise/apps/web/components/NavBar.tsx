@@ -1,20 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { getSession, clearSession, type AuthSession } from "@/lib/auth";
+import { useSession, signOut } from "next-auth/react";
 
 export default function NavBar() {
-  const [session, setSession] = useState<AuthSession | null>(null);
-
-  useEffect(() => {
-    setSession(getSession());
-  }, []);
+  const { data: session } = useSession();
 
   function logout() {
-    clearSession();
-    setSession(null);
-    window.location.href = "/";
+    signOut({ callbackUrl: "/" });
   }
 
   return (
@@ -60,7 +53,7 @@ export default function NavBar() {
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         {session ? (
           <>
-            <span style={{ fontSize: 13, color: "#666680" }}>{session.email}</span>
+            <span style={{ fontSize: 13, color: "#666680" }}>{session.user?.email}</span>
             <button onClick={logout} className="btn btn-ghost" style={{ padding: "6px 14px", fontSize: 13 }}>
               Sign out
             </button>

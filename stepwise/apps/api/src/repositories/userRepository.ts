@@ -15,15 +15,8 @@ export async function findUserById(id: string): Promise<User | null> {
 
 export async function createUser(data: {
   email: string;
+  passwordHash: string;
   username?: string;
 }): Promise<User> {
   return prisma.user.create({ data });
-}
-
-export async function upsertUserByEmail(email: string): Promise<User> {
-  return prisma.user.upsert({
-    where: { email },
-    create: { email },
-    update: {},
-  });
 }
