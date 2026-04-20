@@ -11,9 +11,9 @@ const server = http.createServer((req, res) => {
   const { method, url } = req;
 
   // Answer for Step 1:
-+ if (method === 'GET' && url === '/health') {
-+   return sendJson(res, 200, { status: 'ok', version: '1.0.0' });
-+ }
+  if (method === 'GET' && url === '/health') {
+    return sendJson(res, 200, { status: 'ok', version: '1.0.0' });
+  }
 
   sendJson(res, 404, { error: 'Not found' });
 });

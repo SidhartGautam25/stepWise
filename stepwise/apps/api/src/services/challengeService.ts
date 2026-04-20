@@ -25,6 +25,7 @@ export interface ChallengeInfo {
   language: string;
   runtime: string;
   description?: string;
+  systemRequirements?: Record<string, unknown>;
   steps: StepInfo[];
   challengePath: string;
 }
@@ -114,6 +115,7 @@ export function getChallengeInfo(challengeId: string): ChallengeInfo {
     language: readString(manifest.language, "language"),
     runtime: readString(manifest.runtime, "runtime"),
     description: typeof manifest.description === "string" ? manifest.description : undefined,
+    systemRequirements: isRecord(manifest.systemRequirements) ? manifest.systemRequirements : undefined,
     steps,
     challengePath,
   };

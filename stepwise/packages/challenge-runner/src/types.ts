@@ -51,6 +51,15 @@ export interface ChallengeStepManifest {
   server?: ServerConfig;
 }
 
+export interface SystemRequirements {
+  os?: string;
+  cpu?: string;
+  ram?: string;
+  storage?: string;
+  network?: string;
+  [key: string]: unknown;
+}
+
 export interface ChallengeManifest {
   schemaVersion: 1;
   id: string;
@@ -62,6 +71,7 @@ export interface ChallengeManifest {
   type?: ChallengeType;
   description?: string;
   difficulty?: Difficulty;
+  systemRequirements?: SystemRequirements;
   tags?: string[];
   entrypoint?: string;
   defaultTimeoutMs?: number;

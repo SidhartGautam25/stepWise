@@ -31,6 +31,14 @@ export interface ChallengeDetail {
   language: string;
   runtime: string;
   description?: string;
+  systemRequirements?: {
+    os?: string;
+    cpu?: string;
+    ram?: string;
+    storage?: string;
+    network?: string;
+    [key: string]: string | undefined;
+  };
   steps: StepInfo[];
   challengePath: string;
 }

@@ -110,6 +110,23 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
             )}
           </div>
 
+          {/* System Requirements */}
+          {challenge.systemRequirements && activeStepIndex === 0 && (
+            <div className="glass" style={{ padding: 28, marginBottom: 48, background: "rgba(16, 185, 129, 0.03)", border: "1px solid rgba(16, 185, 129, 0.15)" }}>
+              <h2 style={{ fontSize: 12, fontWeight: 700, color: "#34d399", marginBottom: 20, textTransform: "uppercase", letterSpacing: "0.08em", display: "flex", alignItems: "center", gap: 8 }}>
+                <span>💻</span> System Requirements
+              </h2>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 24 }}>
+                {Object.entries(challenge.systemRequirements).map(([key, value]) => (
+                  <div key={key}>
+                    <div style={{ fontSize: 11, color: "#a0a0b0", textTransform: "uppercase", marginBottom: 6, fontWeight: 600, letterSpacing: "0.05em" }}>{key}</div>
+                    <div style={{ fontSize: 14, color: "#e8e8f0", fontWeight: 500, lineHeight: 1.4 }}>{String(value)}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Terminal Quick Start (only visible on first step usually) */}
           {activeStepIndex === 0 && (
             <div className="glass" style={{ padding: 28, marginBottom: 48 }}>
