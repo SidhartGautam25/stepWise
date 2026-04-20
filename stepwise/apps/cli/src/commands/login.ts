@@ -76,22 +76,32 @@ async function promptPassword(question: string): Promise<string> {
   });
 
   return new Promise((resolve) => {
-    // Write out the question
-    process.stdout.write(question);
+    let muted = false;
 
-    // Using any to access private _writeToOutput method to mask the password
+    // We hook the private internal writer
     (rl as any)._writeToOutput = function _writeToOutput(stringToWrite: string) {
+      if (!muted) {
+        // Just print normally if we aren't mutating keystrokes yet
+        (rl as any).output.write(stringToWrite);
+        return;
+      }
+
       if (stringToWrite === "\r\n" || stringToWrite === "\n") {
         (rl as any).output.write(stringToWrite);
-      } else if (stringToWrite !== "\x1B[2K\x1B[200D") { // Don't mask the clear line sequence
+      } else if (stringToWrite !== "\x1B[2K\x1B[200D") { 
+        // Mask with asterisk and prevent line clear
         (rl as any).output.write("*");
       }
     };
 
-    rl.question("").then((answer: string) => {
+    // Ask the question — _writeToOutput will print it unmuted
+    rl.question(question).then((answer: string) => {
       rl.close();
       resolve(answer.trim());
     });
+    
+    // Now mute all subsequent keystrokes
+    muted = true;
   });
 }
 
