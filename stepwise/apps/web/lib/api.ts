@@ -91,20 +91,10 @@ export async function fetchChallenge(id: string): Promise<ChallengeDetail> {
   return apiFetch<ChallengeDetail>(`/challenges/${id}`);
 }
 
-export async function requestOtp(email: string): Promise<{ message: string; devCode?: string }> {
-  return apiFetch("/auth/login/request", {
+export async function registerUser(email: string, passwordHash: string, username?: string): Promise<{ userId: string; email: string; username: string | null }> {
+  return apiFetch("/auth/register", {
     method: "POST",
-    body: JSON.stringify({ email }),
-  });
-}
-
-export async function verifyOtp(
-  email: string,
-  code: string,
-): Promise<{ token: string; userId: string; email: string; username: string | null }> {
-  return apiFetch("/auth/login/verify", {
-    method: "POST",
-    body: JSON.stringify({ email, code }),
+    body: JSON.stringify({ email, password: passwordHash, username }),
   });
 }
 

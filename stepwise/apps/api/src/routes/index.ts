@@ -15,9 +15,7 @@ export function registerRoutes(app: FastifyInstance): void {
 
   // ── Auth (public) ────────────────────────────────────────────────────────────
   app.post("/auth/register",        authController.register);
-  app.post("/auth/login/request",   authController.requestOtp);
-  app.post("/auth/login/verify",    authController.verifyOtp);
-  app.post("/auth/login/dev",       authController.devLogin);
+  app.post("/auth/login/password",  authController.login);
   app.get("/auth/me",               { preValidation: requireAuth }, authController.getMe);
 
   // ── Challenges (public) ──────────────────────────────────────────────────────

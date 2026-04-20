@@ -3,19 +3,26 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { registerUser } from "@/lib/api";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email || !password) {
+    if (!email || !password || !username) {
       setError("Please fill out all fields");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
       return;
     }
 
@@ -23,6 +30,10 @@ export default function LoginPage() {
     setError(null);
 
     try {
+      // 1. Register with Fastify
+      await registerUser(email, password, username);
+
+      // 2. Automatically log in after registration
       const res = await signIn("credentials", {
         redirect: false,
         email,
@@ -34,10 +45,10 @@ export default function LoginPage() {
         setLoading(false);
       } else {
         router.push("/dashboard");
-        router.refresh(); // ensure server components grab the layout session natively
+        router.refresh();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : "Registration failed");
       setLoading(false);
     }
   }
@@ -51,7 +62,7 @@ export default function LoginPage() {
       <div style={{
         position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
         width: 500, height: 500, borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(108,99,255,0.08) 0%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)",
         pointerEvents: "none",
       }} />
 
@@ -63,20 +74,34 @@ export default function LoginPage() {
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <div style={{
             width: 48, height: 48, borderRadius: 14,
-            background: "linear-gradient(135deg, #6c63ff, #10b981)",
+            background: "linear-gradient(135deg, #10b981, #6c63ff)",
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 24, fontWeight: 900, color: "white",
             margin: "0 auto 16px",
           }}>S</div>
           <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.03em", color: "#e8e8f0" }}>
-            Sign in to StepWise
+            Create an account
           </h1>
           <p style={{ fontSize: 14, color: "#666680", marginTop: 8 }}>
-            Welcome back! Please enter your details.
+            Join StepWise and start building today.
           </p>
         </div>
 
         <form onSubmit={handleSubmit}>
+          <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#888898", marginBottom: 8 }}>
+            Username
+          </label>
+          <input
+            className="input"
+            type="text"
+            placeholder="johndoe"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            style={{ marginBottom: 20 }}
+            autoFocus
+            required
+          />
+
           <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#888898", marginBottom: 8 }}>
             Email address
           </label>
@@ -87,7 +112,6 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             style={{ marginBottom: 20 }}
-            autoFocus
             required
           />
 
@@ -101,6 +125,7 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            minLength={6}
           />
 
           {error && (
@@ -113,13 +138,13 @@ export default function LoginPage() {
             style={{ width: "100%", marginTop: 24, padding: "13px", fontSize: 15 }}
             disabled={loading}
           >
-            {loading ? "Signing in…" : "Sign in →"}
+            {loading ? "Creating account…" : "Sign up →"}
           </button>
 
           <div style={{ marginTop: 24, textAlign: "center", fontSize: 13, color: "#888898" }}>
-            Don&apos;t have an account?{" "}
-            <Link href="/register" style={{ color: "#a78bfa", textDecoration: "none", fontWeight: 600 }}>
-              Sign up
+            Already have an account?{" "}
+            <Link href="/login" style={{ color: "#34d399", textDecoration: "none", fontWeight: 600 }}>
+              Log in
             </Link>
           </div>
         </form>

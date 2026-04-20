@@ -4,18 +4,25 @@
  */
 
 import type { FastifyRequest, FastifyReply } from "fastify";
+import bcrypt from "bcryptjs";
 import * as authService from "../services/authService";
 
 export async function register(request: FastifyRequest, reply: FastifyReply) {
-  const { email, username } = request.body as { email?: unknown; username?: unknown };
+  const { email, password, username } = request.body as { email?: unknown; password?: unknown; username?: unknown };
 
   if (typeof email !== "string" || !email.includes("@")) {
     return reply.status(400).send({ error: "A valid email is required" });
   }
 
+  if (typeof password !== "string" || password.length < 6) {
+    return reply.status(400).send({ error: "Password must be at least 6 characters" });
+  }
+
   try {
+    const passwordHash = await bcrypt.hash(password, 10);
     const user = await authService.registerUser(
       email,
+      passwordHash,
       typeof username === "string" && username.length > 0 ? username : undefined,
     );
     return reply.status(201).send({ userId: user.id, email: user.email, username: user.username });
@@ -24,52 +31,18 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
   }
 }
 
-export async function requestOtp(request: FastifyRequest, reply: FastifyReply) {
-  const { email } = request.body as { email?: unknown };
+export async function login(request: FastifyRequest, reply: FastifyReply) {
+  const { email, password } = request.body as { email?: unknown; password?: unknown };
 
-  if (typeof email !== "string" || !email.includes("@")) {
-    return reply.status(400).send({ error: "A valid email is required" });
+  if (typeof email !== "string" || typeof password !== "string") {
+    return reply.status(400).send({ error: "Email and password are required" });
   }
 
   try {
-    const result = await authService.requestLoginOtp(email);
-    return { message: result.message, ...(result.devCode ? { devCode: result.devCode } : {}) };
-  } catch (err) {
-    return reply.status(500).send({ error: err instanceof Error ? err.message : "Failed to send OTP" });
-  }
-}
-
-export async function verifyOtp(request: FastifyRequest, reply: FastifyReply) {
-  const { email, code } = request.body as { email?: unknown; code?: unknown };
-
-  if (typeof email !== "string" || typeof code !== "string") {
-    return reply.status(400).send({ error: "email and code are required" });
-  }
-
-  try {
-    const result = await authService.verifyLoginOtp(email, code);
+    const result = await authService.loginWithPassword(email, password);
     return result;
   } catch (err) {
     return reply.status(401).send({ error: err instanceof Error ? err.message : "Authentication failed" });
-  }
-}
-
-export async function devLogin(request: FastifyRequest, reply: FastifyReply) {
-  if (process.env.NODE_ENV === "production") {
-    return reply.status(404).send({ error: "Not found" });
-  }
-
-  const { email } = request.body as { email?: unknown };
-
-  if (typeof email !== "string" || !email.includes("@")) {
-    return reply.status(400).send({ error: "A valid email is required" });
-  }
-
-  try {
-    const result = await authService.devLogin(email);
-    return result;
-  } catch (err) {
-    return reply.status(500).send({ error: err instanceof Error ? err.message : "Dev login failed" });
   }
 }
 

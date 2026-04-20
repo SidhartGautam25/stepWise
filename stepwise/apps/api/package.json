@@ -13,9 +13,11 @@
     "@repo/attempt-contracts": "workspace:^",
     "@repo/auth": "workspace:^",
     "@repo/db": "workspace:^",
+    "bcryptjs": "^3.0.3",
     "fastify": "^5.8.5"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
     "@types/node": "^22.15.3",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2"
