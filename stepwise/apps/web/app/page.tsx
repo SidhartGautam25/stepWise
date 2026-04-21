@@ -35,7 +35,7 @@ export default async function HomePage() {
           <h1 style={{
             fontSize: "clamp(48px, 7vw, 84px)", fontWeight: 900,
             lineHeight: 1.05, letterSpacing: "-0.04em", marginBottom: 24,
-            color: "#e8e8f0",
+            color: "var(--color-text)",
           }}>
             Learn by{" "}
             <span className="gradient-text">Building.</span>
@@ -43,7 +43,7 @@ export default async function HomePage() {
           </h1>
 
           <p style={{
-            fontSize: 18, color: "#666680", maxWidth: 560, margin: "0 auto 48px",
+            fontSize: 18, color: "var(--color-muted)", maxWidth: 560, margin: "0 auto 48px",
             lineHeight: 1.7,
           }}>
             StepWise is a code challenge platform where you build real projects step by step,
@@ -69,7 +69,7 @@ export default async function HomePage() {
 
       {/* How it works */}
       <section style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 100px" }}>
-        <h2 style={{ textAlign: "center", fontSize: 28, fontWeight: 700, marginBottom: 48, color: "#e8e8f0" }}>
+        <h2 style={{ textAlign: "center", fontSize: 28, fontWeight: 700, marginBottom: 48, color: "var(--color-text)" }}>
           How it works
         </h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20 }}>
@@ -99,15 +99,15 @@ export default async function HomePage() {
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
                 <div style={{
                   width: 36, height: 36, borderRadius: 10,
-                  background: "rgba(108, 99, 255, 0.15)",
-                  border: "1px solid rgba(108, 99, 255, 0.2)",
+                  background: "var(--color-indigo-muted)",
+                  border: "1px solid var(--color-border-glass)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 18,
                 }}>{icon}</div>
-                <span style={{ fontSize: 12, color: "#6c63ff", fontWeight: 600 }}>STEP {step}</span>
+                <span style={{ fontSize: 12, color: "var(--color-indigo)", fontWeight: 600 }}>STEP {step}</span>
               </div>
-              <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 8, color: "#e8e8f0" }}>{title}</h3>
-              <p style={{ fontSize: 14, color: "#666680", marginBottom: 16, lineHeight: 1.6 }}>{desc}</p>
+              <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 8, color: "var(--color-text)" }}>{title}</h3>
+              <p style={{ fontSize: 14, color: "var(--color-muted)", marginBottom: 16, lineHeight: 1.6 }}>{desc}</p>
               <div className="terminal" style={{ padding: "10px 14px", fontSize: 12 }}>
                 <span className="prompt">$ </span>
                 <span className="cmd">{code}</span>
@@ -121,8 +121,8 @@ export default async function HomePage() {
       {challenges.length > 0 && (
         <section style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 120px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 32 }}>
-            <h2 style={{ fontSize: 28, fontWeight: 700, color: "#e8e8f0" }}>Challenges</h2>
-            <Link href="/challenges" style={{ fontSize: 14, color: "#6c63ff", textDecoration: "none" }}>
+            <h2 style={{ fontSize: 28, fontWeight: 700, color: "var(--color-text)" }}>Challenges</h2>
+            <Link href="/challenges" style={{ fontSize: 14, color: "var(--color-indigo)", textDecoration: "none" }}>
               View all →
             </Link>
           </div>
@@ -132,12 +132,12 @@ export default async function HomePage() {
                 <div className="glass card-hover" style={{ padding: 28 }}>
                   <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
                     <span className="badge badge-indigo">{c.language}</span>
-                    <span className="badge" style={{ background: "rgba(255,255,255,0.05)", color: "#666680", border: "1px solid rgba(255,255,255,0.07)" }}>
+                    <span className="badge" style={{ background: "transparent", color: "var(--color-muted)", border: "1px solid var(--color-border-strong)" }}>
                       {c.stepCount} steps
                     </span>
                   </div>
-                  <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8e8f0", marginBottom: 8 }}>{c.title}</h3>
-                  <p style={{ fontSize: 13, color: "#666680" }}>v{c.version}</p>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--color-text)", marginBottom: 8 }}>{c.title}</h3>
+                  <p style={{ fontSize: 13, color: "var(--color-muted)" }}>v{c.version}</p>
                 </div>
               </Link>
             ))}
@@ -147,10 +147,10 @@ export default async function HomePage() {
 
       {/* Footer */}
       <footer style={{
-        borderTop: "1px solid rgba(255,255,255,0.06)",
+        borderTop: "1px solid var(--color-border)",
         padding: "40px 24px",
         textAlign: "center",
-        color: "#333350", fontSize: 13,
+        color: "var(--color-muted)", fontSize: 13,
       }}>
         Built with ♥ · StepWise {new Date().getFullYear()}
       </footer>

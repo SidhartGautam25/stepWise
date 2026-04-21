@@ -68,11 +68,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                   }}>
                     {step.title}
                   </h3>
-                  {step.hasStarter && (
-                    <span className="badge" style={{ background: "var(--color-emerald-muted)", color: "var(--color-emerald)", fontSize: 10, marginTop: 6, display: "inline-block" }}>
-                      Starter files
-                    </span>
-                  )}
+
                 </button>
               </div>
             );

@@ -22,17 +22,17 @@ export default async function ChallengesPage() {
         <div className="badge badge-indigo" style={{ marginBottom: 16 }}>
           {challenges.length} challenge{challenges.length !== 1 ? "s" : ""} available
         </div>
-        <h1 style={{ fontSize: 42, fontWeight: 900, letterSpacing: "-0.03em", color: "#e8e8f0", marginBottom: 12 }}>
+        <h1 style={{ fontSize: 42, fontWeight: 900, letterSpacing: "-0.03em", color: "var(--color-text)", marginBottom: 12 }}>
           All Challenges
         </h1>
-        <p style={{ fontSize: 16, color: "#666680" }}>
+        <p style={{ fontSize: 16, color: "var(--color-muted)" }}>
           Pick a challenge, run the CLI, and start building.
         </p>
       </div>
 
       {challenges.length === 0 ? (
         <div className="glass" style={{ padding: 60, textAlign: "center" }}>
-          <p style={{ fontSize: 16, color: "#666680" }}>No challenges available yet. Make sure the API is running.</p>
+          <p style={{ fontSize: 16, color: "var(--color-muted)" }}>No challenges available yet. Make sure the API is running.</p>
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 20 }}>
@@ -73,14 +73,14 @@ function ChallengeCard({ challenge: c }: { challenge: ChallengeSummary }) {
             }}>
               {c.language}
             </span>
-            <span className="badge" style={{ background: "rgba(255,255,255,0.04)", color: "#666680", border: "1px solid rgba(255,255,255,0.07)" }}>
+            <span className="badge" style={{ background: "transparent", color: "var(--color-muted)", border: "1px solid var(--color-border-strong)" }}>
               {c.runtime}
             </span>
           </div>
-          <span style={{ fontSize: 12, color: "#333350", fontFamily: "var(--font-mono)" }}>v{c.version}</span>
+          <span style={{ fontSize: 12, color: "var(--color-muted)", fontFamily: "var(--font-mono)" }}>v{c.version}</span>
         </div>
 
-        <h2 style={{ fontSize: 20, fontWeight: 700, color: "#e8e8f0", marginBottom: 8, letterSpacing: "-0.02em" }}>
+        <h2 style={{ fontSize: 20, fontWeight: 700, color: "var(--color-text)", marginBottom: 8, letterSpacing: "-0.02em" }}>
           {c.title}
         </h2>
 
@@ -89,14 +89,14 @@ function ChallengeCard({ challenge: c }: { challenge: ChallengeSummary }) {
             {Array.from({ length: c.stepCount }).map((_, i) => (
               <div key={i} style={{
                 width: 6, height: 6, borderRadius: "50%",
-                background: i === 0 ? "#6c63ff" : "rgba(255,255,255,0.1)",
+                background: i === 0 ? "var(--color-indigo)" : "var(--color-border-strong)",
               }} />
             ))}
-            <span style={{ fontSize: 12, color: "#666680", marginLeft: 8 }}>
+            <span style={{ fontSize: 12, color: "var(--color-muted)", marginLeft: 8 }}>
               {c.stepCount} step{c.stepCount !== 1 ? "s" : ""}
             </span>
           </div>
-          <span style={{ fontSize: 13, color: "#6c63ff", fontWeight: 600 }}>
+          <span style={{ fontSize: 13, color: "var(--color-indigo)", fontWeight: 600 }}>
             Start →
           </span>
         </div>

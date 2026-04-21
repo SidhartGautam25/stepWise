@@ -28,23 +28,29 @@
   --color-muted: #8b8b9d;
   --color-terminal-bg: #0d0d18;
   --color-badge: #a78bfa;
+  --bg-pattern: radial-gradient(circle, rgba(108, 99, 255, 0.055) 1px, transparent 1px);
 }
 
 :root[data-theme='light'] {
-  --color-bg: #fdfdfd;
+  --color-bg: #fafafa;
   --color-surface: #ffffff;
-  --color-surface-glass: rgba(255, 255, 255, 0.85);
-  --color-border: rgba(0, 0, 0, 0.08);
-  --color-border-strong: rgba(0, 0, 0, 0.15);
-  --color-border-glass: rgba(108, 99, 255, 0.3);
-  --color-indigo: #6c63ff;
-  --color-indigo-muted: rgba(108, 99, 255, 0.1);
-  --color-emerald: #10b981;
-  --color-emerald-muted: rgba(16, 185, 129, 0.08);
+  --color-surface-glass: rgba(255, 255, 255, 0.7);
+  --color-border: rgba(0, 0, 0, 0.06);
+  --color-border-strong: rgba(0, 0, 0, 0.12);
+  --color-border-glass: rgba(108, 99, 255, 0.2);
+  --color-indigo: #5b46f1;
+  --color-indigo-muted: rgba(91, 70, 241, 0.08);
+  --color-emerald: #059669;
+  --color-emerald-muted: rgba(5, 150, 105, 0.08);
   --color-text: #1a1a24;
-  --color-muted: #555566;
-  --color-terminal-bg: #f1f1f5;
-  --color-badge: #5a52d5;
+  --color-muted: #5e5e78;
+  --color-terminal-bg: #0d0d18; /* High-contrast dark terminal even in light mode! */
+  --color-badge: #5b46f1;
+  --bg-pattern: 
+    radial-gradient(at 10% 0%, rgba(108, 99, 255, 0.06) 0px, transparent 50%),
+    radial-gradient(at 90% 0%, rgba(16, 185, 129, 0.04) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(108, 99, 255, 0.05) 0px, transparent 50%),
+    radial-gradient(circle, rgba(108, 99, 255, 0.04) 1px, transparent 1px);
 }
 
 html {
@@ -57,18 +63,19 @@ body {
   font-family: var(--font-sans);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  background-image: radial-gradient(circle, rgba(108, 99, 255, 0.055) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background-image: var(--bg-pattern);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px;
+  background-attachment: fixed;
 }
 
 a { color: inherit; }
 
 /* ── Glass card ─────────────────────────────────── */
 .glass {
-  background: rgba(15, 15, 26, 0.7);
+  background: var(--color-surface-glass);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--color-border);
   border-radius: 16px;
 }
 
@@ -93,22 +100,22 @@ a { color: inherit; }
 }
 
 .badge-indigo {
-  background: rgba(108, 99, 255, 0.15);
-  color: #a78bfa;
-  border: 1px solid rgba(108, 99, 255, 0.25);
+  background: var(--color-indigo-muted);
+  color: var(--color-badge);
+  border: 1px solid var(--color-border-glass);
 }
 
 .badge-emerald {
-  background: rgba(16, 185, 129, 0.12);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: var(--color-emerald-muted);
+  color: var(--color-emerald);
+  border: 1px solid var(--color-emerald-muted);
 }
 
 /* ── Progress bar ───────────────────────────────── */
 .progress-track {
   height: 4px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--color-border);
   overflow: hidden;
 }
 
@@ -121,20 +128,20 @@ a { color: inherit; }
 
 /* ── Terminal block ─────────────────────────────── */
 .terminal {
-  background: #0d0d18;
-  border: 1px solid rgba(108, 99, 255, 0.18);
+  background: var(--color-terminal-bg);
+  border: 1px solid var(--color-border-glass);
   border-radius: 10px;
   font-family: var(--font-mono);
   font-size: 13px;
   padding: 16px 20px;
-  color: #c4c4e0;
+  color: #e8e8f0;
   overflow-x: auto;
   line-height: 1.8;
 }
 
-.terminal .prompt { color: #6c63ff; user-select: none; }
-.terminal .cmd    { color: #e8e8f0; }
-.terminal .comment{ color: #333355; }
+.terminal .prompt { color: var(--color-indigo); user-select: none; }
+.terminal .cmd    { color: #ffffff; }
+.terminal .comment{ color: #8b8b9d; }
 
 /* ── Buttons ─────────────────────────────────────── */
 .btn {
@@ -164,33 +171,34 @@ a { color: inherit; }
 }
 
 .btn-ghost {
-  background: rgba(255, 255, 255, 0.05);
-  color: #a8a8c0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: var(--color-muted);
+  border: 1px solid var(--color-border);
 }
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.09);
-  color: #e8e8f0;
+  background: var(--color-surface-glass);
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
 }
 
 /* ── Input ───────────────────────────────────────── */
 .input {
   width: 100%;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: transparent;
+  border: 1px solid var(--color-border-strong);
   border-radius: 10px;
-  color: #e8e8f0;
+  color: var(--color-text);
   font-size: 15px;
   font-family: var(--font-sans);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .input:focus {
-  border-color: rgba(108, 99, 255, 0.5);
-  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+  border-color: var(--color-indigo);
+  box-shadow: 0 0 0 3px var(--color-indigo-muted);
 }
-.input::placeholder { color: #33334a; }
+.input::placeholder { color: var(--color-muted); }
 
 /* ── Step timeline dots ──────────────────────────── */
 .step-dot {
@@ -204,9 +212,9 @@ a { color: inherit; }
   font-weight: 700;
   flex-shrink: 0;
 }
-.step-dot-done    { background: rgba(16,185,129,0.18); border: 1.5px solid #10b981; color: #10b981; }
-.step-dot-current { background: rgba(108,99,255,0.18); border: 1.5px solid #6c63ff; color: #a78bfa; }
-.step-dot-locked  { background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.08); color: #333355; }
+.step-dot-done    { background: var(--color-emerald-muted); border: 1.5px solid var(--color-emerald); color: var(--color-emerald); }
+.step-dot-current { background: var(--color-indigo-muted); border: 1.5px solid var(--color-indigo); color: var(--color-badge); }
+.step-dot-locked  { background: transparent; border: 1.5px solid var(--color-border-strong); color: var(--color-muted); }
 
 /* ── Scrollbar ───────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; }
@@ -237,9 +245,9 @@ a { color: inherit; }
   font-size: 13px;
   color: #a78bfa;
 }
-.markdown-body strong { color: #e8e8f0; font-weight: 600; }
+.markdown-body strong { color: var(--color-text); font-weight: 600; }
 .markdown-body h1, .markdown-body h2, .markdown-body h3 {
-  color: #e8e8f0;
+  color: var(--color-text);
   margin-top: 24px;
   margin-bottom: 12px;
   font-weight: 700;
