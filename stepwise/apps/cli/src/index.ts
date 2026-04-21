@@ -41,16 +41,16 @@ import { getStoredCredentials } from "./credentials";
 
 async function run() {
   if (command === "init") {
-    const { main } = await import("./commands/init");
+    const { main } = await import("./commands/init.js");
     await main();
   } else if (command === "test") {
-    const { main } = await import("./commands/test");
+    const { main } = await import("./commands/test.js");
     await main();
   } else if (command === "login") {
-    const { main } = await import("./commands/login");
+    const { main } = await import("./commands/login.js");
     await main();
   } else if (command === "logout") {
-    const { main } = await import("./commands/logout");
+    const { main } = await import("./commands/logout.js");
     await main();
   } else if (command === "whoami") {
     const creds = getStoredCredentials();

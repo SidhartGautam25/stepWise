@@ -24,6 +24,21 @@
   "defaultTimeoutMs": 10000,
   "steps": [
     {
+      "id": "00-primer",
+      "title": "Core Concepts & The Big Picture",
+      "prompt": "prompt.md",
+      "explanation": "explanation.md",
+      "free": true,
+      "workspace": {
+        "starter": "steps/00-primer/workspace/starter",
+        "entrypoint": "server.js",
+        "root": "steps/00-primer/workspace"
+      },
+      "tests": {
+        "visible": "steps/00-primer/tests/visible.test.js"
+      }
+    },
+    {
       "id": "01-setup",
       "title": "Boot the Server",
       "prompt": "prompt.md",
