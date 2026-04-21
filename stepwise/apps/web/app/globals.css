@@ -11,13 +11,40 @@
 :root {
   --font-sans: var(--font-geist-sans, system-ui, sans-serif);
   --font-mono: var(--font-geist-mono, "Fira Code", monospace);
+}
+
+:root[data-theme='dark'] {
   --color-bg: #08080f;
   --color-surface: #0f0f1a;
+  --color-surface-glass: rgba(15, 15, 26, 0.7);
   --color-border: rgba(255, 255, 255, 0.07);
+  --color-border-strong: rgba(255, 255, 255, 0.15);
+  --color-border-glass: rgba(108, 99, 255, 0.18);
   --color-indigo: #6c63ff;
+  --color-indigo-muted: rgba(108, 99, 255, 0.15);
   --color-emerald: #10b981;
+  --color-emerald-muted: rgba(16, 185, 129, 0.12);
   --color-text: #e8e8f0;
-  --color-muted: #666680;
+  --color-muted: #8b8b9d;
+  --color-terminal-bg: #0d0d18;
+  --color-badge: #a78bfa;
+}
+
+:root[data-theme='light'] {
+  --color-bg: #fdfdfd;
+  --color-surface: #ffffff;
+  --color-surface-glass: rgba(255, 255, 255, 0.85);
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-strong: rgba(0, 0, 0, 0.15);
+  --color-border-glass: rgba(108, 99, 255, 0.3);
+  --color-indigo: #6c63ff;
+  --color-indigo-muted: rgba(108, 99, 255, 0.1);
+  --color-emerald: #10b981;
+  --color-emerald-muted: rgba(16, 185, 129, 0.08);
+  --color-text: #1a1a24;
+  --color-muted: #555566;
+  --color-terminal-bg: #f1f1f5;
+  --color-badge: #5a52d5;
 }
 
 html {

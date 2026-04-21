@@ -59,7 +59,7 @@ function parseArgs(): LoginConfig {
   return {
     email: parsed.email,
     devMode: parsed.dev === "true",
-    apiBaseUrl: parsed.api ?? "http://127.0.0.1:4000",
+    apiBaseUrl: parsed.api ?? process.env.STEPWISE_API_URL ?? "https://api.stepwise.run",
     helpRequested: false,
   };
 }
