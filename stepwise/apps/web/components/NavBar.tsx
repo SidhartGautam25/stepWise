@@ -2,9 +2,17 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export default function NavBar() {
   const { data: session } = useSession();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   function logout() {
     signOut({ callbackUrl: "/" });
@@ -13,8 +21,8 @@ export default function NavBar() {
   return (
     <nav style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-      background: "rgba(8, 8, 15, 0.85)", backdropFilter: "blur(20px)",
-      borderBottom: "1px solid rgba(255,255,255,0.06)",
+      background: "var(--color-surface-glass)", backdropFilter: "blur(20px)",
+      borderBottom: "1px solid var(--color-border)",
       display: "flex", alignItems: "center", justifyContent: "space-between",
       padding: "0 32px", height: "60px",
     }}>
@@ -26,8 +34,8 @@ export default function NavBar() {
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 14, fontWeight: 900, color: "white",
         }}>S</div>
-        <span style={{ fontWeight: 700, fontSize: 16, color: "#e8e8f0", letterSpacing: "-0.02em" }}>
-          Step<span style={{ color: "#6c63ff" }}>Wise</span>
+        <span style={{ fontWeight: 700, fontSize: 16, color: "var(--color-text)", letterSpacing: "-0.02em" }}>
+          Step<span style={{ color: "var(--color-indigo)" }}>Wise</span>
         </span>
       </Link>
 
@@ -51,9 +59,19 @@ export default function NavBar() {
 
       {/* Auth */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        {mounted && (
+          <button 
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="btn btn-ghost"
+            style={{ padding: "6px 10px", fontSize: 14 }}
+            aria-label="Toggle Theme"
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+        )}
         {session ? (
           <>
-            <span style={{ fontSize: 13, color: "#666680" }}>{session.user?.email}</span>
+            <span style={{ fontSize: 13, color: "var(--color-muted)" }}>{session.user?.email}</span>
             <button onClick={logout} className="btn btn-ghost" style={{ padding: "6px 14px", fontSize: 13 }}>
               Sign out
             </button>

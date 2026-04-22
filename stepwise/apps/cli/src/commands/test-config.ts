@@ -114,7 +114,7 @@ export function readLocalTestCommandConfig(): LocalTestCommandConfig {
   // Flag-based mode (legacy / developer override)
   const challengeId = args.challenge ?? (foundConfig?.config.challengeId) ?? "promise-basic";
   const userId = args.user ?? foundConfig?.config.userId ?? "student-local";
-  const apiBaseUrl = args.api ?? foundConfig?.config.apiBaseUrl ?? "http://127.0.0.1:4000";
+  const apiBaseUrl = args.api ?? foundConfig?.config.apiBaseUrl ?? process.env.STEPWISE_API_URL ?? "https://api.stepwise.run";
   const stepId = args.step ?? foundConfig?.config.currentStepId;
 
   return {

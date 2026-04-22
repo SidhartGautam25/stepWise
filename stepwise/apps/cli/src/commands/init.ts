@@ -96,7 +96,7 @@ function parseInitArgs(argv: string[]): InitCommandConfig {
       ? path.resolve(parsed.dir)
       : path.resolve(process.cwd(), challengeId),
     userId: parsed.user ?? "",   // resolved from credentials below
-    apiBaseUrl: parsed.api ?? "http://127.0.0.1:4000",
+    apiBaseUrl: parsed.api ?? process.env.STEPWISE_API_URL ?? "https://api.stepwise.run",
     showPrompt,
     helpRequested: false,
   };
