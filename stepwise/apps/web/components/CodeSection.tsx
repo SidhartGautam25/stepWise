@@ -26,7 +26,7 @@ export function CodeSection({ files }: CodeSectionProps) {
   return (
     <div style={{
       marginBottom: 40,
-      background: "var(--color-terminal-bg)",
+      background: "var(--color-surface)",
       borderRadius: 12,
       border: "1px solid var(--color-border)",
       overflow: "hidden"
@@ -44,7 +44,7 @@ export function CodeSection({ files }: CodeSectionProps) {
               onClick={() => setActiveIndex(idx)}
               style={{
                 padding: "12px 24px",
-                background: activeIndex === idx ? "var(--color-terminal-bg)" : "var(--color-bg)",
+                background: activeIndex === idx ? "var(--color-surface)" : "var(--color-bg)",
                 border: "none",
                 borderRight: "1px solid var(--color-border)",
                 borderBottom: "none",
@@ -60,7 +60,7 @@ export function CodeSection({ files }: CodeSectionProps) {
               {file.filename}
             </button>
           ))}
-          <div style={{ flex: 1, borderBottom: "1px solid var(--color-border)" }} />
+          <div style={{ flex: 1, borderBottom: "1px solid var(--color-border)", background: "var(--color-bg)" }} />
         </div>
 
         {/* Action Button */}
@@ -90,7 +90,7 @@ export function CodeSection({ files }: CodeSectionProps) {
       </div>
 
       {/* Code Display Area */}
-      <div style={{ padding: "20px 0", overflowX: "auto", fontFamily: "var(--font-mono)", fontSize: 13, lineHeight: 1.6 }}>
+      <div style={{ padding: "20px 0", overflowX: "auto", fontFamily: "var(--font-mono)", fontSize: 13, lineHeight: 1.6, background: "var(--color-surface)" }}>
         {activeFile.diffContent.split('\n').map((line, i) => {
           let bg = "transparent";
           let color = "var(--color-text)";

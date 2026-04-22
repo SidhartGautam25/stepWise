@@ -180,13 +180,8 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
             </div>
           )}
 
-          {/* Actionable Code Section */}
-          {activeStep?.codeFiles && activeStep.codeFiles.length > 0 && (
-            <CodeSection files={activeStep.codeFiles} />
-          )}
-
-          {/* Solution Section */}
-          {activeStep?.solution && (
+          {/* Solution & Actionable Code Section */}
+          {((activeStep?.codeFiles && activeStep.codeFiles.length > 0) || activeStep?.solution) && (
             <details 
               style={{
                 marginBottom: 40,
@@ -211,7 +206,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                   transition: "background 0.2s"
                 }}
               >
-                <span style={{ fontSize: 18 }}>👁️</span> Click to Reveal Solution Pattern
+                <span style={{ fontSize: 18 }}>👁️</span> Click to Reveal Solution
               </summary>
               <div style={{ 
                 padding: "0 24px 24px", 
@@ -219,15 +214,22 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                 marginTop: 4,
                 paddingTop: 24
               }}>
-                <div style={{
-                  background: "var(--color-terminal-bg)",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: 8,
-                  padding: "16px",
-                  color: "var(--color-text)",
-                }}>
-                  <MarkdownViewer content={`\`\`\`javascript\n${activeStep.solution}\n\`\`\``} />
-                </div>
+                {activeStep?.codeFiles && activeStep.codeFiles.length > 0 && (
+                  <CodeSection files={activeStep.codeFiles} />
+                )}
+
+                {activeStep?.solution && (
+                  <div style={{
+                    background: "var(--color-terminal-bg)",
+                    border: "1px solid var(--color-border)",
+                    borderRadius: 8,
+                    padding: "16px",
+                    color: "var(--color-text)",
+                    marginTop: (activeStep?.codeFiles && activeStep.codeFiles.length > 0) ? 24 : 0
+                  }}>
+                    <MarkdownViewer content={`\`\`\`javascript\n${activeStep.solution}\n\`\`\``} />
+                  </div>
+                )}
               </div>
             </details>
           )}
