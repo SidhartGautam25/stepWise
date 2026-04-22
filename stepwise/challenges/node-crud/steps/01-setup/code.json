@@ -1,0 +1,8 @@
+[
+  {
+    "filename": "server.js",
+    "language": "javascript",
+    "diffContent": "  const server = http.createServer((req, res) => {\n    const { method, url } = req;\n\n+   if (method === 'GET' && url === '/health') {\n+     return sendJson(res, 200, { status: 'ok', version: '1.0.0' });\n+   }\n\n    sendJson(res, 404, { error: 'Not found' });\n  });",
+    "finalCode": "const http = require('http');\n\nconst PORT = process.env.PORT || 3000;\n\nfunction sendJson(res, statusCode, data) {\n  res.writeHead(statusCode, { 'Content-Type': 'application/json' });\n  res.end(JSON.stringify(data));\n}\n\nconst server = http.createServer((req, res) => {\n  const { method, url } = req;\n\n  if (method === 'GET' && url === '/health') {\n    return sendJson(res, 200, { status: 'ok', version: '1.0.0' });\n  }\n\n  sendJson(res, 404, { error: 'Not found' });\n});\n\nserver.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});"
+  }
+]
