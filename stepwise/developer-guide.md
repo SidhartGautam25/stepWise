@@ -9,13 +9,16 @@ Welcome to the StepWise core platform! This guide covers exactly how to clone th
 ### Clone the Repository
 Pull the ecosystem down to your local machine:
 ```bash
-git clone https://github.com/stepwise/stepwise.git
-cd stepwise
+git clone git@github.com:SidhartGautam25/stepWise.git
+cd stepWise/stepwise
 ```
 
 ### Install Dependencies
-Because we use **Turborepo** and **PNPM Workspace** features to string the cloud environment together, you must use `pnpm`:
+Because we use **Turborepo** and **PNPM Workspace** features to string the cloud environment together (since we have multiple packages like web, api, cli, and db inside one repository), you must use `pnpm`. If you only have `npm` installed, install `pnpm` first:
 ```bash
+# Install pnpm globally via npm
+npm install -g pnpm
+
 # This installs all packages across /apps and /packages simultaneously
 pnpm install
 ```
@@ -26,10 +29,15 @@ pnpm install
 
 Before the API or the CLI works, we need to spin up the local development database and populate it with challenge definitions.
 
-### Seed the Database
-We use a Postgres container locally (Make sure Docker is running).
+### Configure and Seed the Database
+We use a Postgres database. Ensure you have your connection string ready or Docker running.
+Before seeding or running the API, you MUST generate the Prisma Database client bindings!
+
 ```bash
-# Start the local database and run the `db:seed` logic
+# 1. Generate the Prisma Client code (IMPORTANT: Fixes "@prisma/client did not initialize" error)
+pnpm turbo run db:generate
+
+# 2. Start the local database and run the `db:seed` logic
 pnpm turbo run db:seed
 ```
 *Behind the scenes: This parses all `challenge.json` payloads inside `/packages/challenges` and securely injects them into Postgres.*
