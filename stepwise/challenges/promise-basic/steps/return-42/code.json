@@ -1,0 +1,8 @@
+[
+  {
+    "filename": "index.js",
+    "language": "javascript",
+    "diffContent": "  function getNumber() {\n-   return 0;\n+   return Promise.resolve(42);\n  }\n  \n  module.exports = { getNumber };",
+    "finalCode": "function getNumber() {\n  return Promise.resolve(42);\n}\n\nmodule.exports = { getNumber };"
+  }
+]

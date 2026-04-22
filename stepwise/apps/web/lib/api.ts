@@ -14,6 +14,13 @@ export interface ChallengeSummary {
   stepCount: number;
 }
 
+export interface CodeFile {
+  filename: string;
+  language: string;
+  diffContent: string;
+  finalCode: string;
+}
+
 export interface StepInfo {
   id: string;
   title: string;
@@ -22,6 +29,7 @@ export interface StepInfo {
   solution?: string;
   hasStarter: boolean;
   position: number;
+  codeFiles?: CodeFile[];
 }
 
 export interface ChallengeDetail {

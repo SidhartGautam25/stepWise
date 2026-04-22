@@ -1,0 +1,8 @@
+[
+  {
+    "filename": "package.json",
+    "language": "json",
+    "diffContent": "+ {\n+   \"name\": \"todo-api\",\n+   \"version\": \"1.0.0\"\n+ }",
+    "finalCode": "{\n  \"name\": \"todo-api\",\n  \"version\": \"1.0.0\"\n}"
+  }
+]

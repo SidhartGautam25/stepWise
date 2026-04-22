@@ -4,7 +4,7 @@
  * StepWise CLI entry point.
  *
  * Command dispatch:
- *   stepwise init <challenge-id> [options]  → provision a local workspace
+ *   stepwise init <quest-id> [options]  → provision a local workspace
  *   stepwise test [options]                 → run tests and submit result
  */
 
@@ -28,7 +28,7 @@ Commands:
   login                 Sign in with your email (OTP-based)
   logout                Sign out and clear your local session
   whoami                Show current logged-in user
-  init <challenge-id>   Set up a local workspace for a challenge step
+  init <quest-id>       Set up a local workspace for a quest step
   test                  Run tests for your current step and submit the result
 
 Run "stepwise <command> --help" for command-specific options.
