@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "id": "nodejs-journey",
+  "version": "1.0.0",
+  "title": "Node.js Journey: The Fundamentals",
+  "language": "javascript",
+  "runtime": "node",
+  "defaultTimeoutMs": 3000,
+  "description": "Learn the absolute fundamentals of Node.js completely from scratch by building a functional Todo API without any frameworks.",
+  "steps": [
+    {
+      "id": "project-setup",
+      "title": "Setting Up Your Project",
+      "prompt": "prompt.md",
+      "workspace": {
+        "root": "steps/project-setup/workspace",
+        "starter": "steps/project-setup/starter",
+        "entrypoint": "package.json"
+      },
+      "tests": {
+        "visible": "steps/project-setup/tests/visible.test.js"
+      }
+    },
+    {
+      "id": "http-server",
+      "title": "The HTTP Server",
+      "prompt": "prompt.md",
+      "workspace": {
+        "root": "steps/http-server/workspace",
+        "starter": "steps/http-server/starter",
+        "entrypoint": "server.js"
+      },
+      "tests": {
+        "visible": "steps/http-server/tests/visible.test.js"
+      }
+    },
+    {
+      "id": "routing",
+      "title": "Fundamentals of Routing",
+      "prompt": "prompt.md",
+      "workspace": {
+        "root": "steps/routing/workspace",
+        "starter": "steps/routing/starter",
+        "entrypoint": "server.js"
+      },
+      "tests": {
+        "visible": "steps/routing/tests/visible.test.js"
+      }
+    }
+  ]
+}

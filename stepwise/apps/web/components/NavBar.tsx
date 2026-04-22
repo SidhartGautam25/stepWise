@@ -42,7 +42,7 @@ export default function NavBar() {
       {/* Center links */}
       <div style={{ display: "flex", gap: 8 }}>
         {[
-          { href: "/challenges", label: "Challenges" },
+          { href: "/challenges", label: "Quests" },
           ...(session ? [{ href: "/dashboard", label: "Dashboard" }] : []),
         ].map(({ href, label }) => (
           <Link key={href} href={href} style={{

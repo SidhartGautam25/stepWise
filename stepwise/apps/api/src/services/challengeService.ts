@@ -8,6 +8,13 @@ import path from "path";
 
 const CHALLENGES_ROOT = path.resolve(__dirname, "../../../../challenges");
 
+export interface CodeFile {
+  filename: string;
+  language: string;
+  diffContent: string;
+  finalCode: string;
+}
+
 export interface StepInfo {
   id: string;
   title: string;
@@ -16,6 +23,7 @@ export interface StepInfo {
   solution?: string;
   hasStarter: boolean;
   position: number;
+  codeFiles?: CodeFile[];
 }
 
 export interface ChallengeInfo {
@@ -95,6 +103,19 @@ export function getChallengeInfo(challengeId: string): ChallengeInfo {
       }
     }
 
+    let codeFiles: CodeFile[] | undefined;
+    const codeJsonPath = path.resolve(stepDir, "code.json");
+    if (fs.existsSync(codeJsonPath)) {
+      try {
+        const parsedCode = JSON.parse(fs.readFileSync(codeJsonPath, "utf-8"));
+        if (Array.isArray(parsedCode)) {
+          codeFiles = parsedCode as CodeFile[];
+        }
+      } catch (err) {
+        console.warn(`Failed to parse code.json for step ${stepId}:`, err);
+      }
+    }
+
     return {
       id: stepId,
       title: readString(s.title, `steps[${i}].title`),
@@ -103,6 +124,7 @@ export function getChallengeInfo(challengeId: string): ChallengeInfo {
       solution,
       hasStarter: fs.existsSync(starterDir),
       position: i + 1,
+      codeFiles,
     };
   });
 

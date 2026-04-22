@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ChallengeDetail } from "@/lib/api";
 import { MarkdownViewer } from "./MarkdownViewer";
+import { CodeSection } from "./CodeSection";
 
 interface ChallengeViewerProps {
   challenge: ChallengeDetail;
@@ -177,6 +178,11 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                 <MarkdownViewer content={activeStep.explanation} />
               </div>
             </div>
+          )}
+
+          {/* Actionable Code Section */}
+          {activeStep?.codeFiles && activeStep.codeFiles.length > 0 && (
+            <CodeSection files={activeStep.codeFiles} />
           )}
 
           {/* Solution Section */}

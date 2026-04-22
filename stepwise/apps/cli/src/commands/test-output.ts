@@ -18,7 +18,7 @@ export function renderStudentFacingResult(
     (test) => test.status !== "pass" && test.visibility !== "hidden",
   );
 
-  lines.push(`Challenge: ${output.attempt.challengeId}`);
+  lines.push(`Quest: ${output.attempt.challengeId}`);
   lines.push(`Step: ${output.attempt.step.title} (${output.attempt.step.id})`);
   lines.push(
     "Mode: Build the current project step locally, then submit this step for validation.",
@@ -34,7 +34,7 @@ export function renderStudentFacingResult(
     if (output.progression.challengeCompleted) {
       lines.push("");
       lines.push(
-        "Nice work. You completed this challenge and can move on to the next build.",
+        "Nice work. You completed this quest and can move on to the next build.",
       );
     } else if (output.progression.nextStepId) {
       lines.push("");

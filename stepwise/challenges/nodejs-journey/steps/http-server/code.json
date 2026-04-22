@@ -1,0 +1,8 @@
+[
+  {
+    "filename": "server.js",
+    "language": "javascript",
+    "diffContent": "+ const http = require('http');\n+ \n+ const server = http.createServer((request, response) => {\n+   response.end(\"Hello StepWise!\");\n+ });\n+ \n+ server.listen(3000);",
+    "finalCode": "const http = require('http');\n\nconst server = http.createServer((request, response) => {\n  response.end(\"Hello StepWise!\");\n});\n\nserver.listen(3000);"
+  }
+]

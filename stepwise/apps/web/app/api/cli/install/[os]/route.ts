@@ -4,9 +4,10 @@ import path from "path";
 
 export async function GET(
   request: Request,
-  { params }: { params: { os: string } }
+  { params }: { params: Promise<{ os: string }> }
 ) {
-  const os = params.os; // "linux" or "windows"
+  const resolvedParams = await params;
+  const os = resolvedParams.os; // "linux" or "windows"
   const fileName = os === "windows" ? "install.ps1" : "install.sh";
   
   // Resolve path to the raw shell scripts located natively in the CLI

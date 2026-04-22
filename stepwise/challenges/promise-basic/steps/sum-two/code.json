@@ -1,0 +1,8 @@
+[
+  {
+    "filename": "index.js",
+    "language": "javascript",
+    "diffContent": "  function sumAsync(a, b) {\n-   // implement here\n+   return new Promise((resolve) => resolve(a + b));\n  }\n  \n  module.exports = { sumAsync };",
+    "finalCode": "function sumAsync(a, b) {\n  return new Promise((resolve) => resolve(a + b));\n}\n\nmodule.exports = { sumAsync };"
+  }
+]

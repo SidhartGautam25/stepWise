@@ -4,9 +4,10 @@ import path from "path";
 
 export async function GET(
   request: Request,
-  { params }: { params: { filename: string } }
+  { params }: { params: Promise<{ filename: string }> }
 ) {
-  const filename = params.filename; // e.g. "stepwise-macos-x64"
+  const resolvedParams = await params;
+  const filename = resolvedParams.filename; // e.g. "stepwise-macos-x64"
   
   // Resolve path to the compiled payload executables
   const binaryPath = path.resolve(process.cwd(), "..", "cli", "binaries", filename);

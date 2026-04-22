@@ -22,11 +22,11 @@ interface InitCommandConfig {
 
 const HELP_TEXT = `
 Usage:
-  stepwise init <challenge-id> [options]
+  stepwise init <quest-id> [options]
 
 Options:
   --step <id>         Start at a specific step (default: first step)
-  --dir <path>        Output directory for the workspace (default: ./<challenge-id>)
+  --dir <path>        Output directory for the workspace (default: ./<quest-id>)
   --user <id>         User id (default: student-local, replace with real id when auth is added)
   --api <url>         API base URL (default: http://127.0.0.1:4000)
   --no-prompt         Do not print the step prompt/instructions
@@ -35,7 +35,7 @@ Options:
 Examples:
   stepwise init promise-basic
   stepwise init promise-basic --step return-42
-  stepwise init promise-basic --dir ~/my-challenges/promises
+  stepwise init promise-basic --dir ~/my-quests/promises
 `.trim();
 
 function parseInitArgs(argv: string[]): InitCommandConfig {
@@ -85,7 +85,7 @@ function parseInitArgs(argv: string[]): InitCommandConfig {
 
   if (!challengeId) {
     throw new Error(
-      'Please specify a challenge id. Example: stepwise init promise-basic\nRun "stepwise init --help" for usage.',
+      'Please specify a quest id. Example: stepwise init promise-basic\nRun "stepwise init --help" for usage.',
     );
   }
 
@@ -131,7 +131,7 @@ export async function main() {
 
   const userId = config.userId || creds.userId;
 
-  console.log(pc.dim(`\n  Fetching challenge "${config.challengeId}" from API...`));
+  console.log(pc.dim(`\n  Fetching quest "${config.challengeId}" from API...`));
 
   let challenge;
   try {
@@ -148,8 +148,8 @@ export async function main() {
 
   if (!step) {
     const msg = config.stepId
-      ? `Step "${config.stepId}" not found in challenge "${challenge.id}". Available steps: ${challenge.steps.map((s) => s.id).join(", ")}`
-      : `Challenge "${challenge.id}" has no steps.`;
+      ? `Step "${config.stepId}" not found in quest "${challenge.id}". Available steps: ${challenge.steps.map((s) => s.id).join(", ")}`
+      : `Quest "${challenge.id}" has no steps.`;
     console.error(renderInitError(msg));
     process.exit(1);
   }

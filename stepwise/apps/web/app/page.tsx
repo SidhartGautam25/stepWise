@@ -46,13 +46,13 @@ export default async function HomePage() {
             fontSize: 18, color: "var(--color-muted)", maxWidth: 560, margin: "0 auto 48px",
             lineHeight: 1.7,
           }}>
-            StepWise is a code challenge platform where you build real projects step by step,
+            StepWise is a code quest platform where you build real projects step by step,
             run tests locally, and get immediate feedback — no browser sandbox, no toy problems.
           </p>
 
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/challenges" className="btn btn-primary" style={{ fontSize: 15, padding: "12px 28px" }}>
-              {session ? "Continue Learning →" : "Browse Challenges →"}
+              {session ? "Continue Learning →" : "Browse Quests →"}
             </Link>
             {session ? (
               <Link href="/dashboard" className="btn btn-ghost" style={{ fontSize: 15, padding: "12px 28px" }}>
@@ -80,7 +80,7 @@ export default async function HomePage() {
               code: "npx stepwise --help",
             },
             {
-              step: "2", icon: "📦", title: "Init a challenge",
+              step: "2", icon: "📦", title: "Init a quest",
               desc: "Workspace created with starter files and instructions.",
               code: "stepwise init promise-basic",
             },
@@ -121,7 +121,7 @@ export default async function HomePage() {
       {challenges.length > 0 && (
         <section style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 120px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 32 }}>
-            <h2 style={{ fontSize: 28, fontWeight: 700, color: "var(--color-text)" }}>Challenges</h2>
+            <h2 style={{ fontSize: 28, fontWeight: 700, color: "var(--color-text)" }}>Quests</h2>
             <Link href="/challenges" style={{ fontSize: 14, color: "var(--color-indigo)", textDecoration: "none" }}>
               View all →
             </Link>

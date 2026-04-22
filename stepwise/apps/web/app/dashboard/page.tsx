@@ -77,9 +77,9 @@ export default function DashboardPage() {
       {/* Stats row */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 48 }}>
         {[
-          { label: "Challenges started", value: data?.progress.length ?? 0, color: "var(--color-indigo)" },
+          { label: "Quests started", value: data?.progress.length ?? 0, color: "var(--color-indigo)" },
           { label: "Steps completed", value: totalCompleted, color: "var(--color-emerald)" },
-          { label: "Challenges finished", value: completedChallenges, color: "#f59e0b" },
+          { label: "Quests finished", value: completedChallenges, color: "#f59e0b" },
         ].map(({ label, value, color }) => (
           <div key={label} className="glass" style={{ padding: "24px 28px" }}>
             <div style={{ fontSize: 36, fontWeight: 900, color, marginBottom: 4, letterSpacing: "-0.03em" }}>
@@ -98,9 +98,9 @@ export default function DashboardPage() {
             Ready to start?
           </h2>
           <p style={{ fontSize: 15, color: "var(--color-muted)", marginBottom: 24 }}>
-            You haven&apos;t started any challenges yet.
+            You haven&apos;t started any quests yet.
           </p>
-          <Link href="/challenges" className="btn btn-primary">Browse challenges →</Link>
+          <Link href="/challenges" className="btn btn-primary">Browse quests →</Link>
         </div>
       ) : (
         <div>
