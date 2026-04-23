@@ -17,6 +17,7 @@ import { stdin as input, stdout as output } from "node:process";
 import pc from "picocolors";
 import { storeCredentials } from "../credentials";
 import { decodeToken } from "@repo/auth";
+import { apiBaseUrlFromArgs, apiErrorMessage, postJson } from "../api-client";
 
 interface LoginConfig {
   email?: string;
@@ -31,7 +32,7 @@ Usage:
 
 Options:
   --email <email>   Your email address (prompted if not provided)
-  --api <url>       API base URL (default: http://127.0.0.1:4000)
+  --api <url>       API base URL (default: STEPWISE_API_URL or production)
   --dev             Skip OTP and get a token immediately (dev mode only)
   --help            Show this help
 `.trim();
@@ -59,7 +60,7 @@ function parseArgs(): LoginConfig {
   return {
     email: parsed.email,
     devMode: parsed.dev === "true",
-    apiBaseUrl: parsed.api ?? process.env.STEPWISE_API_URL ?? "https://api.stepwise.run",
+    apiBaseUrl: apiBaseUrlFromArgs(parsed.api),
     helpRequested: false,
   };
 }
@@ -143,13 +144,11 @@ export async function main() {
 
     console.log(pc.dim(`\n  Authenticating ${email}...`));
 
-    const verifyRes = await fetch(`${config.apiBaseUrl}/auth/login/password`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ email, password }),
+    const verifyRes = await postJson(config.apiBaseUrl, "/auth/login/password", {
+      email,
+      password,
     });
-
-    const verifyData = (await verifyRes.json()) as Record<string, unknown>;
+    const verifyData = verifyRes.payload as Record<string, unknown>;
 
     if (!verifyRes.ok) {
       console.error(pc.red(`\n✗ ${String(verifyData.error ?? "Authentication failed")}\n`));

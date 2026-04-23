@@ -1,6 +1,7 @@
 import path from "path";
 import fs from "fs";
 import { parseLocalWorkspaceConfig, LOCAL_WORKSPACE_CONFIG_FILENAME } from "@repo/types";
+import { apiBaseUrlFromArgs } from "../api-client";
 
 export interface LocalTestCommandConfig {
   apiBaseUrl: string;
@@ -19,7 +20,7 @@ Usage:
   stepwise test [options]
 
 Options:
-  --api <url>               API base URL. Default: http://127.0.0.1:4000
+  --api <url>               API base URL. Default: STEPWISE_API_URL or production
   --challenge <id>          Challenge id. Default: promise-basic
   --challenge-path <path>   Override challenge directory path (absolute)
   --code <path>             Override user code path for the selected step
@@ -114,7 +115,7 @@ export function readLocalTestCommandConfig(): LocalTestCommandConfig {
   // Flag-based mode (legacy / developer override)
   const challengeId = args.challenge ?? (foundConfig?.config.challengeId) ?? "promise-basic";
   const userId = args.user ?? foundConfig?.config.userId ?? "student-local";
-  const apiBaseUrl = args.api ?? foundConfig?.config.apiBaseUrl ?? process.env.STEPWISE_API_URL ?? "https://api.stepwise.run";
+  const apiBaseUrl = foundConfig?.config.apiBaseUrl ?? apiBaseUrlFromArgs(args.api);
   const stepId = args.step ?? foundConfig?.config.currentStepId;
 
   return {

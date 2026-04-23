@@ -60,11 +60,16 @@ function installWindows(source) {
     "npm",
   );
   const shimPath = path.join(npmBinDir, "stepwise.cmd");
+  const tempDestination = path.join(installDir, "stepwise.exe.tmp");
 
   fs.mkdirSync(installDir, { recursive: true });
-  fs.copyFileSync(source, destination);
+  fs.rmSync(tempDestination, { force: true });
+  fs.copyFileSync(source, tempDestination);
+  fs.rmSync(destination, { force: true });
+  fs.renameSync(tempDestination, destination);
 
   fs.mkdirSync(npmBinDir, { recursive: true });
+  fs.rmSync(shimPath, { force: true });
   fs.writeFileSync(shimPath, `@echo off\r\n"${destination}" %*\r\n`);
 
   const currentUserPath = runPowerShell(
@@ -137,9 +142,14 @@ function ensureUnixPath(installDir) {
 function installUnix(source) {
   const installDir = preferredUnixInstallDir();
   const destination = path.join(installDir, "stepwise");
+  const tempDestination = path.join(installDir, "stepwise.tmp");
 
   fs.mkdirSync(installDir, { recursive: true });
-  fs.copyFileSync(source, destination);
+  fs.rmSync(tempDestination, { force: true });
+  fs.copyFileSync(source, tempDestination);
+  fs.chmodSync(tempDestination, 0o755);
+  fs.rmSync(destination, { force: true });
+  fs.renameSync(tempDestination, destination);
   fs.chmodSync(destination, 0o755);
 
   console.log(`Installed ${destination}`);

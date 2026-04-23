@@ -21,7 +21,7 @@
     "dev": "tsx src/index.ts",
     "start": "tsx src/index.ts",
     "build": "tsup",
-    "compile": "pnpm run build && pkg . --no-bytecode --public && node scripts/rename-binaries.cjs",
+    "compile": "node scripts/clean-binaries.cjs && pnpm run build && pkg . --no-bytecode --public && node scripts/rename-binaries.cjs",
     "install:local": "node scripts/install-local.cjs"
   },
   "keywords": [],

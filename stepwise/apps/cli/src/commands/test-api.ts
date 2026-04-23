@@ -6,6 +6,7 @@ import {
 } from "../../../../packages/attempt-contracts/src";
 import { RunChallengeResult } from "@repo/challenge-runner";
 import { getStoredCredentials } from "../credentials";
+import { apiErrorMessage, postJson } from "../api-client";
 
 interface StartAttemptInput {
   apiBaseUrl: string;
@@ -43,57 +44,36 @@ function getAuthHeader(): string {
 export async function requestStartAttempt(
   input: StartAttemptInput,
 ): Promise<StartAttemptResponse> {
-  const response = await fetch(`${input.apiBaseUrl}/attempts/start`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "authorization": getAuthHeader(),
-    },
-    body: JSON.stringify({
-      challengeId: input.challengeId,
-      userId: input.userId,   // API ignores this, uses JWT sub instead
-      mode: "local",
-      stepId: input.stepId,
-    }),
+  const response = await postJson(input.apiBaseUrl, "/attempts/start", {
+    challengeId: input.challengeId,
+    userId: input.userId,   // API ignores this, uses JWT sub instead
+    mode: "local",
+    stepId: input.stepId,
+  }, {
+    authorization: getAuthHeader(),
   });
 
-  return parseStartAttemptResponse(await readApiResponse(response));
+  return parseStartAttemptResponse(readApiResponse(response));
 }
 
 export async function submitRunnerResult(
   input: SubmitResultInput,
 ): Promise<SubmitResultResponse> {
-  const response = await fetch(`${input.apiBaseUrl}/attempts/submit-result`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "authorization": getAuthHeader(),
-    },
-    body: JSON.stringify({
-      attemptId: input.attemptId,
-      userId: input.userId,   // API ignores this, uses JWT sub instead
-      result: input.result,
-    }),
+  const response = await postJson(input.apiBaseUrl, "/attempts/submit-result", {
+    attemptId: input.attemptId,
+    userId: input.userId,   // API ignores this, uses JWT sub instead
+    result: input.result,
+  }, {
+    authorization: getAuthHeader(),
   });
 
-  return parseSubmitResultResponse(await readApiResponse(response));
+  return parseSubmitResultResponse(readApiResponse(response));
 }
 
-async function readApiResponse(response: Response): Promise<unknown> {
-  const payload = (await response.json()) as unknown;
-
+function readApiResponse(response: Awaited<ReturnType<typeof postJson>>): unknown {
   if (!response.ok) {
-    if (
-      typeof payload === "object" &&
-      payload !== null &&
-      "error" in payload &&
-      typeof (payload as Record<string, unknown>).error === "string"
-    ) {
-      throw new Error((payload as Record<string, unknown>).error as string);
-    }
-
-    throw new Error(`API request failed with status ${response.status}`);
+    throw new Error(apiErrorMessage(response.payload, response.status));
   }
 
-  return payload;
+  return response.payload;
 }
