@@ -21,7 +21,7 @@
     "dev": "tsx src/index.ts",
     "start": "tsx src/index.ts",
     "build": "tsup",
-    "compile": "pkg ."
+    "compile": "pkg . --no-bytecode --public"
   },
   "keywords": [],
   "author": "",
