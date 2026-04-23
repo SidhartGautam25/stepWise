@@ -1,34 +1,51 @@
 # StepWise CLI Windows Native Installer
 # Usage: iwr https://stepwise.run/install.ps1 -useb | iex
 
-Write-Host "  🚀 Installing StepWise CLI..." -ForegroundColor Cyan
+$ErrorActionPreference = "Stop"
+
+Write-Host "Installing StepWise CLI..." -ForegroundColor Cyan
 
 $OS = "win"
-$ARCH = "x64" # Extend if tracking ARM Windows explicitly
+$ARCH = if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -eq "Arm64") {
+    "arm64"
+} else {
+    "x64"
+}
+
+if ($ARCH -ne "x64") {
+    throw "Unsupported Windows architecture: $ARCH"
+}
 
 $BinaryName = "stepwise-${OS}-${ARCH}.exe"
 $DownloadUrl = "https://github.com/your-org/stepwise/releases/latest/download/$BinaryName"
-$InstallDir = "$env:USERPROFILE\AppData\Local\StepWise"
+$InstallDir = Join-Path $env:LOCALAPPDATA "StepWise"
+$DestPath = Join-Path $InstallDir "stepwise.exe"
 
-Write-Host "  ↓ Downloading StepWise for Windows..." -ForegroundColor Gray
+Write-Host "Downloading $BinaryName..." -ForegroundColor Gray
 
-# Ensure directory exists
-if (-Not (Test-Path -Path $InstallDir)) {
+if (-not (Test-Path -Path $InstallDir)) {
     New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
 }
 
-$DestPath = Join-Path $InstallDir "stepwise.exe"
-
-# Download File
 Invoke-WebRequest -Uri $DownloadUrl -OutFile $DestPath
 
-# Map to PATH via User Environment Variable permanently
 $UserPath = [Environment]::GetEnvironmentVariable("PATH", "User")
-if ($UserPath -notlike "*$InstallDir*") {
-    $NewPath = "$UserPath;$InstallDir"
-    [Environment]::SetEnvironmentVariable("PATH", $NewPath, "User")
-    Write-Host "  📦 Appended StepWise to `%PATH%` seamlessly!" -ForegroundColor DarkGray
+$PathParts = @()
+if ($UserPath) {
+    $PathParts = $UserPath.Split(";") | Where-Object { $_ }
 }
 
-Write-Host "`n  ✅ Installation Complete!" -ForegroundColor Green
-Write-Host "  Try running: stepwise login`n" -ForegroundColor White
+$AlreadyOnPath = $PathParts | Where-Object { $_.Trim().ToLowerInvariant() -eq $InstallDir.ToLowerInvariant() }
+if (-not $AlreadyOnPath) {
+    $NewPath = if ($UserPath) { "$UserPath;$InstallDir" } else { $InstallDir }
+    [Environment]::SetEnvironmentVariable("PATH", $NewPath, "User")
+    Write-Host "Added StepWise to your user PATH." -ForegroundColor DarkGray
+}
+
+if (($env:Path -split ";") -notcontains $InstallDir) {
+    $env:Path = "$InstallDir;$env:Path"
+}
+
+Write-Host ""
+Write-Host "Installation complete." -ForegroundColor Green
+Write-Host "Run: stepwise login" -ForegroundColor White

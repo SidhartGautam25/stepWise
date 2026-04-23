@@ -56,59 +56,160 @@ You should now see:
 
 ## 3. Developing and Testing the Native CLI
 
-StepWise utilizes a **Compile-to-Native-Binary** pipeline. We NEVER execute raw Javascript (`node index.js`) when testing the CLI locally, because we want developers to rigorously experience exactly what the end-student experiences.
+StepWise uses a **compile-to-native-binary** CLI pipeline. For end-to-end testing, prefer the installed `stepwise` binary over running `node dist/index.js`, because that matches what students run on their machines.
 
-### Step 1: Build & Compile the Local Binaries
-Since raw executable binaries are massive, they are intentionally **excluded** from Git. Before a student can install the CLI locally, you must natively compile it so your local Web App has files to serve them!
+### CLI Command Flow
 
-Open a **new terminal tab**:
+From the repository root:
+
 ```bash
-# 1. First, transpile the Typescript into Javascript (dist/index.js)
+# Transpile apps/cli/src into apps/cli/dist/index.js
 pnpm --filter cli run build
 
-# 2. Wrap the Javascript into Native OS Executables (Windows, Mac, Linux)
+# Rebuild dist, package native binaries, and create stepwise-* release names
 pnpm --filter cli run compile
+
+# Install the current OS binary locally as the `stepwise` command
+pnpm --filter cli run install:local
 ```
-*Note: This utilizes `tsup` and Vercel `pkg`. It will successfully generate raw `stepwise-linux-x64`, `stepwise-win-x64.exe`, and `stepwise-macos-x64` binaries inside the `apps/cli/binaries/` folder.*
 
-> [!WARNING]
-> If you make any code changes to the Typescript files inside `apps/cli/src`, you **must routinely rerun both** the `build` AND `compile` commands above to generate a newly updated executable file!
+`compile` already runs `build`, so for normal CLI changes you can usually run only:
 
-### Step 2: Test as a Real Student
-Since you have successfully generated the local binaries, you can now test the student installation flow! 
-
-Navigate anywhere on your physically machine **outside** of the StepWise monolithic repository (e.g. your Desktop) to accurately simulate a student's machine:
 ```bash
-cd ~/Desktop
-mkdir my-dummy-student-folder
-cd my-dummy-student-folder
+pnpm --filter cli run compile
+pnpm --filter cli run install:local
 ```
 
-**Install the CLI connecting to your Localhost:**
-If you are on Linux / Mac:
+The generated release binaries live in `apps/cli/binaries/`:
+
+```text
+stepwise-linux-x64
+stepwise-linux-arm64
+stepwise-macos-x64
+stepwise-macos-arm64
+stepwise-win-x64.exe
+```
+
+The raw `cli-*` files may also be present because `pkg` names outputs from the package name. The `stepwise-*` files are the canonical binaries used by the web download/install flow.
+
+### Local Install by OS
+
+`pnpm --filter cli run install:local` installs the binary for the OS you are currently using.
+
+Windows:
+
+```powershell
+pnpm --filter cli run compile
+pnpm --filter cli run install:local
+stepwise --help
+```
+
+The Windows local installer copies the binary to:
+
+```text
+%LOCALAPPDATA%\StepWise\stepwise.exe
+```
+
+It also creates a command shim at:
+
+```text
+%APPDATA%\npm\stepwise.cmd
+```
+
+If PowerShell still cannot find `stepwise`, open a new terminal and run:
+
+```powershell
+Get-Command stepwise
+```
+
+macOS and Linux:
+
+```bash
+pnpm --filter cli run compile
+pnpm --filter cli run install:local
+stepwise --help
+```
+
+The macOS/Linux local installer copies the binary to:
+
+```text
+~/.local/bin/stepwise
+```
+
+If your current shell cannot find `stepwise`, either open a new terminal or run:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+You can override the install directory on macOS/Linux:
+
+```bash
+STEPWISE_INSTALL_DIR="$HOME/bin" pnpm --filter cli run install:local
+```
+
+### Testing the Web Installer Flow
+
+Because binaries are intentionally excluded from Git, compile them before testing the web download installer:
+
+```bash
+pnpm --filter cli run compile
+pnpm turbo run dev
+```
+
+Then move outside the monorepo to simulate a student workspace:
+
+```bash
+cd ~
+mkdir stepwise-cli-test
+cd stepwise-cli-test
+```
+
+Install from the local web app.
+
+macOS/Linux:
+
 ```bash
 curl -fsSL http://localhost:3000/api/cli/install/linux | bash
+stepwise --help
 ```
 
-If you are on Windows (PowerShell):
+Windows PowerShell:
+
 ```powershell
 iwr http://localhost:3000/api/cli/install/windows -useb | iex
+stepwise --help
 ```
 
-### Step 3: Map the CLI to your Local API
-Before interacting with the CLI, tell it to talk to `localhost:4000` instead of the production API.
+### Point the CLI at the Local API
+
+Before using the CLI against your local backend, set `STEPWISE_API_URL` to the local API.
+
+macOS/Linux:
+
 ```bash
 export STEPWISE_API_URL=http://localhost:4000
-
-# 1. Login the student natively
 stepwise login
-
-# 2. Download the 'node-crud' workspace from the API
 stepwise init node-crud
-
-# 3. Enter the challenge & Execute tests!
 cd node-crud
 stepwise test
+```
+
+Windows PowerShell:
+
+```powershell
+$env:STEPWISE_API_URL="http://localhost:4000"
+stepwise login
+stepwise init node-crud
+cd node-crud
+stepwise test
+```
+
+Whenever you change files under `apps/cli/src`, rerun:
+
+```bash
+pnpm --filter cli run compile
+pnpm --filter cli run install:local
 ```
 
 ## Summary
