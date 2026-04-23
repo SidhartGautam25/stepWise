@@ -58,24 +58,38 @@ You should now see:
 
 StepWise utilizes a **Compile-to-Native-Binary** pipeline. We NEVER execute raw Javascript (`node index.js`) when testing the CLI locally, because we want developers to rigorously experience exactly what the end-student experiences.
 
-### Step 1: Compile the CLI
-Whenever you alter code inside `apps/cli/src`, you must re-wrap the package into a native OS executable. Open a **new terminal tab**:
+### Step 1: Build & Compile the Local Binaries
+Since raw executable binaries are massive, they are intentionally **excluded** from Git. Before a student can install the CLI locally, you must natively compile it so your local Web App has files to serve them!
+
+Open a **new terminal tab**:
 ```bash
-pnpm turbo run compile --filter cli
+# 1. First, transpile the Typescript into Javascript (dist/index.js)
+pnpm --filter cli run build
+
+# 2. Wrap the Javascript into Native OS Executables (Windows, Mac, Linux)
+pnpm --filter cli run compile
 ```
-*Note: This utilizes Vercel `pkg` combined with `tsup`. It will generate massive `stepwise-linux`, `stepwise-win.exe`, and `stepwise-macos` binaries natively inside `apps/cli/binaries/`.*
+*Note: This utilizes `tsup` and Vercel `pkg`. It will successfully generate raw `stepwise-linux-x64`, `stepwise-win-x64.exe`, and `stepwise-macos-x64` binaries inside the `apps/cli/binaries/` folder.*
 
-### Step 2: Test as a Real User
-Since we compiled the raw binaries, let's install them from our purely local Web server explicitly to ensure the system handles dynamic downloads gracefully. 
+### Step 2: Test as a Real Student
+Since you have successfully generated the local binaries, you can now test the student installation flow! 
 
-Navigate anywhere on your completely physical machine, outside of the monolithic repository!
+Navigate anywhere on your physically machine **outside** of the StepWise monolithic repository (e.g. your Desktop) to accurately simulate a student's machine:
 ```bash
 cd ~/Desktop
 mkdir my-dummy-student-folder
 cd my-dummy-student-folder
+```
 
-# Explicitly download the Native Linux/Mac binary from YOUR LOCAL Turborepo Instance!
+**Install the CLI connecting to your Localhost:**
+If you are on Linux / Mac:
+```bash
 curl -fsSL http://localhost:3000/api/cli/install/linux | bash
+```
+
+If you are on Windows (PowerShell):
+```powershell
+iwr http://localhost:3000/api/cli/install/windows -useb | iex
 ```
 
 ### Step 3: Map the CLI to your Local API
