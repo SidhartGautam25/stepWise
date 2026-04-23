@@ -2,7 +2,7 @@
   "name": "cli",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "bin": {
     "stepwise": "./dist/index.js"
   },
@@ -26,17 +26,15 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
     "@repo/auth": "workspace:^",
     "@repo/challenge-runner": "workspace:^",
     "@repo/tester-node": "workspace:^",
     "@repo/tester-server": "workspace:^",
     "@repo/types": "workspace:^",
-    "oclif": "^4.23.0",
-    "picocolors": "^1.1.1"
-  },
-  "devDependencies": {
     "@types/node": "^22.15.3",
+    "oclif": "^4.23.0",
+    "picocolors": "^1.1.1",
     "pkg": "^5.8.1",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
