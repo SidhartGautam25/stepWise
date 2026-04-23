@@ -4,19 +4,35 @@ import { useState } from "react";
 import type { ChallengeDetail } from "@/lib/api";
 import { MarkdownViewer } from "./MarkdownViewer";
 import { CodeSection } from "./CodeSection";
+import { useSession } from "next-auth/react";
+import { AetheraProvider } from "../contexts/AetheraContext";
+import { VisualWorld } from "./Aethera/VisualWorld";
+import { WebTerminal } from "./Aethera/WebTerminal";
+import { AetheraEvaluator } from "./Aethera/AetheraEvaluator";
 
 interface ChallengeViewerProps {
   challenge: ChallengeDetail;
 }
 
 export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
+  const { data: session } = useSession();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeStepId, setActiveStepId] = useState(challenge.steps[0]?.id || "");
+
+  // Note: We cast `challenge` as any for `.mode` safely since our local `api.ts` doesn't strictly have `mode: string` yet.
+  const isWebMode = (challenge as any).mode === "web" || challenge.id === "linux-aethera";
 
   const activeStep = challenge.steps.find((s) => s.id === activeStepId) || challenge.steps[0];
   const activeStepIndex = challenge.steps.findIndex((s) => s.id === activeStepId);
 
-  return (
+  const handleStepPassed = () => {
+    // If successful, auto-advance to the next step dynamically!
+    if (activeStepIndex < challenge.steps.length - 1) {
+      setActiveStepId(challenge.steps[activeStepIndex + 1]?.id || "");
+    }
+  };
+
+  const ContentArea = (
     <div style={{ padding: "80px 24px" }}>
       {/* Container holding Sidebar + Main Content */}
       <div style={{ display: "flex", maxWidth: 1200, margin: "0 auto", gap: 32 }}>
@@ -78,7 +94,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
 
         {/* Main Content Area */}
         <div style={{ flex: 1, minWidth: 0, transition: "all 0.3s ease" }}>
-          
+
           {/* Top Bar with Sidebar Toggle */}
           <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 32 }}>
             <button
@@ -124,8 +140,8 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
             </div>
           )}
 
-          {/* Terminal Quick Start (only visible on first step usually) */}
-          {activeStepIndex === 0 && (
+          {/* Terminal Quick Start (only visible on first step usually if NOT in Web Mode) */}
+          {!isWebMode && activeStepIndex === 0 && (
             <div className="glass" style={{ padding: 28, marginBottom: 48 }}>
               <h2 style={{ fontSize: 12, fontWeight: 700, color: "var(--color-badge)", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.08em" }}>
                 ⚡ Quick Start Checklist
@@ -136,16 +152,33 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                 <div style={{ marginBottom: 4 }}><span className="prompt">$ </span><span className="cmd">curl -fsSL {process.env.NEXT_PUBLIC_APP_URL || "https://stepwise.run"}/api/cli/install/linux | bash</span></div>
                 <div><span className="comment"># For Windows (Powershell):</span></div>
                 <div style={{ marginBottom: 16 }}><span className="prompt">&gt; </span><span className="cmd">iwr {process.env.NEXT_PUBLIC_APP_URL || "https://stepwise.run"}/api/cli/install/windows -useb | iex</span></div>
-                
+
                 <div><span className="comment"># 2. Login to your terminal</span></div>
                 <div style={{ marginBottom: 8 }}><span className="prompt">$ </span><span className="cmd">stepwise login</span></div>
-                
+
                 <div><span className="comment"># 3. Pull down the workspace</span></div>
                 <div style={{ marginBottom: 8 }}><span className="prompt">$ </span><span className="cmd">stepwise init {challenge.id}</span></div>
-                
+
                 <div><span className="comment"># 4. Code your solution and test!</span></div>
                 <div><span className="prompt">$ </span><span className="cmd">stepwise test</span></div>
               </div>
+            </div>
+          )}
+
+          {/* Web Interactive Quest Modules */}
+          {isWebMode && (
+            <div style={{ marginBottom: 40 }}>
+              <VisualWorld />
+              <WebTerminal activeStepTitle={activeStep?.title || ""} />
+              {session?.user && (
+                <AetheraEvaluator
+                  challengeId={challenge.id}
+                  stepId={activeStep?.id || ""}
+                  userId={(session.user as any).id || "local"}
+                  token={(session as any).fastifyToken || ""}
+                  onPassed={handleStepPassed}
+                />
+              )}
             </div>
           )}
 
@@ -166,7 +199,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
           {activeStep?.explanation && (
             <div style={{
               marginBottom: 40,
-              background: "var(--color-indigo-muted)", 
+              background: "var(--color-indigo-muted)",
               borderLeft: "3px solid var(--color-indigo)",
               borderRadius: "0 12px 12px 0",
               padding: "24px 32px"
@@ -182,7 +215,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
 
           {/* Solution & Actionable Code Section */}
           {((activeStep?.codeFiles && activeStep.codeFiles.length > 0) || activeStep?.solution) && (
-            <details 
+            <details
               style={{
                 marginBottom: 40,
                 background: "var(--color-emerald-muted)",
@@ -191,11 +224,11 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                 overflow: "hidden"
               }}
             >
-              <summary 
-                style={{ 
-                  padding: "16px 24px", 
-                  cursor: "pointer", 
-                  fontWeight: 600, 
+              <summary
+                style={{
+                  padding: "16px 24px",
+                  cursor: "pointer",
+                  fontWeight: 600,
                   color: "var(--color-emerald)",
                   fontSize: 15,
                   userSelect: "none",
@@ -208,8 +241,8 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
               >
                 <span style={{ fontSize: 18 }}>👁️</span> Click to Reveal Solution
               </summary>
-              <div style={{ 
-                padding: "0 24px 24px", 
+              <div style={{
+                padding: "0 24px 24px",
                 borderTop: "1px solid var(--color-emerald-muted)",
                 marginTop: 4,
                 paddingTop: 24
@@ -238,4 +271,14 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
       </div>
     </div>
   );
+
+  if (isWebMode) {
+    return (
+      <AetheraProvider>
+        {ContentArea}
+      </AetheraProvider>
+    );
+  }
+
+  return ContentArea;
 }

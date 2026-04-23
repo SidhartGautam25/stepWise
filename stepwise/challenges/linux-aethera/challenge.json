@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "linux-aethera",
+  "version": "1.0.0",
+  "title": "Aethera: The Linux Lore",
+  "language": "bash",
+  "runtime": "web-terminal",
+  "mode": "web",
+  "description": "Step into the magical land of Aethera and tame the Veil using Guide Spirits.",
+  "steps": [
+    {
+      "id": "01-the-first-sanctum",
+      "title": "The First Sanctum",
+      "prompt": "prompt.md",
+      "explanation": "explanation.md",
+      "workspace": {},
+      "tests": {}
+    },
+    {
+      "id": "02-the-codex",
+      "title": "Forging a Codex",
+      "prompt": "prompt.md",
+      "explanation": "explanation.md",
+      "workspace": {},
+      "tests": {}
+    },
+    {
+      "id": "03-sight",
+      "title": "The Power of Sight",
+      "prompt": "prompt.md",
+      "explanation": "explanation.md",
+      "workspace": {},
+      "tests": {}
+    }
+  ]
+}

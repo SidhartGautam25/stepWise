@@ -1,0 +1,9 @@
+components/ChallengeViewer.tsx(176,28): error TS18048: 'activeStep' is possibly 'undefined'.
+contexts/AetheraContext.tsx(137,11): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+contexts/AetheraContext.tsx(140,11): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+contexts/AetheraContext.tsx(151,35): error TS2532: Object is possibly 'undefined'.
+contexts/AetheraContext.tsx(152,32): error TS2532: Object is possibly 'undefined'.
+contexts/AetheraContext.tsx(213,7): error TS2322: Type 'boolean | undefined' is not assignable to type 'boolean'.
+  Type 'undefined' is not assignable to type 'boolean'.

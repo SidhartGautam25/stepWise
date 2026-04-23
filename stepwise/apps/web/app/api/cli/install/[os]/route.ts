@@ -21,7 +21,11 @@ export async function GET(
   let content = fs.readFileSync(scriptPath, "utf-8");
 
   // Determine the dynamic URL for binaries
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://stepwise.run";
+  const host = request.headers.get("host");
+  const protocol = host?.includes("localhost") || host?.includes("127.0.0.1") ? "http" : "https";
+  const defaultUrl = host ? `${protocol}://${host}` : "https://stepwise.run";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || defaultUrl;
+  
   const binaryEndpoint = `${appUrl}/api/cli/binary`;
 
   // Dynamically rewrite the hardcoded GitHub URL so it points specifically to our Binary Streamer!

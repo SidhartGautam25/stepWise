@@ -35,10 +35,10 @@ Before seeding or running the API, you MUST generate the Prisma Database client 
 
 ```bash
 # 1. Generate the Prisma Client code (IMPORTANT: Fixes "@prisma/client did not initialize" error)
-pnpm turbo run db:generate
+pnpm --filter @repo/db db:generate
 
 # 2. Start the local database and run the `db:seed` logic
-pnpm turbo run db:seed
+pnpm --filter @repo/db db:seed
 ```
 *Behind the scenes: This parses all `challenge.json` payloads inside `/packages/challenges` and securely injects them into Postgres.*
 
