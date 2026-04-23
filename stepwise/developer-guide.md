@@ -71,6 +71,9 @@ pnpm --filter cli run compile
 ```
 *Note: This utilizes `tsup` and Vercel `pkg`. It will successfully generate raw `stepwise-linux-x64`, `stepwise-win-x64.exe`, and `stepwise-macos-x64` binaries inside the `apps/cli/binaries/` folder.*
 
+> [!WARNING]
+> If you make any code changes to the Typescript files inside `apps/cli/src`, you **must routinely rerun both** the `build` AND `compile` commands above to generate a newly updated executable file!
+
 ### Step 2: Test as a Real Student
 Since you have successfully generated the local binaries, you can now test the student installation flow! 
 
