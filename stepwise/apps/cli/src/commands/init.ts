@@ -9,6 +9,7 @@ import {
   renderAlreadyInitialized,
 } from "./init-output";
 import { getStoredCredentials } from "../credentials";
+import { apiBaseUrlFromArgs } from "../api-client";
 
 interface InitCommandConfig {
   challengeId: string;
@@ -28,7 +29,7 @@ Options:
   --step <id>         Start at a specific step (default: first step)
   --dir <path>        Output directory for the workspace (default: ./<quest-id>)
   --user <id>         User id (default: student-local, replace with real id when auth is added)
-  --api <url>         API base URL (default: http://127.0.0.1:4000)
+  --api <url>         API base URL (default: STEPWISE_API_URL or production)
   --no-prompt         Do not print the step prompt/instructions
   --help              Show this help message
 
@@ -96,7 +97,7 @@ function parseInitArgs(argv: string[]): InitCommandConfig {
       ? path.resolve(parsed.dir)
       : path.resolve(process.cwd(), challengeId),
     userId: parsed.user ?? "",   // resolved from credentials below
-    apiBaseUrl: parsed.api ?? process.env.STEPWISE_API_URL ?? "https://api.stepwise.run",
+    apiBaseUrl: apiBaseUrlFromArgs(parsed.api),
     showPrompt,
     helpRequested: false,
   };

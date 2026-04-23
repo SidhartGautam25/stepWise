@@ -20,6 +20,7 @@ $BinaryName = "stepwise-${OS}-${ARCH}.exe"
 $DownloadUrl = "https://github.com/your-org/stepwise/releases/latest/download/$BinaryName"
 $InstallDir = Join-Path $env:LOCALAPPDATA "StepWise"
 $DestPath = Join-Path $InstallDir "stepwise.exe"
+$TempPath = Join-Path $InstallDir "stepwise.exe.tmp"
 
 Write-Host "Downloading $BinaryName..." -ForegroundColor Gray
 
@@ -27,7 +28,17 @@ if (-not (Test-Path -Path $InstallDir)) {
     New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
 }
 
-Invoke-WebRequest -Uri $DownloadUrl -OutFile $DestPath
+if (Test-Path -Path $TempPath) {
+    Remove-Item -Path $TempPath -Force
+}
+
+Invoke-WebRequest -Uri $DownloadUrl -OutFile $TempPath
+
+if (Test-Path -Path $DestPath) {
+    Remove-Item -Path $DestPath -Force
+}
+
+Move-Item -Path $TempPath -Destination $DestPath -Force
 
 $UserPath = [Environment]::GetEnvironmentVariable("PATH", "User")
 $PathParts = @()

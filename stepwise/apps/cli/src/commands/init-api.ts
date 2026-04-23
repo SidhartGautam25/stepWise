@@ -2,8 +2,9 @@ import {
   ChallengeInfoResponse,
   parseChallengeInfoResponse,
 } from "@repo/types";
+import { apiErrorMessage, getJson, LOCAL_API_BASE_URL } from "../api-client";
 
-const DEFAULT_API_BASE_URL = "http://127.0.0.1:4000";
+const DEFAULT_API_BASE_URL = LOCAL_API_BASE_URL;
 
 /**
  * Fetches full challenge info (steps, prompts, starter availability, challengePath)
@@ -13,27 +14,20 @@ export async function fetchChallengeInfo(
   challengeId: string,
   apiBaseUrl = DEFAULT_API_BASE_URL,
 ): Promise<ChallengeInfoResponse> {
-  let response: Response;
+  let response: Awaited<ReturnType<typeof getJson>>;
 
   try {
-    response = await fetch(`${apiBaseUrl}/challenges/${challengeId}`);
-  } catch {
+    response = await getJson(apiBaseUrl, `/challenges/${challengeId}`);
+  } catch (err) {
     throw new Error(
-      `Cannot reach the StepWise API at ${apiBaseUrl}. Is the API server running? (npm run dev inside apps/api)`,
+      err instanceof Error ? err.message : `Cannot reach the StepWise API at ${apiBaseUrl}.`,
     );
   }
 
-  const payload = (await response.json()) as unknown;
+  const payload = response.payload;
 
   if (!response.ok) {
-    const msg =
-      typeof payload === "object" &&
-      payload !== null &&
-      "error" in payload &&
-      typeof (payload as Record<string, unknown>).error === "string"
-        ? (payload as Record<string, unknown>).error
-        : `API returned ${response.status}`;
-    throw new Error(msg as string);
+    throw new Error(apiErrorMessage(payload, response.status));
   }
 
   return parseChallengeInfoResponse(payload);

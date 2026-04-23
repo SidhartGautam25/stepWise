@@ -66,10 +66,10 @@ From the repository root:
 # Transpile apps/cli/src into apps/cli/dist/index.js
 pnpm --filter cli run build
 
-# Rebuild dist, package native binaries, and create stepwise-* release names
+# Clean old binaries, rebuild dist, package native binaries, and create stepwise-* release names
 pnpm --filter cli run compile
 
-# Install the current OS binary locally as the `stepwise` command
+# Replace any old local install with the current OS binary as the `stepwise` command
 pnpm --filter cli run install:local
 ```
 
@@ -92,9 +92,13 @@ stepwise-win-x64.exe
 
 The raw `cli-*` files may also be present because `pkg` names outputs from the package name. The `stepwise-*` files are the canonical binaries used by the web download/install flow.
 
+`compile` starts by deleting `apps/cli/binaries/`, so stale binaries from older builds do not hang around. `install:local` also replaces the previous local `stepwise` executable before installing the new one.
+
 ### Local Install by OS
 
 `pnpm --filter cli run install:local` installs the binary for the OS you are currently using.
+
+You can run the local installer repeatedly. It removes the old executable/shim first, then installs the current binary, so multiple installs should not leave conflicting versions behind.
 
 Windows:
 
@@ -167,6 +171,8 @@ cd stepwise-cli-test
 
 Install from the local web app.
 
+The web installers are also idempotent. If a developer or real user runs the installer twice, the script downloads the new binary to a temporary file, deletes the old `stepwise` executable, and then moves the fresh binary into place.
+
 macOS/Linux:
 
 ```bash
@@ -185,10 +191,16 @@ stepwise --help
 
 Before using the CLI against your local backend, set `STEPWISE_API_URL` to the local API.
 
+You can also pass the local API explicitly on a single command:
+
+```bash
+stepwise login --api http://127.0.0.1:4000
+```
+
 macOS/Linux:
 
 ```bash
-export STEPWISE_API_URL=http://localhost:4000
+export STEPWISE_API_URL=http://127.0.0.1:4000
 stepwise login
 stepwise init node-crud
 cd node-crud
@@ -198,7 +210,7 @@ stepwise test
 Windows PowerShell:
 
 ```powershell
-$env:STEPWISE_API_URL="http://localhost:4000"
+$env:STEPWISE_API_URL="http://127.0.0.1:4000"
 stepwise login
 stepwise init node-crud
 cd node-crud

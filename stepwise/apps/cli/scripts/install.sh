@@ -31,11 +31,15 @@ BINARY_NAME="stepwise-${OS}-${ARCH}"
 DOWNLOAD_URL="https://github.com/your-org/stepwise/releases/latest/download/${BINARY_NAME}"
 INSTALL_DIR="${STEPWISE_INSTALL_DIR:-$HOME/.local/bin}"
 DEST_PATH="${INSTALL_DIR}/stepwise"
+TEMP_PATH="${INSTALL_DIR}/stepwise.tmp"
 
 echo "Downloading ${BINARY_NAME}..."
 mkdir -p "$INSTALL_DIR"
-curl -fsSL "$DOWNLOAD_URL" -o "$DEST_PATH"
-chmod +x "$DEST_PATH"
+rm -f "$TEMP_PATH"
+curl -fsSL "$DOWNLOAD_URL" -o "$TEMP_PATH"
+chmod +x "$TEMP_PATH"
+rm -f "$DEST_PATH"
+mv "$TEMP_PATH" "$DEST_PATH"
 
 case ":$PATH:" in
   *":$INSTALL_DIR:"*) ;;
