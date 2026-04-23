@@ -15,6 +15,11 @@ export function AetheraEvaluator({ challengeId, stepId, userId, token, onPassed 
       if (isComplete) {
         submittedStepsRef.current.add(stepId);
 
+        if (!token) {
+          onPassed();
+          return;
+        }
+
         // Send a success signal to API seamlessly bypassing CLI!
         submitAttemptResult(challengeId, stepId, userId, token)
           .then(() => onPassed())

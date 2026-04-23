@@ -2,23 +2,29 @@ import React, { useState, useRef, useEffect } from "react";
 import { useAethera } from "../../contexts/AetheraContext";
 
 const STEP_GUIDANCE: Record<string, string[]> = {
-  "01-the-first-sanctum": [
-    "[SYSTEM] Quest Goal: Forge your first Sanctum.",
-    "A Sanctum is a Linux directory. The spell is mkdir.",
-    "Cast: mkdir house",
-    "After the Sanctum appears, watch the Veil give it mark 755.",
+  "00-orientation": [
+    "[SYSTEM] Step 0: How to read this screen.",
+    "The top right of the visualizer always shows your current directory.",
+    "Each tile is a directory or file. It shows the name, owner, permissions, and file content when available.",
+    "Green terminal output means the command worked. Red output means Linux rejected the command.",
+    "Type: continue",
   ],
-  "02-the-codex": [
-    "[SYSTEM] Quest Goal: Move your focus into the house Sanctum.",
-    "The cd spell changes where the Guide Spirit is standing.",
-    "Cast: cd house",
-    "You may continue only after your focus becomes /home/student/house.",
+  "01-directories": [
+    "[SYSTEM] Step 1: Directories and listing.",
+    "Run these commands in order: pwd, ls, mkdir projects, ls",
+    "pwd prints where you are. ls lists what is here. mkdir creates a new directory.",
   ],
-  "03-sight": [
-    "[SYSTEM] Quest Goal: Use Sight to inspect the current Sanctum.",
-    "The ls spell lists what your current directory contains.",
-    "Cast: ls",
-    "Aethera will accept this step only when Sight is used inside /home/student/house.",
+  "02-navigation": [
+    "[SYSTEM] Step 2: Moving between directories.",
+    "Practice using the directory you created earlier.",
+    "Run these commands: cd projects, pwd, cd .., cd projects",
+    "cd moves your current directory. cd .. moves one level up.",
+  ],
+  "03-files-and-listing": [
+    "[SYSTEM] Step 3: Files, content, and listing.",
+    "Stay inside /home/student/projects.",
+    "Run these commands: touch notes.txt, echo hello linux > notes.txt, ls, cat notes.txt",
+    "touch creates a file. echo writes text. cat prints file content.",
   ],
 };
 
@@ -37,8 +43,8 @@ export function WebTerminal({ activeStepId, activeStepTitle }: { activeStepId?: 
     announcedStepRef.current = activeStepId;
 
     const messages = STEP_GUIDANCE[activeStepId] ?? [
-      `[SYSTEM] Quest Goal: ${activeStepTitle ?? "Continue the quest."}`,
-      "Aethera Spirit awaits your spell...",
+      `[SYSTEM] Quest Goal: ${activeStepTitle ?? "Continue the lesson."}`,
+      "Read the prompt, then enter the required command.",
     ];
 
     messages.forEach(appendSystemLog);
@@ -68,7 +74,7 @@ export function WebTerminal({ activeStepId, activeStepTitle }: { activeStepId?: 
         <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ef4444" }} />
         <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#f59e0b" }} />
         <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#10b981" }} />
-        <span style={{ marginLeft: 12, fontSize: 13, color: "var(--color-muted)", fontWeight: 600, letterSpacing: "0.05em" }}>Aethera Bound Spirit</span>
+        <span style={{ marginLeft: 12, fontSize: 13, color: "var(--color-muted)", fontWeight: 600, letterSpacing: "0.05em" }}>Linux Practice Terminal</span>
       </div>
       
       <div style={{ flex: 1, padding: "16px 20px", overflowY: "auto" }}>
@@ -91,14 +97,14 @@ export function WebTerminal({ activeStepId, activeStepTitle }: { activeStepId?: 
           return (
             <div key={idx} style={{ marginBottom: 12 }}>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <span style={{ color: "var(--color-emerald)", fontWeight: 600 }}>guide@aethera</span>
+                <span style={{ color: "var(--color-emerald)", fontWeight: 600 }}>student@linux</span>
                 <span style={{ color: "var(--color-muted)" }}>:</span>
                 <span style={{ color: "var(--color-indigo)", fontWeight: 600 }}>/{(log.cwd ?? cwd).join("/")}</span>
                 <span style={{ color: "var(--color-muted)" }}>$</span>
                 <span style={{ marginLeft: 8 }}>{log.command}</span>
               </div>
               {log.output && (
-                <div style={{ color: log.isError ? "#ef4444" : "var(--color-text)", marginTop: 4, whiteSpace: "pre-wrap", lineHeight: 1.5 }}>
+                <div style={{ color: log.isError ? "#ef4444" : "#10b981", marginTop: 4, whiteSpace: "pre-wrap", lineHeight: 1.5 }}>
                   {log.output}
                 </div>
               )}
@@ -107,7 +113,7 @@ export function WebTerminal({ activeStepId, activeStepTitle }: { activeStepId?: 
         })}
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          <span style={{ color: "var(--color-emerald)", fontWeight: 600 }}>guide@aethera</span>
+          <span style={{ color: "var(--color-emerald)", fontWeight: 600 }}>student@linux</span>
           <span style={{ color: "var(--color-muted)", margin: "0 4px" }}>:</span>
           <span style={{ color: "var(--color-indigo)", fontWeight: 600 }}>/{cwd.join("/")}</span>
           <span style={{ color: "var(--color-muted)", margin: "0 8px 0 4px" }}>$</span>

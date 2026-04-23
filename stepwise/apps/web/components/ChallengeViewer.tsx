@@ -19,6 +19,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeStepId, setActiveStepId] = useState(challenge.steps[0]?.id || "");
   const [passedStepIds, setPassedStepIds] = useState<string[]>([]);
+  const [successMessage, setSuccessMessage] = useState("");
 
   // Note: We cast `challenge` as any for `.mode` safely since our local `api.ts` doesn't strictly have `mode: string` yet.
   const isWebMode = (challenge as any).mode === "web" || challenge.id === "linux-aethera";
@@ -28,9 +29,13 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   const highestUnlockedIndex = Math.min(passedStepIds.length, challenge.steps.length - 1);
 
   const handleStepPassed = () => {
+    const completedTitle = activeStep?.title ?? "Step";
     if (activeStep?.id && !passedStepIds.includes(activeStep.id)) {
       setPassedStepIds((prev) => prev.includes(activeStep.id) ? prev : [...prev, activeStep.id]);
     }
+
+    setSuccessMessage(`Nice work. ${completedTitle} is complete.`);
+    window.setTimeout(() => setSuccessMessage(""), 2500);
 
     // If successful, auto-advance to the next step dynamically!
     if (activeStepIndex < challenge.steps.length - 1) {
@@ -185,17 +190,28 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
           {/* Web Interactive Quest Modules */}
           {isWebMode && (
             <div style={{ marginBottom: 40 }}>
+              {successMessage && (
+                <div style={{
+                  marginBottom: 20,
+                  border: "1px solid rgba(16, 185, 129, 0.35)",
+                  background: "rgba(16, 185, 129, 0.12)",
+                  color: "var(--color-emerald)",
+                  borderRadius: 8,
+                  padding: "14px 18px",
+                  fontWeight: 700,
+                }}>
+                  {successMessage}
+                </div>
+              )}
               <VisualWorld />
               <WebTerminal activeStepId={activeStep?.id || ""} activeStepTitle={activeStep?.title || ""} />
-              {session?.user && (
-                <AetheraEvaluator
-                  challengeId={challenge.id}
-                  stepId={activeStep?.id || ""}
-                  userId={(session.user as any).id || "local"}
-                  token={(session as any).fastifyToken || ""}
-                  onPassed={handleStepPassed}
-                />
-              )}
+              <AetheraEvaluator
+                challengeId={challenge.id}
+                stepId={activeStep?.id || ""}
+                userId={(session?.user as any)?.id || "local"}
+                token={(session as any)?.fastifyToken || ""}
+                onPassed={handleStepPassed}
+              />
             </div>
           )}
 

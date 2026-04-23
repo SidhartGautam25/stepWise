@@ -2,15 +2,15 @@
 
 import React, { createContext, useContext, useCallback, useState, ReactNode } from "react";
 
-export type NodeType = "sanctum" | "codex";
+export type NodeType = "directory" | "file";
 
 export interface VfsNode {
   name: string;
   type: NodeType;
   owner: string;
-  permissions: string; // e.g. "755", "644"
-  content?: string; // used if codex
-  children?: Record<string, VfsNode>; // used if sanctum
+  permissions: string;
+  content?: string;
+  children?: Record<string, VfsNode>;
 }
 
 interface CommandLog {
@@ -22,7 +22,7 @@ interface CommandLog {
 
 interface AetheraState {
   vfs: Record<string, VfsNode>;
-  cwd: string[]; // path array, e.g. ["projects", "house"]
+  cwd: string[];
   history: CommandLog[];
   execute: (input: string) => void;
   appendSystemLog: (msg: string) => void;
@@ -30,25 +30,25 @@ interface AetheraState {
 }
 
 const initialState: Record<string, VfsNode> = {
-  "bin": { name: "bin", type: "sanctum", owner: "root", permissions: "755", children: {
-    "guide-spirit": { name: "guide-spirit", type: "codex", owner: "root", permissions: "755", content: "The Guide Spirit listens for your commands.\n" },
-    "veil-reader": { name: "veil-reader", type: "codex", owner: "root", permissions: "755", content: "A small spell for reading hidden marks.\n" },
+  "bin": { name: "bin", type: "directory", owner: "root", permissions: "755", children: {
+    "bash": { name: "bash", type: "file", owner: "root", permissions: "755", content: "The shell program that reads your commands.\n" },
+    "ls": { name: "ls", type: "file", owner: "root", permissions: "755", content: "A command that lists directory contents.\n" },
   } },
-  "tmp": { name: "tmp", type: "sanctum", owner: "root", permissions: "777", children: {
-    "passing-rune": { name: "passing-rune", type: "codex", owner: "traveler", permissions: "666", content: "Anyone may leave a temporary mark here.\n" },
+  "tmp": { name: "tmp", type: "directory", owner: "root", permissions: "777", children: {
+    "scratch.txt": { name: "scratch.txt", type: "file", owner: "student", permissions: "666", content: "Temporary files often live here.\n" },
   } },
-  "etc": { name: "etc", type: "sanctum", owner: "root", permissions: "755", children: {
-    "laws-of-aethera": { name: "laws-of-aethera", type: "codex", owner: "root", permissions: "644", content: "Sight reads. Ink changes. Passage enters.\n" },
-    "veil.conf": { name: "veil.conf", type: "codex", owner: "root", permissions: "644", content: "Sanctums begin open, then the Veil removes unsafe powers.\n" },
+  "etc": { name: "etc", type: "directory", owner: "root", permissions: "755", children: {
+    "permissions.txt": { name: "permissions.txt", type: "file", owner: "root", permissions: "644", content: "r means read, w means write, x means execute or enter.\n" },
+    "system.conf": { name: "system.conf", type: "file", owner: "root", permissions: "644", content: "System configuration files are commonly stored in /etc.\n" },
   } },
-  "home": { name: "home", type: "sanctum", owner: "root", permissions: "755", children: {
-    "student": { name: "student", type: "sanctum", owner: "student", permissions: "755", children: {
-      "welcome-codex": { name: "welcome-codex", type: "codex", owner: "student", permissions: "644", content: "You are the Owner Soul here. Create house to begin.\n" },
-      "public": { name: "public", type: "sanctum", owner: "student", permissions: "755", children: {
-        "notice": { name: "notice", type: "codex", owner: "student", permissions: "644", content: "Others may see this, but only the owner may change it.\n" },
+  "home": { name: "home", type: "directory", owner: "root", permissions: "755", children: {
+    "student": { name: "student", type: "directory", owner: "student", permissions: "755", children: {
+      "welcome.txt": { name: "welcome.txt", type: "file", owner: "student", permissions: "644", content: "Welcome. This is your home directory.\n" },
+      "public": { name: "public", type: "directory", owner: "student", permissions: "755", children: {
+        "notice.txt": { name: "notice.txt", type: "file", owner: "student", permissions: "644", content: "This directory can be entered and read by others.\n" },
       } },
-      "sealed-vault": { name: "sealed-vault", type: "sanctum", owner: "student", permissions: "700", children: {
-        "private-rune": { name: "private-rune", type: "codex", owner: "student", permissions: "600", content: "Only the Owner Soul may read this.\n" },
+      "private": { name: "private", type: "directory", owner: "student", permissions: "700", children: {
+        "notes.txt": { name: "notes.txt", type: "file", owner: "student", permissions: "600", content: "Only the owner should read this file.\n" },
       } },
     } }
   }},
@@ -58,15 +58,16 @@ const AetheraContext = createContext<AetheraState | undefined>(undefined);
 
 export function AetheraProvider({ children }: { children: ReactNode }) {
   const [vfs, setVfs] = useState<Record<string, VfsNode>>(initialState);
-  const [cwd, setCwd] = useState<string[]>(["home", "student"]); // Start in ~
+  const [cwd, setCwd] = useState<string[]>(["home", "student"]);
   const [history, setHistory] = useState<CommandLog[]>([]);
 
-  // Helpers to traverse VFS
+  const pathToString = (path: string[]) => `/${path.join("/")}`;
+
   const resolvePath = (pathStr: string): string[] => {
     if (!pathStr || pathStr === ".") return cwd;
     const parts = pathStr.split("/").filter(Boolean);
     const start = pathStr.startsWith("/") ? [] : [...cwd];
-    
+
     for (const p of parts) {
       if (p === "..") start.pop();
       else if (p !== ".") start.push(p);
@@ -78,7 +79,7 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
     let currentDir = currentVfs;
     for (const p of path) {
       const next = currentDir[p];
-      if (!next || next.type !== "sanctum" || !next.children) return null;
+      if (!next || next.type !== "directory" || !next.children) return null;
       currentDir = next.children;
     }
     return currentDir;
@@ -96,7 +97,8 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
   };
 
   const execute = (input: string) => {
-    const args = input.trim().split(/\s+/);
+    const trimmed = input.trim();
+    const args = trimmed.split(/\s+/);
     const cmd = args[0];
     let output = "";
     let isError = false;
@@ -104,19 +106,26 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
     if (!cmd) return;
 
     try {
-      if (cmd === "mkdir") {
+      if (cmd === "continue") {
+        output = "Intro complete. You can start using Linux commands now.";
+      }
+      else if (cmd === "pwd") {
+        output = pathToString(cwd);
+      }
+      else if (cmd === "mkdir") {
         const target = args[1];
         if (!target) throw new Error("mkdir: missing operand");
+        if (target.includes("/")) throw new Error("mkdir: this lesson expects a simple directory name");
         const dir = getDirNode(cwd);
         if (!dir) throw new Error("Cannot find current directory");
         if (dir[target]) throw new Error(`mkdir: cannot create directory '${target}': File exists`);
-        
+
         const nextVfs = traverseAndSet(cwd, {
-          name: target, type: "sanctum", owner: "student", permissions: "755", children: {}
+          name: target, type: "directory", owner: "student", permissions: "755", children: {}
         }, vfs);
         setVfs(nextVfs);
-        output = `The Veil settles on '${target}' with mark 755: owner has Sight, Ink, and Passage; others keep Sight and Passage.`;
-      } 
+        output = `created directory '${target}' with permissions 755`;
+      }
       else if (cmd === "cd") {
         const target = args[1] || "/home/student";
         const newPath = resolvePath(target);
@@ -131,53 +140,52 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
       else if (cmd === "touch") {
         const target = args[1];
         if (!target) throw new Error("touch: missing file operand");
+        if (target.includes("/")) throw new Error("touch: this lesson expects a simple file name");
         const dir = getDirNode(cwd);
         if (!dir) throw new Error("Cannot find current directory");
-        
+
         if (!dir[target]) {
-           const nextVfs = traverseAndSet(cwd, {
-             name: target, type: "codex", owner: "student", permissions: "644", content: ""
-           }, vfs);
-           setVfs(nextVfs);
-           output = `A new Codex '${target}' appears with mark 644: owner may read/write; others may only read.`;
+          const nextVfs = traverseAndSet(cwd, {
+            name: target, type: "file", owner: "student", permissions: "644", content: ""
+          }, vfs);
+          setVfs(nextVfs);
+          output = `created file '${target}' with permissions 644`;
         }
       }
       else if (cmd === "echo") {
-        // Simple mock for `echo "hello" > index.txt` or `>>`
-        // We do a naive split
         const redirectIndex = args.indexOf(">");
         const appendIndex = args.indexOf(">>");
-        
+
         let text = "";
         let redirectArg = "";
         let append = false;
 
         if (redirectIndex !== -1) {
-          text = args.slice(1, redirectIndex).join(" ").replace(/^["']|["']$/g, '');
+          text = args.slice(1, redirectIndex).join(" ").replace(/^["']|["']$/g, "");
           redirectArg = args[redirectIndex + 1] || "";
         } else if (appendIndex !== -1) {
-          text = args.slice(1, appendIndex).join(" ").replace(/^["']|["']$/g, '');
+          text = args.slice(1, appendIndex).join(" ").replace(/^["']|["']$/g, "");
           redirectArg = args[appendIndex + 1] || "";
           append = true;
         } else {
-          output = args.slice(1).join(" ").replace(/^["']|["']$/g, '');
+          output = args.slice(1).join(" ").replace(/^["']|["']$/g, "");
         }
 
         if (redirectArg) {
           const dir = getDirNode(cwd);
           if (!dir) throw new Error("Cannot find current directory");
-          
+
           let existingContent = "";
           const targetNode = dir[redirectArg];
-          if (targetNode && targetNode.type === "codex") {
-             existingContent = targetNode.content || "";
+          if (targetNode && targetNode.type === "file") {
+            existingContent = targetNode.content || "";
           }
 
           const nextVfs = traverseAndSet(cwd, {
-            name: redirectArg, 
-            type: "codex", 
-            owner: "student", 
-            permissions: "644", 
+            name: redirectArg,
+            type: "file",
+            owner: "student",
+            permissions: "644",
             content: append ? existingContent + text + "\n" : text + "\n"
           }, vfs);
           setVfs(nextVfs);
@@ -188,22 +196,22 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
         if (!target) throw new Error("cat: missing operand");
         const dir = getDirNode(cwd);
         if (!dir || !dir[target]) throw new Error(`cat: ${target}: No such file or directory`);
-        if (dir[target].type !== "codex") throw new Error(`cat: ${target}: Is a directory`);
+        if (dir[target].type !== "file") throw new Error(`cat: ${target}: Is a directory`);
         output = dir[target].content || "";
       }
       else if (cmd === "rm") {
         const isRecursive = args.includes("-r") || args.includes("-rf");
         const target = args.filter(a => !a.startsWith("-"))[1];
         if (!target) throw new Error("rm: missing operand");
-        
+
         const currentVfs = JSON.parse(JSON.stringify(vfs));
         const dir = getDirNode(cwd, currentVfs);
         if (!dir || !dir[target]) throw new Error(`rm: cannot remove '${target}': No such file or directory`);
-        
-        if (dir[target].type === "sanctum" && !isRecursive) {
+
+        if (dir[target].type === "directory" && !isRecursive) {
           throw new Error(`rm: cannot remove '${target}': Is a directory`);
         }
-        
+
         delete dir[target];
         setVfs(currentVfs);
       }
@@ -215,36 +223,62 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
       output = e.message;
     }
 
-    setHistory(prev => [...prev, { command: input, output, isError, cwd: [...cwd] }]);
+    setHistory(prev => [...prev, { command: trimmed, output, isError, cwd: [...cwd] }]);
   };
 
   const appendSystemLog = useCallback((msg: string) => {
     setHistory(prev => [...prev, { command: "", output: msg, isError: false }]);
   }, []);
 
+  const successfulCommands = () => history.filter((log) => log.command && !log.isError);
+  const hasCommand = (command: string, path?: string) =>
+    successfulCommands().some((log) => log.command.trim() === command && (!path || pathToString(log.cwd ?? []) === path));
+  const commandCount = (command: string, path?: string) =>
+    successfulCommands().filter((log) => log.command.trim() === command && (!path || pathToString(log.cwd ?? []) === path)).length;
+
   const checkStepCompletion = (stepId: string): boolean => {
-    // Basic dynamic evaluator!
     const homeStudent = getDirNode(["home", "student"]);
-    
-    if (stepId === "01-the-first-sanctum") {
-       const lastCmd = history[history.length - 1];
-       return !!(
-        homeStudent &&
-        homeStudent["house"] &&
-        homeStudent["house"].type === "sanctum" &&
-        lastCmd?.command.trim() === "mkdir house"
-       );
+    const projects = homeStudent?.["projects"];
+    const projectDir = projects?.type === "directory" ? projects.children : undefined;
+    const notes = projectDir?.["notes.txt"];
+
+    if (stepId === "00-orientation") {
+      return hasCommand("continue");
     }
-    if (stepId === "02-the-codex") {
-       const lastCmd = history[history.length - 1];
-       return cwd.join("/") === "home/student/house" && lastCmd?.command.trim() === "cd house";
+
+    if (stepId === "01-directories") {
+      return !!(
+        projects &&
+        projects.type === "directory" &&
+        hasCommand("pwd", "/home/student") &&
+        commandCount("ls", "/home/student") >= 2 &&
+        hasCommand("mkdir projects", "/home/student")
+      );
     }
-    if (stepId === "03-sight") {
-      // Just requiring them to have run `ls` inside `house` recently.
-      const lastCmd = history[history.length - 1];
-      return cwd.join("/") === "home/student/house" && (lastCmd?.command.startsWith("ls") ?? false);
+
+    if (stepId === "02-navigation") {
+      return !!(
+        projects &&
+        cwd.join("/") === "home/student/projects" &&
+        hasCommand("cd projects", "/home/student") &&
+        hasCommand("pwd", "/home/student/projects") &&
+        hasCommand("cd ..", "/home/student/projects")
+      );
     }
-    
+
+    if (stepId === "03-files-and-listing") {
+      return !!(
+        notes &&
+        notes.type === "file" &&
+        notes.content?.includes("hello linux") &&
+        cwd.join("/") === "home/student/projects" &&
+        hasCommand("touch notes.txt", "/home/student/projects") &&
+        hasCommand("echo hello linux > notes.txt", "/home/student/projects") &&
+        hasCommand("ls", "/home/student/projects") &&
+        hasCommand("cat notes.txt", "/home/student/projects")
+      );
+    }
+
     return false;
   };
 

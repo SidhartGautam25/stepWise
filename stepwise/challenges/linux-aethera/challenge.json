@@ -2,31 +2,39 @@
   "schemaVersion": 1,
   "id": "linux-aethera",
   "version": "1.0.0",
-  "title": "Aethera: The Linux Lore",
+  "title": "Intro to Linux",
   "language": "bash",
   "runtime": "web-terminal",
   "mode": "web",
-  "description": "Step into the magical land of Aethera and tame the Veil using Guide Spirits.",
+  "description": "Learn the first Linux filesystem commands with a visual directory and file explorer.",
   "steps": [
     {
-      "id": "01-the-first-sanctum",
-      "title": "The First Sanctum",
+      "id": "00-orientation",
+      "title": "How to Read the Visualizer",
       "prompt": "prompt.md",
       "explanation": "explanation.md",
       "workspace": {},
       "tests": {}
     },
     {
-      "id": "02-the-codex",
-      "title": "The Focus Shift",
+      "id": "01-directories",
+      "title": "Directories and Listing",
       "prompt": "prompt.md",
       "explanation": "explanation.md",
       "workspace": {},
       "tests": {}
     },
     {
-      "id": "03-sight",
-      "title": "The Power of Sight",
+      "id": "02-navigation",
+      "title": "Moving Between Directories",
+      "prompt": "prompt.md",
+      "explanation": "explanation.md",
+      "workspace": {},
+      "tests": {}
+    },
+    {
+      "id": "03-files-and-listing",
+      "title": "Files, Content, and Listing",
       "prompt": "prompt.md",
       "explanation": "explanation.md",
       "workspace": {},
