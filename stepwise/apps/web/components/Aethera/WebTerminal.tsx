@@ -31,11 +31,13 @@ const STEP_GUIDANCE: Record<string, string[]> = {
 export function WebTerminal({ activeStepId, activeStepTitle }: { activeStepId?: string; activeStepTitle?: string }) {
   const { cwd, history, execute, appendSystemLog } = useAethera();
   const [input, setInput] = useState("");
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const announcedStepRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
   }, [history]);
 
   useEffect(() => {
@@ -65,7 +67,8 @@ export function WebTerminal({ activeStepId, activeStepTitle }: { activeStepId?: 
       overflow: "hidden",
       display: "flex",
       flexDirection: "column",
-      minHeight: 520,
+      minHeight: 560,
+      height: "100%",
       fontFamily: "var(--font-mono)",
       fontSize: 14,
       color: "var(--color-text)"
@@ -77,7 +80,7 @@ export function WebTerminal({ activeStepId, activeStepTitle }: { activeStepId?: 
         <span style={{ marginLeft: 12, fontSize: 13, color: "var(--color-muted)", fontWeight: 600, letterSpacing: "0.05em" }}>Linux Practice Terminal</span>
       </div>
       
-      <div style={{ flex: 1, padding: "16px 20px", overflowY: "auto" }}>
+      <div style={{ flex: 1, padding: "16px 20px", overflowY: "auto" }} ref={scrollContainerRef}>
         {history.map((log, idx) => {
           if (!log.command && log.output.startsWith("[SYSTEM]")) {
              return (
@@ -135,7 +138,6 @@ export function WebTerminal({ activeStepId, activeStepTitle }: { activeStepId?: 
             spellCheck={false}
           />
         </div>
-        <div ref={bottomRef} />
       </div>
     </div>
   );

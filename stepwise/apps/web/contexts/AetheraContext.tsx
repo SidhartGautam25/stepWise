@@ -215,8 +215,12 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
         delete dir[target];
         setVfs(currentVfs);
       }
+      else if (cmd === "clear") {
+        setHistory([]);
+        return;
+      }
       else {
-        throw new Error(`bash: ${cmd}: command not found`);
+        throw new Error(`bash: ${cmd}: command not found.\nThis interactive lesson only supports specific commands: continue, pwd, mkdir, cd, ls, touch, echo, cat, rm, clear.\nPlease verify your spelling and try sticking to the lesson objectives!`);
       }
     } catch (e: any) {
       isError = true;

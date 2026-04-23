@@ -32,8 +32,9 @@ export function VisualWorld() {
       border: "1px solid var(--color-border)",
       borderRadius: 8,
       padding: 28,
-      marginBottom: 32,
+      marginBottom: 0,
       minHeight: 560,
+      height: "100%",
       color: "var(--color-text)",
       boxShadow: "0 20px 60px rgba(0,0,0,0.22)",
     }}>

@@ -16,10 +16,11 @@ interface ChallengeViewerProps {
 
 export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   const { data: session } = useSession();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeStepId, setActiveStepId] = useState(challenge.steps[0]?.id || "");
   const [passedStepIds, setPassedStepIds] = useState<string[]>([]);
   const [successMessage, setSuccessMessage] = useState("");
+  const [activeTab, setActiveTab] = useState<"visualizer" | "content">("visualizer");
 
   // Note: We cast `challenge` as any for `.mode` safely since our local `api.ts` doesn't strictly have `mode: string` yet.
   const isWebMode = (challenge as any).mode === "web" || challenge.id === "linux-aethera";
@@ -40,13 +41,103 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
     // If successful, auto-advance to the next step dynamically!
     if (activeStepIndex < challenge.steps.length - 1) {
       setActiveStepId(challenge.steps[activeStepIndex + 1]?.id || "");
+      setActiveTab("content"); // Auto switch to content to read next prompt!
     }
   };
 
+  const stepContent = (
+    <div style={{ padding: 24, paddingBottom: 64 }}>
+      {/* Active Step Header */}
+      <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 24, borderBottom: "1px solid var(--color-border)", paddingBottom: 16 }}>
+        <span style={{ fontSize: 24, fontWeight: 900, color: "var(--color-indigo)" }}>{activeStepIndex + 1}.</span>
+        <h2 style={{ fontSize: 24, fontWeight: 800, color: "var(--color-text)" }}>{activeStep?.title}</h2>
+      </div>
+
+      {/* Prompt Section */}
+      {activeStep?.prompt && (
+        <div style={{ marginBottom: 40, fontSize: 15, color: "var(--color-text)", lineHeight: 1.7 }}>
+          <MarkdownViewer content={activeStep.prompt} />
+        </div>
+      )}
+
+      {/* Explanation Section */}
+      {activeStep?.explanation && (
+        <div style={{
+          marginBottom: 40,
+          background: "var(--color-indigo-muted)",
+          borderLeft: "3px solid var(--color-indigo)",
+          borderRadius: "0 12px 12px 0",
+          padding: "24px 32px"
+        }}>
+          <h4 style={{ color: "var(--color-badge)", fontSize: 13, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginBottom: 16 }}>
+            💡 Why this matters
+          </h4>
+          <div style={{ color: "var(--color-muted)", fontSize: 14, lineHeight: 1.6 }}>
+            <MarkdownViewer content={activeStep.explanation} />
+          </div>
+        </div>
+      )}
+
+      {/* Solution & Actionable Code Section */}
+      {((activeStep?.codeFiles && activeStep.codeFiles.length > 0) || activeStep?.solution) && (
+        <details
+          style={{
+            marginBottom: 40,
+            background: "var(--color-emerald-muted)",
+            border: "1px solid var(--color-emerald-muted)",
+            borderRadius: 12,
+            overflow: "hidden"
+          }}
+        >
+          <summary
+            style={{
+              padding: "16px 24px",
+              cursor: "pointer",
+              fontWeight: 600,
+              color: "var(--color-emerald)",
+              fontSize: 15,
+              userSelect: "none",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              outline: "none",
+              transition: "background 0.2s"
+            }}
+          >
+            <span style={{ fontSize: 18 }}>👁️</span> Click to Reveal Solution
+          </summary>
+          <div style={{
+            padding: "0 24px 24px",
+            borderTop: "1px solid var(--color-emerald-muted)",
+            marginTop: 4,
+            paddingTop: 24
+          }}>
+            {activeStep?.codeFiles && activeStep.codeFiles.length > 0 && (
+              <CodeSection files={activeStep.codeFiles} />
+            )}
+
+            {activeStep?.solution && (
+              <div style={{
+                background: "var(--color-terminal-bg)",
+                border: "1px solid var(--color-border)",
+                borderRadius: 8,
+                padding: "16px",
+                color: "var(--color-text)",
+                marginTop: (activeStep?.codeFiles && activeStep.codeFiles.length > 0) ? 24 : 0
+              }}>
+                <MarkdownViewer content={`\`\`\`javascript\n${activeStep.solution}\n\`\`\``} />
+              </div>
+            )}
+          </div>
+        </details>
+      )}
+    </div>
+  );
+
   const ContentArea = (
-    <div style={{ padding: "80px 24px" }}>
+    <div style={{ padding: "80px 24px 40px" }}>
       {/* Container holding Sidebar + Main Content */}
-      <div style={{ display: "flex", maxWidth: isWebMode ? 1600 : 1200, margin: "0 auto", gap: 32 }}>
+      <div style={{ display: "flex", maxWidth: isWebMode ? 1800 : 1200, width: "100%", margin: "0 auto", gap: 32 }}>
 
         {/* Collapsible Sidebar */}
         <div style={{
@@ -189,22 +280,87 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
 
           {/* Web Interactive Quest Modules */}
           {isWebMode && (
-            <div style={{ marginBottom: 40 }}>
+            <div style={{ marginBottom: 20 }}>
+              <style>{`
+                @keyframes flyUp {
+                  0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
+                  100% { transform: translateY(-20vh) scale(1.5); opacity: 0; }
+                }
+                .cracker {
+                  position: fixed;
+                  font-size: 3rem;
+                  animation: flyUp 2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+                  z-index: 9999;
+                  pointer-events: none;
+                }
+              `}</style>
               {successMessage && (
-                <div style={{
-                  marginBottom: 20,
-                  border: "1px solid rgba(16, 185, 129, 0.35)",
-                  background: "rgba(16, 185, 129, 0.12)",
-                  color: "var(--color-emerald)",
-                  borderRadius: 8,
-                  padding: "14px 18px",
-                  fontWeight: 700,
-                }}>
-                  {successMessage}
-                </div>
+                <>
+                  <div style={{
+                    marginBottom: 20,
+                    border: "1px solid rgba(16, 185, 129, 0.35)",
+                    background: "rgba(16, 185, 129, 0.12)",
+                    color: "var(--color-emerald)",
+                    borderRadius: 8,
+                    padding: "14px 18px",
+                    fontWeight: 700,
+                  }}>
+                    {successMessage}
+                  </div>
+                  <div>
+                    <div className="cracker" style={{ left: "10%", animationDelay: "0.1s" }}>🎉</div>
+                    <div className="cracker" style={{ left: "30%", animationDelay: "0.3s" }}>🎊</div>
+                    <div className="cracker" style={{ left: "50%", animationDelay: "0s" }}>🚀</div>
+                    <div className="cracker" style={{ left: "70%", animationDelay: "0.2s" }}>✨</div>
+                    <div className="cracker" style={{ left: "90%", animationDelay: "0.4s" }}>🎉</div>
+                  </div>
+                </>
               )}
-              <VisualWorld />
-              <WebTerminal activeStepId={activeStep?.id || ""} activeStepTitle={activeStep?.title || ""} />
+
+              <div style={{ display: "flex", gap: "16px", marginBottom: "16px" }}>
+                <button
+                  onClick={() => setActiveTab("visualizer")}
+                  style={{
+                    padding: "8px 16px", background: activeTab === "visualizer" ? "var(--color-indigo)" : "transparent",
+                    color: activeTab === "visualizer" ? "#fff" : "var(--color-muted)", borderRadius: 6,
+                    fontWeight: 700, border: "1px solid var(--color-indigo)", cursor: "pointer"
+                  }}
+                >
+                  Visualizer
+                </button>
+                <button
+                  onClick={() => setActiveTab("content")}
+                  style={{
+                    padding: "8px 16px", background: activeTab === "content" ? "var(--color-indigo)" : "transparent",
+                    color: activeTab === "content" ? "#fff" : "var(--color-muted)", borderRadius: 6,
+                    fontWeight: 700, border: "1px solid var(--color-indigo)", cursor: "pointer"
+                  }}
+                >
+                  Step Description
+                </button>
+              </div>
+
+              <div style={{ display: "flex", gap: "24px", alignItems: "stretch", width: "100%", height: "calc(100vh - 280px)", minHeight: 560 }}>
+                <div style={{ width: "60%", display: "flex", flexDirection: "column" }}>
+                  {activeTab === "visualizer" ? (
+                    <VisualWorld />
+                  ) : (
+                    <div style={{ 
+                      flex: 1,
+                      background: "rgba(15, 23, 42, 0.96)", 
+                      border: "1px solid var(--color-border)", 
+                      borderRadius: 8, 
+                      overflowY: "auto",
+                      minHeight: 560
+                    }}>
+                      {stepContent}
+                    </div>
+                  )}
+                </div>
+                <div style={{ width: "40%", display: "flex", flexDirection: "column" }}>
+                  <WebTerminal activeStepId={activeStep?.id || ""} activeStepTitle={activeStep?.title || ""} />
+                </div>
+              </div>
               <AetheraEvaluator
                 challengeId={challenge.id}
                 stepId={activeStep?.id || ""}
@@ -215,90 +371,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
             </div>
           )}
 
-          {/* Active Step Header */}
-          <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 24, borderBottom: "1px solid var(--color-border)", paddingBottom: 16 }}>
-            <span style={{ fontSize: 24, fontWeight: 900, color: "var(--color-indigo)" }}>{activeStepIndex + 1}.</span>
-            <h2 style={{ fontSize: 24, fontWeight: 800, color: "var(--color-text)" }}>{activeStep?.title}</h2>
-          </div>
-
-          {/* Prompt Section */}
-          {activeStep?.prompt && (
-            <div style={{ marginBottom: 40, fontSize: 15, color: "var(--color-text)", lineHeight: 1.7 }}>
-              <MarkdownViewer content={activeStep.prompt} />
-            </div>
-          )}
-
-          {/* Explanation Section */}
-          {activeStep?.explanation && (
-            <div style={{
-              marginBottom: 40,
-              background: "var(--color-indigo-muted)",
-              borderLeft: "3px solid var(--color-indigo)",
-              borderRadius: "0 12px 12px 0",
-              padding: "24px 32px"
-            }}>
-              <h4 style={{ color: "var(--color-badge)", fontSize: 13, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginBottom: 16 }}>
-                💡 Why this matters
-              </h4>
-              <div style={{ color: "var(--color-muted)", fontSize: 14, lineHeight: 1.6 }}>
-                <MarkdownViewer content={activeStep.explanation} />
-              </div>
-            </div>
-          )}
-
-          {/* Solution & Actionable Code Section */}
-          {((activeStep?.codeFiles && activeStep.codeFiles.length > 0) || activeStep?.solution) && (
-            <details
-              style={{
-                marginBottom: 40,
-                background: "var(--color-emerald-muted)",
-                border: "1px solid var(--color-emerald-muted)",
-                borderRadius: 12,
-                overflow: "hidden"
-              }}
-            >
-              <summary
-                style={{
-                  padding: "16px 24px",
-                  cursor: "pointer",
-                  fontWeight: 600,
-                  color: "var(--color-emerald)",
-                  fontSize: 15,
-                  userSelect: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  outline: "none",
-                  transition: "background 0.2s"
-                }}
-              >
-                <span style={{ fontSize: 18 }}>👁️</span> Click to Reveal Solution
-              </summary>
-              <div style={{
-                padding: "0 24px 24px",
-                borderTop: "1px solid var(--color-emerald-muted)",
-                marginTop: 4,
-                paddingTop: 24
-              }}>
-                {activeStep?.codeFiles && activeStep.codeFiles.length > 0 && (
-                  <CodeSection files={activeStep.codeFiles} />
-                )}
-
-                {activeStep?.solution && (
-                  <div style={{
-                    background: "var(--color-terminal-bg)",
-                    border: "1px solid var(--color-border)",
-                    borderRadius: 8,
-                    padding: "16px",
-                    color: "var(--color-text)",
-                    marginTop: (activeStep?.codeFiles && activeStep.codeFiles.length > 0) ? 24 : 0
-                  }}>
-                    <MarkdownViewer content={`\`\`\`javascript\n${activeStep.solution}\n\`\`\``} />
-                  </div>
-                )}
-              </div>
-            </details>
-          )}
+          {!isWebMode && stepContent}
 
         </div>
       </div>

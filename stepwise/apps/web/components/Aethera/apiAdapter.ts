@@ -21,7 +21,11 @@ export async function submitAttemptResult(
     })
   });
   
-  if (!startRes.ok) throw new Error("Failed to start attempt");
+  if (!startRes.ok) {
+    const errText = await startRes.text();
+    console.error("Start attempt failed with status", startRes.status, errText);
+    throw new Error(`Failed to start attempt: ${errText}`);
+  }
   const startData = await startRes.json();
   const attemptId = startData.attemptId;
 
@@ -37,7 +41,7 @@ export async function submitAttemptResult(
       userId,
       result: {
         challengeId,
-        challengeVersion: "1.0.0",
+        challengeVersion: startData.challengeVersion,
         stepId,
         mode: "web",
         total: 1,
