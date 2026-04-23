@@ -103,7 +103,7 @@ export async function startAttempt(
 
   const step = getStepOrThrow(challenge, payload.stepId ?? fallbackStepKey);
 
-  if (existingProgress && !isStepUnlocked(mapProgress(existingProgress), step.id)) {
+  if (existingProgress && !isStepUnlocked(challenge, mapProgress(existingProgress), step.id)) {
     throw new Error(`Step "${step.id}" is not unlocked for user "${payload.userId}"`);
   }
 
@@ -241,7 +241,9 @@ export async function getUserDashboard(userId: string): Promise<UserDashboardDat
 
 // ─── Private helpers ──────────────────────────────────────────────────────────
 
-function isStepUnlocked(progress: NormalizedProgress, stepKey: string): boolean {
+function isStepUnlocked(challenge: ChallengeInfo, progress: NormalizedProgress, stepKey: string): boolean {
+  if (progress.challengeCompleted) return true;
+  if (challenge.steps[0]?.id === stepKey) return true;
   return progress.currentStepKey === stepKey || progress.completedStepKeys.includes(stepKey);
 }
 

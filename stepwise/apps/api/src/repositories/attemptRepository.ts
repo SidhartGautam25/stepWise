@@ -14,7 +14,7 @@ export async function createAttempt(data: {
   challengeVersion: string;
   stepId: string;       // DB ChallengeStep UUID
   stepKey: string;
-  mode: "local" | "server";
+  mode: "local" | "server" | "web";
   startedAt: Date;
 }): Promise<Attempt> {
   return prisma.attempt.create({
