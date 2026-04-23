@@ -46,7 +46,7 @@ export async function submitAttemptResult(
         executionTime: 10,
         results: [
           {
-            name: "Aethera Evaluator Validation",
+            name: "Web Linux Lesson Validation",
             status: "pass",
             duration: 10
           }
