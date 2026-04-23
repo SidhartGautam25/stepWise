@@ -1,4 +1,4 @@
-export type AttemptMode = "local";
+export type AttemptMode = "local" | "web";
 export type AttemptStatus = "started" | "submitted";
 export type AttemptOutcome = "passed" | "failed";
 export type TestStatus = "pass" | "fail" | "error" | "timeout";
@@ -111,7 +111,7 @@ function readNumber(value: unknown, field: string): number {
 }
 
 function readAttemptMode(value: unknown, field: string): AttemptMode {
-  if (value !== "local") {
+  if (value !== "local" && value !== "web") {
     throw new Error(`Invalid ${field}`);
   }
 
