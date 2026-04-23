@@ -18,14 +18,20 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   const { data: session } = useSession();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeStepId, setActiveStepId] = useState(challenge.steps[0]?.id || "");
+  const [passedStepIds, setPassedStepIds] = useState<string[]>([]);
 
   // Note: We cast `challenge` as any for `.mode` safely since our local `api.ts` doesn't strictly have `mode: string` yet.
   const isWebMode = (challenge as any).mode === "web" || challenge.id === "linux-aethera";
 
   const activeStep = challenge.steps.find((s) => s.id === activeStepId) || challenge.steps[0];
   const activeStepIndex = challenge.steps.findIndex((s) => s.id === activeStepId);
+  const highestUnlockedIndex = Math.min(passedStepIds.length, challenge.steps.length - 1);
 
   const handleStepPassed = () => {
+    if (activeStep?.id && !passedStepIds.includes(activeStep.id)) {
+      setPassedStepIds((prev) => prev.includes(activeStep.id) ? prev : [...prev, activeStep.id]);
+    }
+
     // If successful, auto-advance to the next step dynamically!
     if (activeStepIndex < challenge.steps.length - 1) {
       setActiveStepId(challenge.steps[activeStepIndex + 1]?.id || "");
@@ -35,7 +41,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   const ContentArea = (
     <div style={{ padding: "80px 24px" }}>
       {/* Container holding Sidebar + Main Content */}
-      <div style={{ display: "flex", maxWidth: 1200, margin: "0 auto", gap: 32 }}>
+      <div style={{ display: "flex", maxWidth: isWebMode ? 1600 : 1200, margin: "0 auto", gap: 32 }}>
 
         {/* Collapsible Sidebar */}
         <div style={{
@@ -57,13 +63,15 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
           {challenge.steps.map((step, idx) => {
             const isActive = step.id === activeStepId;
             const isLast = idx === challenge.steps.length - 1;
+            const isPassed = passedStepIds.includes(step.id);
+            const isLocked = isWebMode && idx > highestUnlockedIndex;
 
             return (
               <div key={step.id} style={{ display: "flex", gap: 16 }}>
                 {/* Timeline visual */}
                 <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 28 }}>
-                  <div className={`step-dot ${isActive ? "step-dot-current" : "step-dot-locked"}`} style={{ width: 24, height: 24, fontSize: 11 }}>
-                    {idx + 1}
+                  <div className={`step-dot ${isActive ? "step-dot-current" : "step-dot-locked"}`} style={{ width: 24, height: 24, fontSize: 11, opacity: isLocked ? 0.45 : 1 }}>
+                    {isPassed ? "✓" : idx + 1}
                   </div>
                   {!isLast && (
                     <div style={{ width: 1, flexGrow: 1, background: "var(--color-border)", margin: "4px 0" }} />
@@ -72,10 +80,14 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
 
                 {/* Clickable Step button */}
                 <button
-                  onClick={() => setActiveStepId(step.id)}
+                  onClick={() => {
+                    if (!isLocked) setActiveStepId(step.id);
+                  }}
+                  disabled={isLocked}
                   style={{
-                    background: "none", border: "none", outline: "none", cursor: "pointer",
+                    background: "none", border: "none", outline: "none", cursor: isLocked ? "not-allowed" : "pointer",
                     textAlign: "left", flex: 1, paddingBottom: isLast ? 0 : 24, paddingLeft: 0, paddingTop: 2,
+                    opacity: isLocked ? 0.45 : 1,
                   }}
                 >
                   <h3 style={{
@@ -85,6 +97,11 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                   }}>
                     {step.title}
                   </h3>
+                  {isLocked && (
+                    <div style={{ color: "var(--color-muted)", fontSize: 12, marginTop: 4 }}>
+                      Complete the current spell to unlock.
+                    </div>
+                  )}
 
                 </button>
               </div>
@@ -169,7 +186,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
           {isWebMode && (
             <div style={{ marginBottom: 40 }}>
               <VisualWorld />
-              <WebTerminal activeStepTitle={activeStep?.title || ""} />
+              <WebTerminal activeStepId={activeStep?.id || ""} activeStepTitle={activeStep?.title || ""} />
               {session?.user && (
                 <AetheraEvaluator
                   challengeId={challenge.id}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useCallback, useState, ReactNode } from "react";
 
 export type NodeType = "sanctum" | "codex";
 
@@ -17,6 +17,7 @@ interface CommandLog {
   command: string;
   output: string;
   isError: boolean;
+  cwd?: string[];
 }
 
 interface AetheraState {
@@ -29,11 +30,27 @@ interface AetheraState {
 }
 
 const initialState: Record<string, VfsNode> = {
-  "bin": { name: "bin", type: "sanctum", owner: "root", permissions: "755", children: {} },
-  "tmp": { name: "tmp", type: "sanctum", owner: "root", permissions: "777", children: {} },
-  "etc": { name: "etc", type: "sanctum", owner: "root", permissions: "755", children: {} },
+  "bin": { name: "bin", type: "sanctum", owner: "root", permissions: "755", children: {
+    "guide-spirit": { name: "guide-spirit", type: "codex", owner: "root", permissions: "755", content: "The Guide Spirit listens for your commands.\n" },
+    "veil-reader": { name: "veil-reader", type: "codex", owner: "root", permissions: "755", content: "A small spell for reading hidden marks.\n" },
+  } },
+  "tmp": { name: "tmp", type: "sanctum", owner: "root", permissions: "777", children: {
+    "passing-rune": { name: "passing-rune", type: "codex", owner: "traveler", permissions: "666", content: "Anyone may leave a temporary mark here.\n" },
+  } },
+  "etc": { name: "etc", type: "sanctum", owner: "root", permissions: "755", children: {
+    "laws-of-aethera": { name: "laws-of-aethera", type: "codex", owner: "root", permissions: "644", content: "Sight reads. Ink changes. Passage enters.\n" },
+    "veil.conf": { name: "veil.conf", type: "codex", owner: "root", permissions: "644", content: "Sanctums begin open, then the Veil removes unsafe powers.\n" },
+  } },
   "home": { name: "home", type: "sanctum", owner: "root", permissions: "755", children: {
-    "student": { name: "student", type: "sanctum", owner: "student", permissions: "755", children: {} }
+    "student": { name: "student", type: "sanctum", owner: "student", permissions: "755", children: {
+      "welcome-codex": { name: "welcome-codex", type: "codex", owner: "student", permissions: "644", content: "You are the Owner Soul here. Create house to begin.\n" },
+      "public": { name: "public", type: "sanctum", owner: "student", permissions: "755", children: {
+        "notice": { name: "notice", type: "codex", owner: "student", permissions: "644", content: "Others may see this, but only the owner may change it.\n" },
+      } },
+      "sealed-vault": { name: "sealed-vault", type: "sanctum", owner: "student", permissions: "700", children: {
+        "private-rune": { name: "private-rune", type: "codex", owner: "student", permissions: "600", content: "Only the Owner Soul may read this.\n" },
+      } },
+    } }
   }},
 };
 
@@ -98,6 +115,7 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
           name: target, type: "sanctum", owner: "student", permissions: "755", children: {}
         }, vfs);
         setVfs(nextVfs);
+        output = `The Veil settles on '${target}' with mark 755: owner has Sight, Ink, and Passage; others keep Sight and Passage.`;
       } 
       else if (cmd === "cd") {
         const target = args[1] || "/home/student";
@@ -121,6 +139,7 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
              name: target, type: "codex", owner: "student", permissions: "644", content: ""
            }, vfs);
            setVfs(nextVfs);
+           output = `A new Codex '${target}' appears with mark 644: owner may read/write; others may only read.`;
         }
       }
       else if (cmd === "echo") {
@@ -196,22 +215,29 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
       output = e.message;
     }
 
-    setHistory(prev => [...prev, { command: input, output, isError }]);
+    setHistory(prev => [...prev, { command: input, output, isError, cwd: [...cwd] }]);
   };
 
-  const appendSystemLog = (msg: string) => {
+  const appendSystemLog = useCallback((msg: string) => {
     setHistory(prev => [...prev, { command: "", output: msg, isError: false }]);
-  };
+  }, []);
 
   const checkStepCompletion = (stepId: string): boolean => {
     // Basic dynamic evaluator!
     const homeStudent = getDirNode(["home", "student"]);
     
     if (stepId === "01-the-first-sanctum") {
-       return !!(homeStudent && homeStudent["house"] && homeStudent["house"].type === "sanctum");
+       const lastCmd = history[history.length - 1];
+       return !!(
+        homeStudent &&
+        homeStudent["house"] &&
+        homeStudent["house"].type === "sanctum" &&
+        lastCmd?.command.trim() === "mkdir house"
+       );
     }
     if (stepId === "02-the-codex") {
-       return cwd.join("/") === "home/student/house";
+       const lastCmd = history[history.length - 1];
+       return cwd.join("/") === "home/student/house" && lastCmd?.command.trim() === "cd house";
     }
     if (stepId === "03-sight") {
       // Just requiring them to have run `ls` inside `house` recently.
