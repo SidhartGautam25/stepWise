@@ -2,47 +2,69 @@
 # StepWise CLI Native Installer
 # Usage: curl -fsSL https://stepwise.run/install.sh | bash
 
-set -e
+set -euo pipefail
 
-echo "  🚀 Installing StepWise CLI..."
+echo "Installing StepWise CLI..."
 
 OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
-ARCH="$(uname -m)"
+ARCH="$(uname -m | tr '[:upper:]' '[:lower:]')"
 
-# Normalize architecture to pkg target mappings
-if [ "$ARCH" = "x86_64" ] || [ "$ARCH" = "amd64" ]; then
-  ARCH="x64"
-elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
-  ARCH="arm64"
-else
-  echo "Unsupported architecture: $ARCH"
-  exit 1
-fi
+case "$ARCH" in
+  x86_64|amd64) ARCH="x64" ;;
+  aarch64|arm64) ARCH="arm64" ;;
+  *)
+    echo "Unsupported architecture: $ARCH"
+    exit 1
+    ;;
+esac
 
-if [ "$OS" = "darwin" ]; then
-  OS="macos"
-fi
+case "$OS" in
+  darwin) OS="macos" ;;
+  linux) OS="linux" ;;
+  *)
+    echo "Unsupported OS: $OS"
+    exit 1
+    ;;
+esac
 
 BINARY_NAME="stepwise-${OS}-${ARCH}"
-# In a real environment, you'd replace github.com/.../releases/latest with your actual host!
 DOWNLOAD_URL="https://github.com/your-org/stepwise/releases/latest/download/${BINARY_NAME}"
-INSTALL_DIR="/usr/local/bin"
+INSTALL_DIR="${STEPWISE_INSTALL_DIR:-$HOME/.local/bin}"
+DEST_PATH="${INSTALL_DIR}/stepwise"
 
-echo "  ↓ Downloading for ${OS}-${ARCH}..."
+echo "Downloading ${BINARY_NAME}..."
+mkdir -p "$INSTALL_DIR"
+curl -fsSL "$DOWNLOAD_URL" -o "$DEST_PATH"
+chmod +x "$DEST_PATH"
 
-# Download the executable
-curl -fsSL "$DOWNLOAD_URL" -o /tmp/stepwise
-chmod +x /tmp/stepwise
+case ":$PATH:" in
+  *":$INSTALL_DIR:"*) ;;
+  *)
+    PROFILE=""
+    if [ -n "${ZSH_VERSION:-}" ]; then
+      PROFILE="$HOME/.zshrc"
+    elif [ -n "${BASH_VERSION:-}" ]; then
+      PROFILE="$HOME/.bashrc"
+    elif [ -f "$HOME/.profile" ]; then
+      PROFILE="$HOME/.profile"
+    else
+      PROFILE="$HOME/.profile"
+    fi
 
-# Securely move to path
-echo "  📦 Moving to ${INSTALL_DIR} (may require sudo)..."
-if [ -w "$INSTALL_DIR" ]; then
-  mv /tmp/stepwise "$INSTALL_DIR/stepwise"
-else
-  sudo mv /tmp/stepwise "$INSTALL_DIR/stepwise"
-fi
+    if ! grep -qs "$INSTALL_DIR" "$PROFILE" 2>/dev/null; then
+      {
+        echo ""
+        echo "# StepWise CLI"
+        echo "export PATH=\"$INSTALL_DIR:\$PATH\""
+      } >> "$PROFILE"
+    fi
+
+    export PATH="$INSTALL_DIR:$PATH"
+    echo "Added ${INSTALL_DIR} to ${PROFILE}."
+    ;;
+esac
 
 echo ""
-echo "  ✅ Installation Complete!"
-echo "  Try running: stepwise login"
+echo "Installation complete."
+echo "Run: stepwise login"
 echo ""
