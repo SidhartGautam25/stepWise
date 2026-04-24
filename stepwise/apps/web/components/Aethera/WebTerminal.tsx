@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, MutableRefObject } from "react";
 import { useAethera } from "../../contexts/AetheraContext";
 
 const STEP_GUIDANCE: Record<string, string[]> = {
   "00-orientation": [
     "[SYSTEM] Step 0: How to read this screen.",
-    "The top right of the visualizer always shows your current directory.",
-    "Each tile is a directory or file. It shows the name, owner, permissions, and file content when available.",
-    "Green terminal output means the command worked. Red output means Linux rejected the command.",
+    "The visualizer on the left always shows your current directory and its contents.",
+    "Each tile is a directory or file — showing name, owner, permissions, and content.",
+    "Green terminal output means the command worked. Red means Linux rejected it.",
     "Type: continue",
   ],
   "01-directories": [
@@ -28,28 +28,48 @@ const STEP_GUIDANCE: Record<string, string[]> = {
   ],
 };
 
-export function WebTerminal({ activeStepId, activeStepTitle }: { activeStepId?: string; activeStepTitle?: string }) {
+interface WebTerminalProps {
+  activeStepId?: string;
+  activeStepTitle?: string;
+  /** Mutable ref — ChallengeViewer assigns a focus() callback here */
+  focusRef?: MutableRefObject<() => void>;
+}
+
+export function WebTerminal({ activeStepId, activeStepTitle, focusRef }: WebTerminalProps) {
   const { cwd, history, execute, appendSystemLog } = useAethera();
   const [input, setInput] = useState("");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const announcedStepRef = useRef<string | undefined>(undefined);
 
+  // Expose focus() to parent via ref
+  useEffect(() => {
+    if (focusRef) {
+      focusRef.current = () => inputRef.current?.focus();
+    }
+  }, [focusRef]);
+
+  // Auto-scroll terminal history to bottom on every new entry
   useEffect(() => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
     }
   }, [history]);
 
+  // Announce step guidance when step changes
   useEffect(() => {
     if (!activeStepId || announcedStepRef.current === activeStepId) return;
     announcedStepRef.current = activeStepId;
 
     const messages = STEP_GUIDANCE[activeStepId] ?? [
       `[SYSTEM] Quest Goal: ${activeStepTitle ?? "Continue the lesson."}`,
-      "Read the prompt, then enter the required command.",
+      "Read the prompt on the left, then enter the required command here.",
     ];
 
     messages.forEach(appendSystemLog);
+
+    // Focus input whenever a new step starts
+    window.setTimeout(() => inputRef.current?.focus(), 60);
   }, [activeStepId, activeStepTitle, appendSystemLog]);
 
   const handleRun = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -62,52 +82,86 @@ export function WebTerminal({ activeStepId, activeStepTitle }: { activeStepId?: 
   return (
     <div style={{
       background: "var(--color-terminal-bg)",
-      borderRadius: 8,
-      border: "1px solid var(--color-border-glass)",
-      overflow: "hidden",
       display: "flex",
       flexDirection: "column",
-      minHeight: 560,
       height: "100%",
       fontFamily: "var(--font-mono)",
-      fontSize: 14,
-      color: "var(--color-text)"
+      fontSize: 13,
+      color: "#e8e8f2",
+      overflow: "hidden",
     }}>
-      <div style={{ background: "rgba(0,0,0,0.3)", padding: "10px 16px", borderBottom: "1px solid var(--color-border-glass)", display: "flex", alignItems: "center", gap: 8 }}>
-        <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ef4444" }} />
-        <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#f59e0b" }} />
-        <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#10b981" }} />
-        <span style={{ marginLeft: 12, fontSize: 13, color: "var(--color-muted)", fontWeight: 600, letterSpacing: "0.05em" }}>Linux Practice Terminal</span>
+      {/* Terminal header bar */}
+      <div style={{
+        background: "rgba(0,0,0,0.35)",
+        padding: "10px 16px",
+        borderBottom: "1px solid var(--color-border-glass)",
+        display: "flex",
+        alignItems: "center",
+        gap: 7,
+        flexShrink: 0,
+      }}>
+        <div style={{ width: 11, height: 11, borderRadius: "50%", background: "#ef4444" }} />
+        <div style={{ width: 11, height: 11, borderRadius: "50%", background: "#f59e0b" }} />
+        <div style={{ width: 11, height: 11, borderRadius: "50%", background: "#10b981" }} />
+        <span style={{ marginLeft: 10, fontSize: 12, color: "var(--color-muted)", fontWeight: 600, letterSpacing: "0.05em" }}>
+          Linux Practice Terminal
+        </span>
+        <div style={{ flex: 1 }} />
+        <span style={{ fontSize: 11, color: "var(--color-muted)", fontFamily: "var(--font-mono)" }}>
+          /{cwd.join("/")}
+        </span>
       </div>
-      
-      <div style={{ flex: 1, padding: "16px 20px", overflowY: "auto" }} ref={scrollContainerRef}>
+
+      {/* History scroll area */}
+      <div
+        ref={scrollContainerRef}
+        style={{ flex: 1, padding: "14px 18px", overflowY: "auto" }}
+        onClick={() => inputRef.current?.focus()}
+      >
         {history.map((log, idx) => {
           if (!log.command && log.output.startsWith("[SYSTEM]")) {
-             return (
-               <div key={idx} style={{ marginBottom: 12, color: "var(--color-indigo)", fontWeight: 700, fontSize: 13, background: "rgba(99, 102, 241, 0.1)", padding: "8px 12px", borderLeft: "2px solid var(--color-indigo)", borderRadius: 4 }}>
-                 {log.output}
-               </div>
-             );
+            return (
+              <div key={idx} style={{
+                marginBottom: 10,
+                color: "var(--color-indigo-light)",
+                fontWeight: 700,
+                fontSize: 12,
+                background: "rgba(108, 99, 255, 0.1)",
+                padding: "7px 12px",
+                borderLeft: "2px solid var(--color-indigo)",
+                borderRadius: "0 4px 4px 0",
+              }}>
+                {log.output.replace("[SYSTEM] ", "")}
+              </div>
+            );
           }
+
           if (!log.command) {
-             return (
-               <div key={idx} style={{ marginBottom: 10, color: "var(--color-muted)", fontSize: 13, lineHeight: 1.5 }}>
-                 # {log.output}
-               </div>
-             );
+            return (
+              <div key={idx} style={{ marginBottom: 8, color: "var(--color-muted)", fontSize: 12, lineHeight: 1.55 }}>
+                # {log.output}
+              </div>
+            );
           }
 
           return (
-            <div key={idx} style={{ marginBottom: 12 }}>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <span style={{ color: "var(--color-emerald)", fontWeight: 600 }}>student@linux</span>
-                <span style={{ color: "var(--color-muted)" }}>:</span>
-                <span style={{ color: "var(--color-indigo)", fontWeight: 600 }}>/{(log.cwd ?? cwd).join("/")}</span>
-                <span style={{ color: "var(--color-muted)" }}>$</span>
-                <span style={{ marginLeft: 8 }}>{log.command}</span>
+            <div key={idx} style={{ marginBottom: 10 }}>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "baseline" }}>
+                <span style={{ color: "var(--color-emerald)", fontWeight: 700, fontSize: 12 }}>student@linux</span>
+                <span style={{ color: "var(--color-muted)", fontSize: 12 }}>:</span>
+                <span style={{ color: "var(--color-indigo-light)", fontWeight: 600, fontSize: 12 }}>/{(log.cwd ?? cwd).join("/")}</span>
+                <span style={{ color: "var(--color-muted)", fontSize: 12 }}>$</span>
+                <span style={{ color: "#fff", fontSize: 13 }}>{log.command}</span>
               </div>
               {log.output && (
-                <div style={{ color: log.isError ? "#ef4444" : "#10b981", marginTop: 4, whiteSpace: "pre-wrap", lineHeight: 1.5 }}>
+                <div style={{
+                  color: log.isError ? "#f87171" : "#34d399",
+                  marginTop: 3,
+                  whiteSpace: "pre-wrap",
+                  lineHeight: 1.5,
+                  fontSize: 12,
+                  paddingLeft: 2,
+                }}>
                   {log.output}
                 </div>
               )}
@@ -115,27 +169,32 @@ export function WebTerminal({ activeStepId, activeStepTitle }: { activeStepId?: 
           );
         })}
 
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <span style={{ color: "var(--color-emerald)", fontWeight: 600 }}>student@linux</span>
-          <span style={{ color: "var(--color-muted)", margin: "0 4px" }}>:</span>
-          <span style={{ color: "var(--color-indigo)", fontWeight: 600 }}>/{cwd.join("/")}</span>
-          <span style={{ color: "var(--color-muted)", margin: "0 8px 0 4px" }}>$</span>
-          
-          <input 
+        {/* Active input line */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+          <span style={{ color: "var(--color-emerald)", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>student@linux</span>
+          <span style={{ color: "var(--color-muted)", fontSize: 12, flexShrink: 0 }}>:</span>
+          <span style={{ color: "var(--color-indigo-light)", fontWeight: 600, fontSize: 12, flexShrink: 0 }}>/{cwd.join("/")}</span>
+          <span style={{ color: "var(--color-muted)", fontSize: 12, margin: "0 2px", flexShrink: 0 }}>$</span>
+          <input
+            ref={inputRef}
             autoFocus
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleRun}
             style={{
               flex: 1,
+              minWidth: 0,
               background: "transparent",
               border: "none",
               outline: "none",
-              color: "var(--color-text)",
+              color: "#fff",
               fontFamily: "var(--font-mono)",
-              fontSize: 14
+              fontSize: 13,
+              caretColor: "var(--color-indigo)",
             }}
             spellCheck={false}
+            autoComplete="off"
+            autoCorrect="off"
           />
         </div>
       </div>

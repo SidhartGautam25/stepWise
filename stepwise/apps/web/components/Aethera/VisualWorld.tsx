@@ -19,123 +19,193 @@ export function VisualWorld() {
   const currentContents = getCwdNode();
   const rootDirectories = Object.values(vfs).filter((node) => node.type === "directory");
 
-  const powerLabel = (permissions: string) => {
-    const owner = permissions[0] ?? "-";
-    const group = permissions[1] ?? "-";
+  const permLabel = (permissions: string) => {
+    const owner  = permissions[0] ?? "-";
+    const group  = permissions[1] ?? "-";
     const others = permissions[2] ?? "-";
-    return `Owner ${owner} | Kin ${group} | Others ${others}`;
+    return `owner:${owner}  group:${group}  others:${others}`;
   };
 
   return (
     <div style={{
-      background: "linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(17, 24, 39, 0.92))",
-      border: "1px solid var(--color-border)",
-      borderRadius: 8,
-      padding: 28,
-      marginBottom: 0,
-      minHeight: 560,
+      display: "flex",
+      flexDirection: "column",
       height: "100%",
-      color: "var(--color-text)",
-      boxShadow: "0 20px 60px rgba(0,0,0,0.22)",
+      overflow: "hidden",
+      background: "linear-gradient(180deg, rgba(8,8,24,0.98), rgba(10,10,22,0.95))",
+      borderRadius: 8,
+      border: "1px solid var(--color-border-glass)",
     }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, borderBottom: "1px solid rgba(255,255,255,0.12)", paddingBottom: 16, gap: 16, flexWrap: "wrap" }}>
+      {/* Header */}
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "12px 16px",
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
+        flexShrink: 0,
+        flexWrap: "wrap",
+        gap: 8,
+      }}>
         <div>
-          <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--color-text)", display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-text)", letterSpacing: "-0.01em" }}>
             Filesystem Visualizer
-          </h3>
-          <p style={{ color: "var(--color-muted)", fontSize: 14, marginTop: 4 }}>
-            Top right shows your current directory. Green output means success; red output means the command failed.
-          </p>
+          </div>
+          <div style={{ fontSize: 11, color: "var(--color-muted)", marginTop: 2 }}>
+            Green output = success · Red output = error
+          </div>
         </div>
         <div style={{
-          background: "rgba(99, 102, 241, 0.16)",
-          padding: "6px 12px",
+          background: "var(--color-indigo-muted)",
+          padding: "5px 11px",
           borderRadius: 6,
-          color: "var(--color-badge)",
+          color: "var(--color-indigo-light)",
           fontFamily: "var(--font-mono)",
-          fontSize: 13,
-          fontWeight: 600,
-          border: "1px solid rgba(99, 102, 241, 0.28)"
+          fontSize: 12,
+          fontWeight: 700,
+          border: "1px solid var(--color-border-glass)",
+          flexShrink: 0,
         }}>
-          Focus: /{cwd.join("/")}
+          /{cwd.join("/")}
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(220px, 0.8fr) minmax(320px, 1.6fr)", gap: 24 }}>
-        <div style={{ border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: 16, background: "rgba(2, 6, 23, 0.45)" }}>
-          <div style={{ fontSize: 12, color: "var(--color-muted)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.08em", marginBottom: 14 }}>
-            Root Directories
+      {/* Content */}
+      <div style={{
+        flex: 1,
+        overflow: "auto",
+        display: "grid",
+        gridTemplateColumns: "180px 1fr",
+        gap: 0,
+      }}>
+        {/* Left: Root directory tree */}
+        <div style={{
+          borderRight: "1px solid rgba(255,255,255,0.07)",
+          padding: "14px 12px",
+          overflowY: "auto",
+        }}>
+          <div style={{ fontSize: 10, color: "var(--color-muted)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.1em", marginBottom: 12 }}>
+            Root /
           </div>
-          <div style={{ display: "grid", gap: 10 }}>
-            {rootDirectories.map((node) => (
-              <div key={node.name} style={{
-                display: "grid",
-                gridTemplateColumns: "32px 1fr",
-                gap: 10,
-                alignItems: "center",
-                padding: 10,
-                borderRadius: 6,
-                background: cwd[0] === node.name ? "rgba(16, 185, 129, 0.14)" : "rgba(255,255,255,0.05)",
-                border: cwd[0] === node.name ? "1px solid rgba(16, 185, 129, 0.35)" : "1px solid rgba(255,255,255,0.08)",
-              }}>
-                <div style={{ width: 32, height: 32, borderRadius: 6, background: "rgba(99,102,241,0.18)", display: "grid", placeItems: "center", fontSize: 13, fontWeight: 900 }}>
-                  D
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {rootDirectories.map((node) => {
+              const isActive = cwd[0] === node.name;
+              return (
+                <div key={node.name} style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "8px 10px",
+                  borderRadius: 6,
+                  background: isActive ? "rgba(16, 185, 129, 0.12)" : "rgba(255,255,255,0.03)",
+                  border: isActive ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid rgba(255,255,255,0.06)",
+                  cursor: "default",
+                }}>
+                  <div style={{
+                    width: 26,
+                    height: 26,
+                    borderRadius: 5,
+                    background: isActive ? "rgba(16,185,129,0.18)" : "rgba(99,102,241,0.14)",
+                    display: "grid",
+                    placeItems: "center",
+                    fontSize: 11,
+                    fontWeight: 900,
+                    color: isActive ? "var(--color-emerald)" : "var(--color-indigo-light)",
+                    flexShrink: 0,
+                  }}>
+                    📁
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ color: isActive ? "var(--color-emerald)" : "var(--color-text)", fontSize: 12, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {node.name}
+                    </div>
+                    <div style={{ color: "var(--color-muted)", fontSize: 10, fontFamily: "var(--font-mono)" }}>
+                      {node.permissions}
+                    </div>
+                  </div>
                 </div>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ color: "var(--color-text)", fontSize: 13, fontWeight: 700 }}>{node.name}</div>
-                  <div style={{ color: "var(--color-muted)", fontSize: 11, fontFamily: "var(--font-mono)" }}>{node.permissions}</div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
-        <div>
-          <div style={{ fontSize: 12, color: "var(--color-muted)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.08em", marginBottom: 14 }}>
-            Current Directory Contents
+        {/* Right: Current directory contents */}
+        <div style={{ padding: "14px 14px", overflowY: "auto" }}>
+          <div style={{ fontSize: 10, color: "var(--color-muted)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.1em", marginBottom: 12 }}>
+            Contents of /{cwd.join("/")}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 16 }}>
-            {Object.keys(currentContents).length === 0 && (
-              <div style={{ color: "var(--color-muted)", fontStyle: "italic", fontSize: 14, gridColumn: "1 / -1", textAlign: "center", padding: "56px 0", border: "1px dashed rgba(255,255,255,0.16)", borderRadius: 8 }}>
-                This directory is empty. Create a directory or file to see it here.
-              </div>
-            )}
-            {Object.values(currentContents).map((node) => (
-              <div key={node.name} style={{
-                display: "flex",
-                flexDirection: "column",
-                minHeight: 150,
-                padding: 16,
-                background: node.type === "directory" ? "rgba(15, 118, 110, 0.14)" : "rgba(180, 83, 9, 0.14)",
-                borderRadius: 8,
-                border: node.type === "directory" ? "1px solid rgba(45, 212, 191, 0.26)" : "1px solid rgba(251, 191, 36, 0.26)",
-                transition: "all 0.2s",
-                cursor: "default"
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 18 }}>
-                  <div style={{ width: 42, height: 42, borderRadius: 8, display: "grid", placeItems: "center", background: "rgba(255,255,255,0.08)", color: "var(--color-text)", fontWeight: 900 }}>
-                    {node.type === "directory" ? "D" : "F"}
+
+          {Object.keys(currentContents).length === 0 && (
+            <div style={{
+              color: "var(--color-muted)",
+              fontStyle: "italic",
+              fontSize: 13,
+              textAlign: "center",
+              padding: "40px 0",
+              border: "1px dashed rgba(255,255,255,0.12)",
+              borderRadius: 8,
+            }}>
+              Empty directory. Create files or directories to see them here.
+            </div>
+          )}
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 10 }}>
+            {Object.values(currentContents).map((node) => {
+              const isDir = node.type === "directory";
+              return (
+                <div key={node.name} style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "12px 14px",
+                  background: isDir ? "rgba(8, 145, 178, 0.1)" : "rgba(245, 158, 11, 0.08)",
+                  borderRadius: 8,
+                  border: isDir ? "1px solid rgba(6,182,212,0.22)" : "1px solid rgba(251,191,36,0.2)",
+                  minHeight: 120,
+                  cursor: "default",
+                  transition: "border-color 0.2s, background 0.2s",
+                }}>
+                  {/* Icon + permissions row */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+                    <div style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 7,
+                      background: "rgba(255,255,255,0.06)",
+                      display: "grid",
+                      placeItems: "center",
+                      fontSize: 18,
+                    }}>
+                      {isDir ? "📁" : "📄"}
+                    </div>
+                    <div style={{ fontSize: 10, color: isDir ? "var(--color-cyan)" : "var(--color-amber)", fontFamily: "var(--font-mono)", fontWeight: 700, textAlign: "right" }}>
+                      {node.permissions}
+                    </div>
                   </div>
-                  <div style={{ fontSize: 12, color: "var(--color-emerald)", fontFamily: "var(--font-mono)", fontWeight: 700 }}>
-                    {node.permissions}
+
+                  {/* Name */}
+                  <div style={{ fontWeight: 800, color: "var(--color-text)", fontSize: 13, overflowWrap: "anywhere", lineHeight: 1.3 }}>
+                    {node.name}
                   </div>
-                </div>
-                <div style={{ fontWeight: 800, color: "var(--color-text)", fontSize: 15, overflowWrap: "anywhere" }}>
-                  {node.name}
-                </div>
-                <div style={{ fontSize: 12, color: "var(--color-muted)", marginTop: 6 }}>
-                  {node.type === "directory" ? "Directory" : "File"} owned by {node.owner}
-                </div>
-                <div style={{ fontSize: 11, color: "var(--color-muted)", marginTop: "auto", paddingTop: 14, fontFamily: "var(--font-mono)" }}>
-                  {powerLabel(node.permissions)}
-                </div>
-                {node.type === "file" && (
-                  <div style={{ fontSize: 11, color: "var(--color-emerald)", marginTop: 6, fontWeight: 600 }}>
-                    Content: {node.content ? node.content.trim().slice(0, 32) || "(empty)" : "(empty)"}
+
+                  {/* Type + owner */}
+                  <div style={{ fontSize: 10, color: "var(--color-muted)", marginTop: 4 }}>
+                    {isDir ? "Directory" : "File"} · {node.owner}
                   </div>
-                )}
-              </div>
-            ))}
+
+                  {/* Permissions breakdown */}
+                  <div style={{ fontSize: 9, color: "var(--color-muted)", marginTop: "auto", paddingTop: 10, fontFamily: "var(--font-mono)", lineHeight: 1.5 }}>
+                    {permLabel(node.permissions)}
+                  </div>
+
+                  {/* File content preview */}
+                  {node.type === "file" && node.content && (
+                    <div style={{ fontSize: 10, color: "var(--color-amber)", marginTop: 4, fontFamily: "var(--font-mono)", fontStyle: "italic" }}>
+                      "{node.content.trim().slice(0, 28)}{node.content.trim().length > 28 ? "…" : ""}"
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
