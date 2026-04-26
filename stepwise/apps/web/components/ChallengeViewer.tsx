@@ -29,7 +29,8 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   // Ref passed down so WebTerminal can re-focus input after step advance
   const terminalFocusRef = useRef<() => void>(() => {});
 
-  const isWebMode = (challenge as any).mode === "web" || challenge.id === "linux-aethera";
+  const WEB_QUESTS = ["linux-aethera", "git-aethera"];
+  const isWebMode = (challenge as any).mode === "web" || WEB_QUESTS.includes(challenge.id);
 
   // ── Load saved progress from server on mount ──────────────────────────────
   useEffect(() => {

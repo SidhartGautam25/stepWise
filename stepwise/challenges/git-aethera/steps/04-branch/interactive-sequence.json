@@ -1,0 +1,48 @@
+{
+  "slides": [
+    {
+      "id": "branch-kavya-again",
+      "heading": "Remember Kavya's dark mode disaster? Let's fix that too 🌙",
+      "body": "Kavya was afraid to try adding dark mode because last time she broke everything and couldn't go back.\n\nNow she has snapshots. The working version is safe. But she's still nervous — what if she tries dark mode and breaks 10 files? She'd have to go back to the very beginning.\n\nhere's the thing — even with snapshots, making risky changes on your *main* project is stressful.\n\nWhat if there was a way to try the experiment completely separately — without touching the main code at all?\n\nThere is. It's called a **branch**.",
+      "bullets": [
+        "✅ Snapshots protect you from accidents",
+        "🤔 But big experiments still feel risky",
+        "💡 What if you could try things in a completely separate copy?",
+        "→ That's what a branch is!"
+      ]
+    },
+    {
+      "id": "branch-parallel",
+      "heading": "A branch is a parallel version of your project 🌿",
+      "body": "Imagine you're writing a book. The main story is done. You want to try a completely different ending — but you don't want to overwrite the original.\n\nYou make a copy of the final chapter. You write the alternative ending there. If you love it, you swap it in. If you hate it, you throw the copy away — and your original ending is still perfect.\n\nA branch is exactly this:\n\n- It starts from your current code\n- It's a completely separate working space\n- Whatever you do there doesn't touch the original\n- If it's good, merge it in. If not, delete the branch — nothing lost.",
+      "bullets": [
+        "🌿 Branch = a safe parallel workspace",
+        "✏️ Experiment freely — break things, test ideas",
+        "✅ Merge it into main when it's ready",
+        "🗑️ Delete it if it didn't work — main is untouched"
+      ]
+    },
+    {
+      "id": "branch-visual",
+      "heading": "See branches as a visual timeline",
+      "body": "Each branch is a separate line in your project's history.\n\nThey start from the same point — then grow independently.\n\nThe green line is Kavya's stable, working code (main).\nThe purple line is her dark mode experiment (feature branch).\n\nShe can work on both at the same time. Switch between them instantly. Merge them when she's ready.\n\nClick any commit node to learn what it contains.",
+      "bullets": [
+        "🟢 main = stable, working code",
+        "🟣 feature = experiment in progress",
+        "⎇ HEAD = where you are right now",
+        "🔀 Merge = bring the experiment back into main"
+      ]
+    },
+    {
+      "id": "branch-try",
+      "heading": "Try branching in the terminal — it takes 10 seconds",
+      "body": "Creating a branch is effortless. It doesn't copy any files. It just creates a new starting point.\n\nSwitching branches is instant — your files change to match that branch.\n\nTry it below. Type each command and watch what happens.",
+      "bullets": [
+        "git checkout -b feature/darkmode — create + switch in one step",
+        "Make some changes and commit them on the branch",
+        "git checkout main — switch back (branch changes are gone — but safe!)",
+        "git checkout feature/darkmode — switch back to the experiment"
+      ]
+    }
+  ]
+}

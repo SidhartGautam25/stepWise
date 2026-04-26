@@ -1,0 +1,48 @@
+{
+  "slides": [
+    {
+      "id": "git-reveal",
+      "heading": "Those ideas you just discovered? Git already built them. 🎉",
+      "body": "You didn't realize it, but in the last steps you invented version control yourself.\n\nYou figured out that you need:\n✅ A way to take snapshots\n✅ Labels for each snapshot\n✅ A timeline to scroll through\n✅ A shared place for teams\n\nGit is a tool that does exactly these four things. Nothing more, nothing less.\n\nEvery Git command you'll ever learn maps directly to one of these ideas.",
+      "bullets": [
+        "git commit → takes a labelled snapshot",
+        "git log → shows your timeline",
+        "git push → sends snapshots to the shared place",
+        "git pull → gets others' snapshots from the shared place"
+      ]
+    },
+    {
+      "id": "git-three-zones",
+      "heading": "Git organises your work into three zones",
+      "body": "Here's the one slightly new idea in Git — something that actually makes it *better* than just a backup tool.\n\nBefore taking a snapshot, you get to choose *exactly* what goes into it.\n\nImagine you're packing a bag. Your room has lots of things. You don't pack everything — you choose what's relevant for this trip.\n\nGit works the same way:\n\n🗄️ **Your Room** = all your files (some changed, some not)\n🛏️ **Your Bag** = things you've chosen to include in the next snapshot\n📸 **The Photo** = the snapshot itself, stored forever",
+      "bullets": [
+        "📁 Working Directory = your room (everything you're working on)",
+        "📋 Staging Area = your bag (what you're choosing to snapshot)",
+        "🏛️ Repository = the photo album (all your permanent snapshots)",
+        "💡 This lets you make clean, focused snapshots instead of messy all-at-once saves"
+      ]
+    },
+    {
+      "id": "git-why-staging",
+      "heading": "Why is the 'bag' step useful? 🤔",
+      "body": "This is the part most tutorials skip — but it's really important.\n\nImagine Kavya has been working all day. She fixed a bug in the login page AND added a new feature to the dashboard.\n\nThose are two separate things. She wants two separate snapshots:\n- \"Fix login bug\"\n- \"Add dashboard feature\"\n\nWith the staging area, she can take the login files and put them in the bag first. Snapshot. Then put the dashboard files in. Snapshot again.\n\nTwo clean snapshots. Not one messy \"I did a bunch of stuff today\" snapshot.\n\nSee the difference in the interactive demo below.",
+      "bullets": [
+        "❌ Without staging: one big messy snapshot of everything",
+        "✅ With staging: two focused snapshots that tell a clear story",
+        "📖 Your snapshot history becomes readable, like a book",
+        "🔍 Finding when something broke becomes easy"
+      ]
+    },
+    {
+      "id": "git-commands-revealed",
+      "heading": "Now the commands will make complete sense",
+      "body": "Before you type a single command, you already understand *exactly* what Git does and why.\n\nLet's connect everything:\n\n**git init** — tells Git to start watching this folder\n**git status** — shows what's changed and what's staged\n**git add** — puts files into your bag (staging)\n**git commit** — takes the snapshot of what's in your bag\n**git log** — shows your timeline of all snapshots\n**git branch** — creates a parallel timeline for experiments\n\nAll of these are just the ideas you already worked out. Let's go try them.",
+      "bullets": [
+        "🧠 You already understand the concepts",
+        "⌨️ Now let's connect them to real commands",
+        "🚀 You're ready for the terminal",
+        "→ Click Complete to move to the practice steps!"
+      ]
+    }
+  ]
+}

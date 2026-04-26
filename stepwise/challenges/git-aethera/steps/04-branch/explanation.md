@@ -1,0 +1,1 @@
+Branches are lightweight — creating one takes milliseconds. Switching branches changes your working files to match that branch's state. This is how all professional teams build software — feature branches merged into main when ready.

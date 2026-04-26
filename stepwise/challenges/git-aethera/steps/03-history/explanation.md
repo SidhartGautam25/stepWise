@@ -1,0 +1,1 @@
+git log --oneline is probably the most-used Git command after commit. Good commit messages here aren't just nice to have — they're the difference between a timeline that helps you and one that confuses you.

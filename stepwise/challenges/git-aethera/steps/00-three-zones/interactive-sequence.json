@@ -1,0 +1,69 @@
+{
+  "slides": [
+    {
+      "id": "zones-intro",
+      "heading": "Git has three zones — like your house",
+      "body": "Think about the last time you were getting ready to go somewhere important.\n\nYou picked clothes from your wardrobe, laid some on your bed to decide, then packed the final choices into your suitcase.\n\nGit works exactly like this.\n\nYou have three zones. Each one has a specific purpose.",
+      "bullets": [
+        "🗄️ Wardrobe = Working Directory (where you keep everything)",
+        "🛏️ Bed = Staging Area (what you're deciding to pack)",
+        "🧳 Suitcase = Repository (what's packed and saved forever)"
+      ]
+    },
+    {
+      "id": "zones-working",
+      "heading": "Zone 1 — Your Working Directory",
+      "body": "This is your normal project folder. Your files. Where you type, edit, delete, and experiment.\n\nGit watches this folder — but it doesn't save anything automatically. You have to tell it when you're ready.\n\nThink of it as your desk. Messy, changing, in-progress.\n\nChanges here are NOT saved to Git yet.",
+      "bullets": [
+        "📁 Your project folder on your computer",
+        "✏️ Make changes freely here",
+        "👁️ Git can see changes but hasn't saved them",
+        "Command: git status — see what's changed"
+      ]
+    },
+    {
+      "id": "zones-staging",
+      "heading": "Zone 2 — The Staging Area",
+      "body": "Staging is the bed you lay clothes on before packing.\n\nYou might change 5 files, but only want to save 3 of them in this checkpoint. You pick exactly which files to include.\n\nThis is why Git is so powerful — every checkpoint is clean and focused. Not just \"everything I touched today.\"\n\nClick the files to move them into staging!",
+      "bullets": [
+        "📋 A waiting room for your next checkpoint",
+        "✅ You choose EXACTLY what goes in",
+        "🎯 Makes every save clean and focused",
+        "Command: git add filename (or git add . for all)"
+      ]
+    },
+    {
+      "id": "zones-repo",
+      "heading": "Zone 3 — The Repository",
+      "body": "The repository is your suitcase. Once you've packed it, it's locked.\n\nEvery time you commit, Git takes a permanent photo of what's in staging. That photo is stored forever in the repository.\n\nYou can never lose a commit. Even if you delete all your files, your entire history lives in the .git folder.\n\nThis is your safety net.",
+      "bullets": [
+        "🏛️ Permanent, unchangeable snapshots",
+        "📅 Every snapshot has a timestamp and message",
+        "🔒 Once committed, it's safe forever",
+        "Command: git commit -m \"your message\""
+      ]
+    },
+    {
+      "id": "zones-remote",
+      "heading": "Bonus Zone — Remote (the cloud)",
+      "body": "There's a fourth zone: a copy of your repository stored online — on GitHub, GitLab, or any server.\n\nThink of it as Google Photos for your code. Your phone photos live on your phone (local), and also safely in the cloud (remote).\n\nIf your laptop breaks, your code is still safe in the remote. If you want to share with Raj, you both connect to the same remote.\n\nThis is how teams collaborate.",
+      "bullets": [
+        "☁️ Your code backed up online",
+        "🤝 The meeting point for teams",
+        "📤 git push — send local → remote",
+        "📥 git pull — bring remote → local"
+      ]
+    },
+    {
+      "id": "zones-interactive",
+      "heading": "See it in action — move files through the zones",
+      "body": "Now you understand the three zones. Let's watch files move through them.\n\nIn the visualizer below, you'll see:\n- A file starts in the Working Directory\n- git add moves it to Staging\n- git commit moves it to the Repository\n\nClick through to see each stage!",
+      "bullets": [
+        "Click a file to stage it (git add)",
+        "Click again to commit it (git commit)",
+        "Watch the file move through the three zones",
+        "This is the core Git workflow you'll use every day"
+      ]
+    }
+  ]
+}

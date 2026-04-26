@@ -39,6 +39,8 @@ export { CollapsibleTree }      from "./components/CollapsibleTree";
 export { FileNavigator }        from "./components/FileNavigator";
 export { InfoCallout }          from "./components/InfoCallout";
 export { LessonSequenceShell }  from "./components/LessonSequenceShell";
+export { GitCommitGraph }       from "./components/GitCommitGraph";
+export { GitStagingArea }       from "./components/GitStagingArea";
 export { renderIllustration }   from "./renderIllustration";
 
 export { T }                    from "./tokens";
@@ -56,6 +58,8 @@ export type { TreeNode, CollapsibleTreeProps }                 from "./component
 export type { FileSystemTree, FileNavigatorProps }            from "./components/FileNavigator";
 export type { InfoCalloutVariant, InfoCalloutProps }          from "./components/InfoCallout";
 export type { LessonSlide, LessonSequenceShellProps }         from "./components/LessonSequenceShell";
+export type { CommitNode, GitBranchLine, GitCommitGraphProps } from "./components/GitCommitGraph";
+export type { StagingFile, GitStagingAreaProps }              from "./components/GitStagingArea";
 
 // IllustrationConfig — data-driven discriminated union + all variant types
 export type {
@@ -70,4 +74,7 @@ export type {
   FileNavigatorConfig,
   InfoCalloutConfig,
   MultiConfig,
+  GitCommitGraphConfig,
+  GitStagingAreaConfig,
+  SimulatedTerminalConfig,
 } from "./IllustrationConfig";

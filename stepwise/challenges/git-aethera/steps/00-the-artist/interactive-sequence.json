@@ -1,0 +1,47 @@
+{
+  "slides": [
+    {
+      "id": "artist-meet",
+      "heading": "Meet Arjun — a digital artist",
+      "body": "Arjun is designing a logo for a car company. He's been working on it for hours and the design is looking really good.\n\nThen his client asks: \"Can we try a bold red version? But DON'T lose the blue one — we might want to go back.\"\n\nWhat does Arjun do?",
+      "bullets": [
+        "🎨 He has one canvas. One file.",
+        "😰 If he paints over it, the blue version is GONE",
+        "🤔 What would you do in this situation?"
+      ]
+    },
+    {
+      "id": "artist-reallife",
+      "heading": "What artists do in real life",
+      "body": "Real artists — painters, sculptors, photographers — have solved this problem for centuries.\n\nA painter takes a PHOTO of their canvas at each important stage. A sculptor makes a cast before carving further.\n\nThey create checkpoints. Moments they can always return to.\n\nTap each checkpoint below to see what Arjun saved at each stage.",
+      "bullets": [
+        "📸 Checkpoint 1 — first rough sketch",
+        "📸 Checkpoint 2 — colors added, blue version",
+        "📸 Checkpoint 3 — red version (new experiment)",
+        "↩️ Can return to ANY of these, any time"
+      ]
+    },
+    {
+      "id": "artist-problem-solved",
+      "heading": "The insight: save checkpoints, not copies",
+      "body": "Notice what Arjun does NOT do:\n\n  ❌ logo_final.psd\n  ❌ logo_final_blue.psd\n  ❌ logo_ACTUALLY_final_USE_THIS.psd\n\nInstead, he has ONE project file — and a TIMELINE of checkpoints.\n\nEvery checkpoint has a label: \"what changed and why.\"\n\nHe can jump to any moment in history. This is the idea behind Git.",
+      "bullets": [
+        "✅ One project — many checkpoints",
+        "✅ Every checkpoint labelled with a message",
+        "✅ Jump back to any moment, instantly",
+        "✅ Try bold experiments — the safe version is always saved"
+      ]
+    },
+    {
+      "id": "artist-to-code",
+      "heading": "Code has the same problem",
+      "body": "Code files are like Arjun's canvas.\n\nYou write your app. It works. You try something new. It breaks. You want to go back to when it worked — but you saved over everything.\n\nThis is the moment every developer realizes they needed Git.\n\nIn the next step, meet Priya — a developer going through exactly this pain.",
+      "bullets": [
+        "💻 Code is just a file, like a canvas",
+        "🐛 New features can break working code",
+        "😱 Without checkpoints, there's no way back",
+        "→ Next: See the real problems Priya faces"
+      ]
+    }
+  ]
+}

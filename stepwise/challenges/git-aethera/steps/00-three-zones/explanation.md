@@ -1,0 +1,1 @@
+Git's design — Working Directory → Staging → Repository — is intentional. Staging lets you make clean, focused commits instead of saving every random change together. Remote adds collaboration and cloud backup.

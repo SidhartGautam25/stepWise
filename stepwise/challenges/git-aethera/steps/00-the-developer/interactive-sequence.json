@@ -1,0 +1,47 @@
+{
+  "slides": [
+    {
+      "id": "dev-meet",
+      "heading": "Meet Priya — building her first todo app",
+      "body": "Priya is learning to code. She's built a simple todo app — it works, and she's proud of it.\n\nThen she decides to add a new feature: drag-and-drop tasks. She starts rewriting parts of her code.\n\nTwo hours later? Nothing works. The drag-and-drop is broken. And so is the part that was working fine before.\n\nCan she go back? No. She saved over everything.",
+      "bullets": [
+        "💻 Her todo app was working beautifully",
+        "✋ She changed the code to add a new feature",
+        "💥 Everything broke — old AND new",
+        "😭 No way back. The working version is gone."
+      ]
+    },
+    {
+      "id": "dev-problem2",
+      "heading": "Problem 2 — the folder of doom",
+      "body": "Priya is smart. After that disaster, she starts making backup copies before changing anything.\n\nA week later, her project folder looks like this:\n\ntodo-app/\ntodo-backup-jan5.zip\ntodo-WORKING-VERSION.zip\ntodo-before-dragdrop.zip\ntodo-final-v2.zip\ntodo-USE_THIS_ONE.zip\n\nShe has 6 versions. She has no idea which one is the real one. Which had the bug fix? Which had the dark mode?",
+      "bullets": [
+        "😰 Which version has which features?",
+        "🗑️ Afraid to delete any in case she needs it",
+        "🕐 Wasted time digging through old zips",
+        "🧠 She needs to remember every version in her head"
+      ]
+    },
+    {
+      "id": "dev-problem3",
+      "heading": "Problem 3 — working with a friend",
+      "body": "Priya's friend Raj wants to help. Great!\n\nThey both download the latest version. Priya works on the login page. Raj works on the settings page.\n\nRaj finishes first and sends her the new file. Priya copies it in. Her login page changes — GONE. His file overwrote everything.\n\nHow do two people work on the same project without destroying each other's work?",
+      "bullets": [
+        "👩‍💻 Priya: working on login",
+        "👨‍💻 Raj: working on settings",
+        "📂 Both editing the same files",
+        "💥 One person's work erases the other's"
+      ]
+    },
+    {
+      "id": "dev-git-solves",
+      "heading": "Git solves ALL three problems",
+      "body": "Git was invented specifically for these problems. It's what every developer in the world uses.\n\nTap each problem to see how Git solves it.",
+      "bullets": [
+        "Problem 1: Can't go back → Git saves checkpoints (commits) you can always return to",
+        "Problem 2: Folder of doom → Git stores all versions with labels, automatically",
+        "Problem 3: Two people overwriting → Git tracks every change by every person and merges them safely"
+      ]
+    }
+  ]
+}

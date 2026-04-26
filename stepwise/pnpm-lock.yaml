@@ -99,6 +99,9 @@ importers:
       '@repo/lesson-content':
         specifier: workspace:*
         version: link:../../packages/lesson-content
+      '@repo/terminal-engine':
+        specifier: workspace:*
+        version: link:../../packages/terminal-engine
       next:
         specifier: 16.2.0
         version: 16.2.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -243,6 +246,9 @@ importers:
 
   packages/interactive-engine:
     dependencies:
+      '@repo/terminal-engine':
+        specifier: workspace:*
+        version: link:../terminal-engine
       react:
         specifier: ^19.0.0
         version: 19.2.5
@@ -271,6 +277,25 @@ importers:
       '@types/node':
         specifier: ^22.15.3
         version: 22.19.17
+      typescript:
+        specifier: 5.9.2
+        version: 5.9.2
+
+  packages/terminal-engine:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.5
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.19.17
+      '@types/react':
+        specifier: 19.2.2
+        version: 19.2.2
       typescript:
         specifier: 5.9.2
         version: 5.9.2
