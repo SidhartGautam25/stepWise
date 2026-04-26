@@ -13,6 +13,7 @@
       "title": "Why Learn Linux This Way",
       "prompt": "prompt.md",
       "explanation": "explanation.md",
+      "requiresTerminal": false,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
@@ -22,9 +23,10 @@
     },
     {
       "id": "00-why-os",
-      "title": "Why Operating Systems Exist",
+      "title": "Storage — Where Your Stuff Lives",
       "prompt": "prompt.md",
       "explanation": "explanation.md",
+      "requiresTerminal": false,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
@@ -37,6 +39,7 @@
       "title": "How to Read the Visualizer",
       "prompt": "prompt.md",
       "explanation": "explanation.md",
+      "requiresTerminal": true,
       "workspace": {},
       "tests": {}
     },
@@ -45,6 +48,7 @@
       "title": "Directories and Listing",
       "prompt": "prompt.md",
       "explanation": "explanation.md",
+      "requiresTerminal": true,
       "workspace": {},
       "tests": {}
     },
@@ -53,6 +57,7 @@
       "title": "Moving Between Directories",
       "prompt": "prompt.md",
       "explanation": "explanation.md",
+      "requiresTerminal": true,
       "workspace": {},
       "tests": {}
     },
@@ -61,6 +66,7 @@
       "title": "Files, Content, and Listing",
       "prompt": "prompt.md",
       "explanation": "explanation.md",
+      "requiresTerminal": true,
       "workspace": {},
       "tests": {}
     }

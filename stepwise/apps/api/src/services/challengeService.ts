@@ -40,6 +40,7 @@ export interface StepInfo {
   interactiveLesson?: InteractiveLesson;
   position: number;
   codeFiles?: CodeFile[];
+  requiresTerminal?: boolean;
 }
 
 export interface ChallengeInfo {
@@ -214,6 +215,7 @@ export function getChallengeInfo(challengeId: string): ChallengeInfo {
       interactiveLesson,
       position: i + 1,
       codeFiles,
+      requiresTerminal: typeof s.requiresTerminal === "boolean" ? s.requiresTerminal : true,
     };
   });
 

@@ -1,44 +1,46 @@
 {
   "slides": [
     {
-      "id": "welcome",
-      "heading": "You do not need to be a computer person",
-      "body": "You do not need to be a \"computer person\" to understand how systems work.\n\nThere is no requirement to already know things, no expectation to move fast, and no need to prove anything. What matters is simple: you are curious about how this works beneath the surface.\n\nThat curiosity is enough.\n\nThis is not about becoming a \"power user\" or fitting into a category. It is about understanding what is happening inside a machine you already use every day.\n\nSo we will begin from there, looking at things directly, without assumptions.",
+      "id": "welcome-hello",
+      "heading": "Hey! Welcome 👋",
+      "body": "You don't need to be a \"tech person\" to start this.\n\nAll you need is a little curiosity — and you already have that, because you're here!\n\nWe're going to explore what's inside a computer, one tiny step at a time. No jargon. No rushing. Just you and the machine getting to know each other.",
       "bullets": [
-        "No prior background required",
-        "No pressure to move fast",
-        "Curiosity is the starting point"
+        "🚫 No experience needed",
+        "🐢 Go at your own pace",
+        "✨ Curiosity is your superpower"
       ]
     },
     {
-      "id": "why-linux-exists",
-      "heading": "Why Linux Exists",
-      "body": "Most operating systems are designed like closed machines. You can use them, but you cannot see how they work internally, modify them freely, or control their behavior completely.\n\nLinux comes from a different idea: your system should be transparent and modifiable.\n\nIt also runs across a wide range of systems, from embedded devices to large-scale servers. Its design prioritizes control and flexibility over abstraction.",
+      "id": "welcome-everyday",
+      "heading": "You already use a computer every day",
+      "body": "You've opened apps, played music, visited websites, saved photos.\n\nBut here's a question — who decides which app gets to run when you click it? Who makes sure the music keeps playing while you browse? Who keeps your files safe?\n\nSomething is managing all of that, quietly, in the background.",
       "bullets": [
-        "You can inspect how it works",
-        "You can change it",
-        "You are not restricted by a single vendor's decisions"
+        "📱 Every tap on your phone is being managed",
+        "🎵 Music keeps playing while you switch apps",
+        "📂 Files stay safe even when you close them",
+        "🤔 Something is doing all this — but what?"
       ]
     },
     {
-      "id": "what-linux-is",
-      "heading": "What Linux Actually Is",
-      "body": "Linux is not the interface you see or the applications you run.\n\nAt its core, it is a kernel, a layer that sits between hardware and software.\n\nIt is responsible for managing memory, handling processes, coordinating input and output, and allowing software to interact with hardware safely.\n\nEverything else, including desktop environments, tools, and applications, is built on top of this layer.",
+      "id": "welcome-manager",
+      "heading": "There's a quiet manager running your computer",
+      "body": "That quiet manager is called an Operating System — or OS for short.\n\nThink of it like the manager of a busy restaurant. Chefs need the oven, the fridge, the counter space. If everyone just grabbed whatever they wanted, it would be chaos.\n\nThe manager says: \"You use the oven now. You wait your turn. The fridge is yours for 2 minutes.\"\n\nYour OS does the exact same thing — but for apps, instead of chefs.",
       "bullets": [
-        "Manages memory",
-        "Handles processes",
-        "Coordinates input and output",
-        "Lets software talk to hardware safely"
+        "🍽️ Apps are like chefs — they all need resources",
+        "🏨 The OS is the manager who coordinates everything",
+        "⚖️ It keeps things fair and prevents crashes",
+        "💻 On your computer, this OS is probably Windows, Mac, or Linux"
       ]
     },
     {
-      "id": "how-it-started",
-      "heading": "How It Started",
-      "body": "In 1991, Linus Torvalds began writing a kernel as a personal project while studying in Finland.\n\nHe shared it publicly, and others began contributing. Over time, it evolved into a collaborative system maintained by developers across the world.\n\nToday, it powers a significant portion of global infrastructure, from servers to supercomputers.",
+      "id": "welcome-linux",
+      "heading": "Linux is one of those managers — and you can peek inside it",
+      "body": "Windows and Mac are operating systems too — but they are closed boxes. You can use them, but you can't see how they work or change them.\n\nLinux is different. It's open. You can look inside, change things, and learn exactly how it works.\n\nThat's why we're using Linux to learn. It's like learning to cook with a glass oven — you can see everything happening inside.",
       "bullets": [
-        "Started as a personal kernel project in 1991",
-        "Became collaborative through public contributions",
-        "Now powers major global infrastructure"
+        "🔒 Windows & Mac: closed — hard to peek inside",
+        "🪟 Linux: open — you can see and change everything",
+        "📚 Great for learning how computers really work",
+        "🚀 Used by phones, websites, satellites, and more"
       ]
     }
   ]

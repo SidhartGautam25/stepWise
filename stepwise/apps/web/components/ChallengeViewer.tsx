@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import type { ChallengeDetail } from "@/lib/api";
 import { MarkdownViewer } from "./MarkdownViewer";
 import { CodeSection } from "./CodeSection";
@@ -22,17 +22,57 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   const [activeStepId, setActiveStepId] = useState(challenge.steps[0]?.id || "");
   const [passedStepIds, setPassedStepIds] = useState<string[]>([]);
   const [successMessage, setSuccessMessage] = useState("");
+  const [terminalVisible, setTerminalVisible] = useState(false);
   // Panels: "visualizer" | "content" — shown left of terminal in web mode
-  const [leftPanel, setLeftPanel] = useState<"visualizer" | "content">("visualizer");
+  const [leftPanel, setLeftPanel] = useState<"visualizer" | "content">("content");
 
   // Ref passed down so WebTerminal can re-focus input after step advance
   const terminalFocusRef = useRef<() => void>(() => {});
 
   const isWebMode = (challenge as any).mode === "web" || challenge.id === "linux-aethera";
 
+  // ── Load saved progress from server on mount ──────────────────────────────
+  useEffect(() => {
+    const token = (session as any)?.fastifyToken;
+    if (!token) return;
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4000";
+    fetch(`${apiUrl}/dashboard`, {
+      headers: { authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((data: any) => {
+        const prog = data?.progress?.find(
+          (p: any) => p.challengeId === challenge.id,
+        );
+        if (prog) {
+          const completed: string[] = prog.completedStepKeys ?? [];
+          setPassedStepIds(completed);
+          // Resume from current step, or first uncompleted
+          const resumeStepKey =
+            prog.currentStepKey ||
+            challenge.steps.find((s) => !completed.includes(s.id))?.id ||
+            challenge.steps[0]?.id;
+          if (resumeStepKey) setActiveStepId(resumeStepKey);
+        }
+      })
+      .catch(() => { /* no progress yet — stay at step 0 */ });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [(session as any)?.fastifyToken, challenge.id]);
+
   const activeStep = challenge.steps.find((s) => s.id === activeStepId) || challenge.steps[0];
   const activeStepIndex = challenge.steps.findIndex((s) => s.id === activeStepId);
+  // A step is unlocked if it is already passed OR it is the very next step after the last passed one
   const highestUnlockedIndex = Math.min(passedStepIds.length, challenge.steps.length - 1);
+
+  // Sync terminal visibility when step changes
+  useEffect(() => {
+    const needsTerminal = activeStep?.requiresTerminal !== false;
+    setTerminalVisible(needsTerminal);
+    // Always open the content/guide panel first when navigating to a new step
+    setLeftPanel("content");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeStepId]);
 
   const handleStepPassed = useCallback(() => {
     const completedTitle = activeStep?.title ?? "Step";
@@ -61,6 +101,38 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
         <span style={{ fontSize: 22, fontWeight: 900, color: "var(--color-indigo)" }}>{activeStepIndex + 1}.</span>
         <h2 style={{ fontSize: 20, fontWeight: 800, color: "var(--color-text)", letterSpacing: "-0.02em" }}>{activeStep?.title}</h2>
       </div>
+
+      {/* Visualizer prompt callout — shown when the step has a visualizer or terminal */}
+      {(activeStep?.requiresTerminal !== false || activeStep?.interactiveLesson) && (
+        <div
+          onClick={() => setLeftPanel("visualizer")}
+          style={{
+            marginBottom: 24,
+            padding: "14px 18px",
+            borderRadius: 12,
+            background: "linear-gradient(135deg, rgba(99,102,241,0.1), rgba(34,197,94,0.08))",
+            border: "1px solid rgba(99,102,241,0.25)",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 14,
+            transition: "all 0.2s",
+          }}
+        >
+          <span style={{ fontSize: 28, flexShrink: 0 }}>{activeStep?.interactiveLesson ? "🗺" : "💻"}</span>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: "var(--color-text)", marginBottom: 3 }}>
+              {activeStep?.interactiveLesson ? "See the visual lesson" : "Open the Visualizer"}
+            </div>
+            <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5 }}>
+              {activeStep?.interactiveLesson
+                ? "Click to explore this concept visually with interactive slides."
+                : "Click to see your filesystem state and run commands in the terminal."}
+            </div>
+          </div>
+          <span style={{ marginLeft: "auto", fontSize: 13, fontWeight: 700, color: "var(--color-indigo)", flexShrink: 0 }}>Open →</span>
+        </div>
+      )}
 
       {activeStep?.prompt && (
         <div style={{ marginBottom: 32, fontSize: 14, color: "var(--color-text)", lineHeight: 1.75 }}>
@@ -347,6 +419,24 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
             </button>
           ))}
         </div>
+
+        {/* Terminal toggle */}
+        <button
+          onClick={() => setTerminalVisible(v => !v)}
+          style={{
+            padding: "5px 12px",
+            borderRadius: 6,
+            border: "1px solid var(--color-border)",
+            cursor: "pointer",
+            fontWeight: 600,
+            fontSize: 12,
+            background: terminalVisible ? "rgba(34,197,94,0.12)" : "var(--color-surface-2)",
+            color: terminalVisible ? "var(--color-emerald)" : "var(--color-muted)",
+            transition: "all 0.18s ease",
+          }}
+        >
+          {terminalVisible ? "💻 Terminal" : "💻 Show Terminal"}
+        </button>
       </div>
 
       {/* ── Body: Sidebar + Left Panel + Terminal ── */}
@@ -372,7 +462,8 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
             {challenge.steps.map((step, idx) => {
               const isActive = step.id === activeStepId;
               const isPassed = passedStepIds.includes(step.id);
-              const isLocked = isWebMode && idx > highestUnlockedIndex;
+              // Completed steps are always accessible; only lock future unseen steps
+              const isLocked = isWebMode && !isPassed && idx > highestUnlockedIndex;
               const isLast = idx === challenge.steps.length - 1;
 
               return (
@@ -411,8 +502,8 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
           </div>
         </div>
 
-        {/* Left panel: Visualizer or Step Guide */}
-        <div style={{ flex: "0 0 55%", display: "flex", flexDirection: "column", overflow: "hidden", borderRight: "1px solid var(--color-border)" }}>
+        {/* Left panel: Visualizer or Step Guide — expands to fill when terminal hidden */}
+        <div style={{ flex: terminalVisible ? "0 0 55%" : 1, display: "flex", flexDirection: "column", overflow: "hidden", borderRight: terminalVisible ? "1px solid var(--color-border)" : "none", transition: "flex 0.3s ease" }}>
           {leftPanel === "visualizer" ? (
             <div style={{ flex: 1, overflow: "auto", padding: 16 }}>
               <WebVisualizerPanel
@@ -427,14 +518,16 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
           )}
         </div>
 
-        {/* Right panel: Terminal — always visible */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 340 }}>
-          <WebTerminal
-            activeStepId={activeStep?.id || ""}
-            activeStepTitle={activeStep?.title || ""}
-            focusRef={terminalFocusRef}
-          />
-        </div>
+        {/* Right panel: Terminal — conditionally visible */}
+        {terminalVisible && (
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 340 }}>
+            <WebTerminal
+              activeStepId={activeStep?.id || ""}
+              activeStepTitle={activeStep?.title || ""}
+              focusRef={terminalFocusRef}
+            />
+          </div>
+        )}
 
       </div>
 
