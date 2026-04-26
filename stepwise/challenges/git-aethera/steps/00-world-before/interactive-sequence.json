@@ -1,0 +1,69 @@
+{
+  "slides": [
+    {
+      "id": "world-meet-kavya",
+      "heading": "Meet Kavya 👩‍💻",
+      "body": "Kavya is learning to code. She's been at it for a few weeks and just finished something she's really proud of — a simple to-do app.\n\nIt works. Users can add tasks, check them off, delete them. It's not perfect, but it's *hers*.\n\nShe saved it as one file on her laptop.\n\nThen she decided to add something new.",
+      "bullets": [
+        "💻 One laptop, one project folder",
+        "📄 One file: todo.js",
+        "✅ Everything working well",
+        "🤔 \"I want to add a dark mode...\""
+      ]
+    },
+    {
+      "id": "world-disaster-1",
+      "heading": "Disaster #1 — The working version is gone 😱",
+      "body": "Kavya spent two hours adding dark mode. She edited parts of her code she'd never touched before.\n\nThen she saved and opened the app.\n\n*Nothing worked.*\n\nThe font rendering was broken. The checkboxes disappeared. Even features she didn't touch were broken.\n\nShe pressed Ctrl+Z about 40 times. The editor undid everything — including the parts that were working before.\n\nShe sat staring at a blank file.\n\n\"If only I had saved a copy before I started...\"",
+      "bullets": [
+        "❌ 2 hours of work, gone",
+        "❌ The working version she had before — overwritten",
+        "❌ Ctrl+Z went too far back",
+        "😔 Starting from memory isn't the same as starting from the original"
+      ]
+    },
+    {
+      "id": "world-kavya-tries-backup",
+      "heading": "Kavya gets smart — she starts making copies",
+      "body": "After that painful experience, Kavya makes a rule: \"Before I change anything, I'll make a copy.\"\n\nSo she starts saving copies of her file.\n\nAt first, it feels great. A safety net!\n\nBut then a week passes...\n\nTap each file below to see what Kavya's project folder looks like now.",
+      "bullets": [
+        "📁 She was careful, organized, responsible",
+        "📂 But her folder slowly turned into... a nightmare",
+        "🤔 Can you guess which file is the real one?",
+        "👇 Tap the files to find out"
+      ]
+    },
+    {
+      "id": "world-disaster-2",
+      "heading": "Disaster #2 — The folder of doom 🗂️",
+      "body": "Two weeks later, Kavya needs to go back to the version that had working animations.\n\nShe has 7 files. None of them are named clearly enough to know what's in them.\n\nShe opens each one. She can't tell which has the animations because the code looks almost identical.\n\nShe spends 45 minutes opening, comparing, getting confused.\n\n\"There must be a better way to keep track of what changed in each version...\"",
+      "bullets": [
+        "❌ 7 copies of the same project",
+        "❌ No clear way to know what's in each one",
+        "❌ 45 minutes wasted just *finding* the right version",
+        "😩 What was changed? When? Why? No one knows."
+      ]
+    },
+    {
+      "id": "world-disaster-3",
+      "heading": "Disaster #3 — Working with someone else 🤯",
+      "body": "Kavya's friend Rohan wants to help. Great!\n\nThey split the work. Kavya works on the search feature. Rohan works on filters.\n\nThey work for 3 hours separately.\n\nRohan emails Kavya his file. She copies it into the project.\n\nHer search feature? **Gone.** His file replaced everything she wrote.\n\nNeither of them had done anything wrong. They just had no way to work on the same project safely.\n\nThat's the third and hardest problem.",
+      "bullets": [
+        "👩‍💻 Kavya: 3 hours on search feature",
+        "👦 Rohan: 3 hours on filters",
+        "📧 Rohan sends a file. Kavya pastes it in.",
+        "💥 Kavya's 3 hours of work: gone."
+      ]
+    },
+    {
+      "id": "world-summary",
+      "heading": "Three real problems — every developer faces these",
+      "body": "Kavya isn't alone. Every developer who has ever worked without version control has hit these exact same walls.\n\nThey're not made-up problems. They happen every day to people learning to code.\n\nBut here's the good news:\n\n**All three of these problems have elegant solutions.** And in the next steps, we're going to discover those solutions — one by one — before we even open a terminal.\n\nTap each problem to refresh your memory.",
+      "bullets": [
+        "Problem 1: Broke working code, can't go back",
+        "Problem 2: Too many copies, can't find the right one",
+        "Problem 3: Two people working together — overwriting each other"
+      ]
+    }
+  ]
+}

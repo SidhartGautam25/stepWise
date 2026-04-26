@@ -1,0 +1,70 @@
+{
+  "slides": [
+    {
+      "id": "snapshot-natural",
+      "heading": "Humans already figured this out — centuries ago 🎨",
+      "body": "Before we talk about software, let's talk about something you already know.\n\nA sculptor carving a stone figure doesn't do it in one go. After each important stage, they step back, look at it, take a photograph, sometimes make a plaster cast.\n\nA writer doesn't write a novel in one draft. They save copies at the end of every chapter. Every major edit.\n\nThese aren't versions of the file. They're **snapshots of progress**.\n\nAnd here's the key insight: they always keep the last snapshot safe before making the next big change.",
+      "bullets": [
+        "📸 A sculptor's photo = a moment frozen in time",
+        "📝 A writer's saved draft = a point they can return to",
+        "🎨 A designer's version 3 = a checkpoint",
+        "💡 Code can work exactly the same way"
+      ]
+    },
+    {
+      "id": "snapshot-the-idea",
+      "heading": "Idea: What if you could take a photo of your code? 📸",
+      "body": "Imagine if every time your code was in a good state, you could press a button.\n\nThat button *freezes* the exact state of every file. Labels it with a message — \"working todo app with checkboxes\" — and stores it safely forever.\n\nFrom that moment on, you can always go back to that exact state. Even if you accidentally delete everything. Even after a hundred more changes.\n\nThat frozen moment? That's what version control calls a **commit**.\n\nLet's watch Kavya use this idea — click through the journey below.",
+      "bullets": [
+        "📸 Snapshot = commit (a frozen moment of your code)",
+        "💬 Every snapshot has a label explaining what it captured",
+        "🔒 Once taken, a snapshot can never be lost",
+        "↩️ You can return to any snapshot, any time"
+      ]
+    },
+    {
+      "id": "snapshot-solves-1",
+      "heading": "This solves Problem #1! ✅",
+      "body": "Remember Kavya's first disaster?\n\nShe added dark mode. Everything broke. The working version was gone because she saved over it.\n\n**With snapshots:**\nBefore starting dark mode, Kavya takes a snapshot — \"todo app working perfectly.\"\n\nShe tries dark mode. It breaks. No problem.\nShe goes back to the snapshot. The working version is right there.\n\nShe didn't have to remember what the code looked like. She didn't have to undo 40 times. One command, and she's back.\n\nSee the difference below — same situation, two outcomes.",
+      "bullets": [
+        "Before: \"Save\" overwrites. No going back.",
+        "After: \"Commit\" takes a snapshot. Always can go back.",
+        "🎯 The snapshot is permanent — even deleting the file won't lose it",
+        "→ Try the interactive comparison below!"
+      ]
+    },
+    {
+      "id": "snapshot-labels",
+      "heading": "But snapshots are useless without good labels 🏷️",
+      "body": "Here's where Kavya's second problem has its answer.\n\nRemember her folder of doom? Files named like:\n- todo-copy-backup-v2-REAL.js\n- todo-WORKING-VERSION-final.js\n\nThose are snapshots. But terrible ones — because the names tell you nothing useful.\n\nWith version control, every snapshot gets a *real label*: a message you write that explains exactly what changed.\n\nTap each example below to see the difference between a bad label and a good one.",
+      "bullets": [
+        "❌ Bad label: 'final-v2-copy-USE_THIS'",
+        "❌ Bad label: 'changes'",
+        "✅ Good label: 'Fix checkbox disappearing on mobile'",
+        "✅ Good label: 'Add dark mode toggle — light mode still default'"
+      ]
+    },
+    {
+      "id": "snapshot-timeline",
+      "heading": "Snapshots + Labels = a timeline of your project 🗓️",
+      "body": "When you have many snapshots, each with a clear label, something magical happens.\n\nYou have a *complete history* of your project.\n\nEvery decision. Every change. Every feature added. Every bug fixed.\n\nYou can scroll through that history like reading a diary. You can jump to any moment instantly. You can see *exactly* what was different between any two moments.\n\nThis solves Problem #2 completely. No more folder of doom.\n\nClick through Kavya's timeline below and see how clean it looks.",
+      "bullets": [
+        "📅 Most recent snapshot at the top",
+        "📜 Scroll back through the entire life of a project",
+        "🔍 Click any snapshot to see exactly what changed",
+        "🧭 Find the moment a bug appeared in seconds"
+      ]
+    },
+    {
+      "id": "snapshot-shared",
+      "heading": "Last problem: what about working with others? 🤝",
+      "body": "Kavya and Rohan still have a problem. They both have their own snapshots — but on different computers.\n\nHere's the solution: a **shared storage place online**.\n\nImagine a shared Google Drive, but specifically for code snapshots.\n\nKavya pushes her snapshots there. Rohan pushes his snapshots there. When they fetch each other's changes, version control figures out how to combine them.\n\nIf they changed different parts, it merges automatically. If they changed the same part, it flags it and asks them to decide.\n\nThat shared place is called a **remote**. GitHub is the most popular one.",
+      "bullets": [
+        "☁️ Remote = a shared central copy online",
+        "📤 push = send your snapshots to the shared place",
+        "📥 pull = get others' snapshots from the shared place",
+        "🔀 merge = combine different people's work intelligently"
+      ]
+    }
+  ]
+}

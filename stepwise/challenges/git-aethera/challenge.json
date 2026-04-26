@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "id": "git-aethera",
+  "version": "2.0.0",
+  "title": "Git — Version Control for Humans",
+  "language": "bash",
+  "runtime": "web-terminal",
+  "mode": "web",
+  "description": "Learn Git through stories and real problems. No experience needed. You'll go from zero to confidently saving, exploring, and branching your code history.",
+  "steps": [
+    {
+      "id": "00-welcome",
+      "title": "Welcome — You're in the Right Place",
+      "prompt": "prompt.md",
+      "explanation": "explanation.md",
+      "requiresTerminal": false,
+      "interactiveLesson": {
+        "type": "sequence",
+        "content": "interactive-sequence.json"
+      },
+      "workspace": {},
+      "tests": {}
+    },
+    {
+      "id": "00-world-before",
+      "title": "The World Before Version Control",
+      "prompt": "prompt.md",
+      "explanation": "explanation.md",
+      "requiresTerminal": false,
+      "interactiveLesson": {
+        "type": "sequence",
+        "content": "interactive-sequence.json"
+      },
+      "workspace": {},
+      "tests": {}
+    },
+    {
+      "id": "00-snapshot-idea",
+      "title": "The Big Idea — Snapshots",
+      "prompt": "prompt.md",
+      "explanation": "explanation.md",
+      "requiresTerminal": false,
+      "interactiveLesson": {
+        "type": "sequence",
+        "content": "interactive-sequence.json"
+      },
+      "workspace": {},
+      "tests": {}
+    },
+    {
+      "id": "00-git-the-answer",
+      "title": "Meet Git — Your Version Control System",
+      "prompt": "prompt.md",
+      "explanation": "explanation.md",
+      "requiresTerminal": false,
+      "interactiveLesson": {
+        "type": "sequence",
+        "content": "interactive-sequence.json"
+      },
+      "workspace": {},
+      "tests": {}
+    },
+    {
+      "id": "01-init",
+      "title": "Starting a Repository",
+      "prompt": "prompt.md",
+      "explanation": "explanation.md",
+      "requiresTerminal": true,
+      "workspace": {},
+      "tests": {}
+    },
+    {
+      "id": "02-first-commit",
+      "title": "Your First Snapshot",
+      "prompt": "prompt.md",
+      "explanation": "explanation.md",
+      "requiresTerminal": true,
+      "workspace": {},
+      "tests": {}
+    },
+    {
+      "id": "03-history",
+      "title": "Reading Your History",
+      "prompt": "prompt.md",
+      "explanation": "explanation.md",
+      "requiresTerminal": true,
+      "workspace": {},
+      "tests": {}
+    },
+    {
+      "id": "04-branch",
+      "title": "Parallel Worlds — Branching",
+      "prompt": "prompt.md",
+      "explanation": "explanation.md",
+      "requiresTerminal": true,
+      "interactiveLesson": {
+        "type": "sequence",
+        "content": "interactive-sequence.json"
+      },
+      "workspace": {},
+      "tests": {}
+    }
+  ]
+}

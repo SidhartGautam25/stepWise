@@ -1,0 +1,37 @@
+{
+  "slides": [
+    {
+      "id": "welcome-hi",
+      "heading": "Hey there — welcome! 👋",
+      "body": "You're about to learn one of the most useful skills a developer can have.\n\nNot a framework. Not a language. Something more fundamental.\n\n**Version control** — the ability to save your work, go back in time, try risky experiments without fear, and work with other people on the same project without chaos.\n\nEvery developer in the world uses this. Now you will too.",
+      "bullets": [
+        "✅ No experience needed — we start from zero",
+        "✅ No complicated setup — just click and learn",
+        "✅ Real examples, plain language, no jargon",
+        "✅ By the end, you'll actually understand Git — not just copy commands"
+      ]
+    },
+    {
+      "id": "welcome-what-youll-do",
+      "heading": "Here's the journey we're taking together",
+      "body": "We're not going to throw commands at you right away.\n\nFirst, we'll tell the story of a developer called Kavya — and all the painful things she went through before she discovered Git.\n\nAs we see each problem, we'll figure out the solution together. And then we'll see how Git already built all those solutions in.\n\nBy the time you open a terminal, you'll already understand *why* every command exists.",
+      "bullets": [
+        "📖 Story first — understand why before how",
+        "🧩 Solve problems one by one",
+        "💡 Discover each Git concept naturally",
+        "⌨️ Then practice with real commands"
+      ]
+    },
+    {
+      "id": "welcome-no-fear",
+      "heading": "One thing before we start",
+      "body": "A lot of people find Git confusing. Not because it's hard — but because it's usually taught backwards.\n\nCommands first. Concepts never.\n\nWe're doing it the right way. By the time you're done here, Git will feel *obvious*. Like, \"of course that's how it works.\"\n\nTap each card to see what this course promises you.",
+      "bullets": [
+        "🙅 No memorizing commands blindly",
+        "🙅 No copying from Stack Overflow without knowing why",
+        "✅ Deep understanding that lasts forever",
+        "✅ Confidence to use Git on any real project"
+      ]
+    }
+  ]
+}

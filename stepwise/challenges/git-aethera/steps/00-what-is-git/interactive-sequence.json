@@ -1,0 +1,47 @@
+{
+  "slides": [
+    {
+      "id": "git-what-savepoint",
+      "heading": "Git is like save points in a video game",
+      "body": "Remember saving your progress in a game? You could go back to any save point if something went wrong.\n\nGit does exactly that — but for the files on your computer.\n\nEvery time you say \"save\" in Git, it remembers the exact state of all your files at that moment. You can go back to any of those moments, any time.",
+      "bullets": [
+        "🎮 Save point = Git commit",
+        "⏪ Undo last hour of work = git checkout",
+        "🧪 Try risky changes without fear",
+        "✅ Always have a safe version to go back to"
+      ]
+    },
+    {
+      "id": "git-what-mess",
+      "heading": "Without Git: the folder of doom",
+      "body": "You've probably seen (or made) something like this:\n\nproject_final.docx\nproject_final_v2.docx\nproject_ACTUALLY_final.docx\nproject_USE_THIS_ONE.docx\n\nThis is what happens without version control. Git replaces this entire mess with a clean history of every change you made.",
+      "bullets": [
+        "😱 No more \"final_v2_REAL_THIS_TIME\" files",
+        "📜 Clean history: who changed what, when, and why",
+        "🤝 Multiple people can work on the same project safely",
+        "🔍 Find exactly when a bug was introduced"
+      ]
+    },
+    {
+      "id": "git-what-how",
+      "heading": "How Git actually works — in 30 seconds",
+      "body": "Git watches a folder on your computer — called a repository.\n\nWhenever you're happy with your work, you take a snapshot. Git stores that snapshot permanently.\n\nYou can stack as many snapshots as you want. Git shows them as a timeline of your project.",
+      "bullets": [
+        "📁 Repository = a folder Git is watching",
+        "📸 Commit = one snapshot",
+        "🗓️ History = all your snapshots in order",
+        "🌿 Branch = a parallel timeline for experimenting"
+      ]
+    },
+    {
+      "id": "git-what-terminal",
+      "heading": "Try it — run your first Git command",
+      "body": "The terminal below is a real Git environment. Try these commands:\n\n  git --version\n  git help\n\nIn the next steps, you'll use these commands for real — creating a repo, making commits, and building a history.",
+      "bullets": [
+        "⌨️ Type git --version to see Git is installed",
+        "📖 Type git help to see all commands",
+        "🚀 You're about to make your first real commit!"
+      ]
+    }
+  ]
+}

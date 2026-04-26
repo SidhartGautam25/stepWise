@@ -36,6 +36,37 @@ const STEP_GUIDANCE: Record<string, string[]> = {
     "Run these commands: touch notes.txt, echo hello linux > notes.txt, ls, cat notes.txt",
     "touch creates a file. echo writes text. cat prints file content.",
   ],
+  // ── git-aethera ────────────────────────────────────────────────────────────
+  "01-init": [
+    "[SYSTEM] Git Step 1: Turn a folder into a repository.",
+    "Run: mkdir todo-app && cd todo-app",
+    "Run: git init",
+    "Run: ls -la   → look for the .git folder Git created",
+  ],
+  "02-first-commit": [
+    "[SYSTEM] Git Step 2: Take your first snapshot.",
+    "Run: echo \"# Kavya's Todo App\" > README.md",
+    "Run: git status   → file is 'untracked' (Git sees it but hasn't saved it)",
+    "Run: git add README.md   → put it in the bag (staging)",
+    "Run: git status   → notice it changed to 'Changes to be committed'",
+    "Run: git commit -m \"Start Kavya's todo app\"   → take the snapshot!",
+    "Run: git status   → 'nothing to commit' = snapshot saved",
+  ],
+  "03-history": [
+    "[SYSTEM] Git Step 3: Build a history and explore it.",
+    "Run: echo \"function addTask(text) {}\" > app.js && git add app.js && git commit -m \"Add addTask\"",
+    "Run: echo \"function deleteTask(id) {}\" >> app.js && git add app.js && git commit -m \"Add deleteTask\"",
+    "Run: git log --oneline   → your clean timeline!",
+  ],
+  "04-branch": [
+    "[SYSTEM] Git Step 4: Create a branch for safe experiments.",
+    "First set up: git init && echo '# Todo App' > README.md && git add . && git commit -m \"Working todo app\"",
+    "Run: git checkout -b feature/darkmode",
+    "Run: echo \"dark-mode=true\" >> README.md && git add . && git commit -m \"Experiment with dark mode\"",
+    "Run: git branch   → see both branches",
+    "Run: git checkout main && cat README.md   → experiment gone from view, but safe!",
+    "Run: git checkout feature/darkmode && cat README.md   → the experiment is here",
+  ],
 };
 
 interface WebTerminalProps {

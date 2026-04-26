@@ -1,5 +1,5 @@
 {
-  "name": "@repo/interactive-engine",
+  "name": "@repo/terminal-engine",
   "version": "0.0.0",
   "private": true,
   "exports": {
@@ -7,12 +7,6 @@
   },
   "main": "./src/index.ts",
   "types": "./src/index.ts",
-  "scripts": {
-    "check-types": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@repo/terminal-engine": "workspace:*"
-  },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^22.15.3",

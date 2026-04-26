@@ -1,0 +1,48 @@
+{
+  "slides": [
+    {
+      "id": "why-git-before",
+      "heading": "Before Git: every project looked like this",
+      "body": "You finished working on something, so you save a copy just in case.\n\nTwo weeks later, you have 6 versions of the same file. Which one is the real one? What changed between them? Who knows?\n\nThis is the problem Git was built to solve.",
+      "bullets": [
+        "😰 \"Which version was working again?\"",
+        "🗑️ Afraid to delete old files in case you need them",
+        "🤝 Emailing files back and forth with teammates",
+        "🐛 No way to know when a bug was introduced"
+      ]
+    },
+    {
+      "id": "why-git-timeline",
+      "heading": "Git gives your project a real timeline",
+      "body": "Instead of a pile of copies, Git gives you a clean, labelled history.\n\nEvery change is recorded with a message explaining what you did and why. You can scroll back through the entire life of your project — like a time machine.\n\nClick the commits in the visualizer to explore what each one changed.",
+      "bullets": [
+        "📅 Every change is timestamped and labelled",
+        "🔎 Find who introduced a bug and when",
+        "↩️ Undo anything, even from a week ago",
+        "📖 Understand the whole story of your project"
+      ]
+    },
+    {
+      "id": "why-git-branches",
+      "heading": "Branches: experiment without fear",
+      "body": "Imagine you want to try a risky new feature, but you don't want to break what's already working.\n\nWith Git, you can create a parallel timeline called a branch. You work on your experiment there. If it works, you merge it in. If it doesn't, you just delete the branch — nothing in your main project was touched.\n\nThis is one of the most powerful ideas in software development.",
+      "bullets": [
+        "🌿 Branch = safe parallel experiment zone",
+        "✅ Merge when it works",
+        "🗑️ Delete if it doesn't — no damage done",
+        "👥 Teams work in parallel branches simultaneously"
+      ]
+    },
+    {
+      "id": "why-git-staging",
+      "heading": "The staging area — your packing zone",
+      "body": "When you're ready to make a snapshot, Git doesn't automatically save everything.\n\nInstead, you choose exactly what to include — like packing a suitcase. You pick which files go in, then take the snapshot.\n\nThis is called staging, and it lets you make clean, focused commits instead of messy all-at-once saves.\n\nClick the files to move them through the stages!",
+      "bullets": [
+        "📝 Working directory = where you edit",
+        "📋 Staging area = what you've packed",
+        "🏛️ Repository = the permanent snapshot",
+        "git add moves files to staging → git commit saves them permanently"
+      ]
+    }
+  ]
+}

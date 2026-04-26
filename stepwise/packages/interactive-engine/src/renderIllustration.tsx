@@ -26,6 +26,9 @@ import { InteractiveBuckets }  from "./components/InteractiveBuckets";
 import { CollapsibleTree }     from "./components/CollapsibleTree";
 import { FileNavigator }       from "./components/FileNavigator";
 import { InfoCallout }         from "./components/InfoCallout";
+import { GitCommitGraph }      from "./components/GitCommitGraph";
+import { GitStagingArea }      from "./components/GitStagingArea";
+import { SimulatedTerminal }   from "@repo/terminal-engine";
 
 export function renderIllustration(config: IllustrationConfig): ReactNode {
   switch (config.type) {
@@ -137,6 +140,37 @@ export function renderIllustration(config: IllustrationConfig): ReactNode {
             <Fragment key={i}>{renderIllustration(child)}</Fragment>
           ))}
         </div>
+      );
+
+    case "GitCommitGraph":
+      return (
+        <GitCommitGraph
+          hint={config.hint}
+          commits={config.commits}
+          branches={config.branches}
+          tip={config.tip}
+        />
+      );
+
+    case "GitStagingArea":
+      return (
+        <GitStagingArea
+          hint={config.hint}
+          files={config.files}
+          tip={config.tip}
+          interactive={config.interactive}
+        />
+      );
+
+    case "SimulatedTerminal":
+      return (
+        <SimulatedTerminal
+          language={config.language}
+          hint={config.hint}
+          initialFiles={config.initialFiles}
+          preHistory={config.preHistory}
+          height={config.height ?? 280}
+        />
       );
 
     default:

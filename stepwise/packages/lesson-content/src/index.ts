@@ -11,3 +11,5 @@
 
 export * from "./linux-aethera/illustrations";
 export * from "./linux-aethera/slide-configs";
+export * from "./git-aethera/illustrations";
+export * from "./git-aethera/slide-configs";
