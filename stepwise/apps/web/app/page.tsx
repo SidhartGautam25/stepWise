@@ -140,7 +140,25 @@ export default async function HomePage() {
   const isLoggedIn = !!session;
 
   return (
-    <div style={{ minHeight: "100vh", overflowX: "hidden" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        overflowX: "hidden",
+        position: "relative",
+        background:
+          "radial-gradient(circle at 12% 8%, var(--color-indigo-muted), transparent 24%), radial-gradient(circle at 88% 14%, var(--color-cyan-muted), transparent 22%), radial-gradient(circle at 50% 100%, var(--color-emerald-muted), transparent 28%)",
+      }}
+    >
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          background:
+            "linear-gradient(180deg, rgba(255,255,255,0.22), transparent 18%, transparent 82%, rgba(255,255,255,0.16))",
+        }}
+      />
 
       {/* ══════════════════════════════════════════
           HERO SECTION

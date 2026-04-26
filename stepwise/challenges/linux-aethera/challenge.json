@@ -21,6 +21,18 @@
       "tests": {}
     },
     {
+      "id": "00-why-os",
+      "title": "Why Operating Systems Exist",
+      "prompt": "prompt.md",
+      "explanation": "explanation.md",
+      "interactiveLesson": {
+        "type": "sequence",
+        "content": "interactive-sequence.json"
+      },
+      "workspace": {},
+      "tests": {}
+    },
+    {
       "id": "00-orientation",
       "title": "How to Read the Visualizer",
       "prompt": "prompt.md",

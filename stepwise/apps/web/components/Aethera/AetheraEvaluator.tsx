@@ -7,25 +7,26 @@ export function AetheraEvaluator({ challengeId, stepId, userId, token, onPassed 
   const submittedStepsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    // Every time the command history changes, we evaluate if the step is satisfied.
-    if (history.length > 0) {
-      if (submittedStepsRef.current.has(stepId)) return;
+    if (submittedStepsRef.current.has(stepId)) return;
 
-      const isComplete = checkStepCompletion(stepId);
-      if (isComplete) {
-        submittedStepsRef.current.add(stepId);
+    const isComplete = checkStepCompletion(stepId);
+    if (!isComplete) return;
 
-        if (!token) {
-          onPassed();
-          return;
-        }
+    submittedStepsRef.current.add(stepId);
 
-        // Send a success signal to API seamlessly bypassing CLI!
-        submitAttemptResult(challengeId, stepId, userId, token)
-          .then(() => onPassed())
-          .catch(console.error);
-      }
+    if (!token) {
+      onPassed();
+      return;
     }
+
+    // Visual-only lessons and terminal-driven steps should share the same
+    // completion pipeline once their step conditions are satisfied.
+    submitAttemptResult(challengeId, stepId, userId, token)
+      .then(() => onPassed())
+      .catch((error) => {
+        submittedStepsRef.current.delete(stepId);
+        console.error(error);
+      });
   }, [history, stepId, challengeId, userId, token, checkStepCompletion, onPassed, completionVersion]);
 
   return null;

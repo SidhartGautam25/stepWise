@@ -89,19 +89,34 @@ export async function startAttempt(
   const challenge = getChallengeInfo(payload.challengeId);
   const active = await findActiveAttempt(payload.userId, payload.challengeId);
 
+  const existingProgress = await findProgress(payload.userId, payload.challengeId);
+  const fallbackStepKey = existingProgress?.challengeCompleted
+    ? challenge.steps.at(-1)?.id
+    : existingProgress?.currentStepKey;
+  const requestedStep = getStepOrThrow(challenge, payload.stepId ?? fallbackStepKey);
+
   if (active) {
+    if (active.stepKey === requestedStep.id) {
+      return {
+        attemptId: active.id,
+        userId: payload.userId,
+        challengeId: challenge.id,
+        challengeVersion: challenge.version,
+        mode: payload.mode,
+        status: "started",
+        startedAt: active.startedAt.toISOString(),
+        step: { id: requestedStep.id, title: requestedStep.title },
+        nextStepId: getNextStepId(challenge, requestedStep.id),
+      };
+    }
+
     throw new Error(
       `An active attempt already exists for challenge "${payload.challengeId}". ` +
       `Submit or finish attempt "${active.id}" before starting another one.`,
     );
   }
 
-  const existingProgress = await findProgress(payload.userId, payload.challengeId);
-  const fallbackStepKey = existingProgress?.challengeCompleted
-    ? challenge.steps.at(-1)?.id
-    : existingProgress?.currentStepKey;
-
-  const step = getStepOrThrow(challenge, payload.stepId ?? fallbackStepKey);
+  const step = requestedStep;
 
   if (existingProgress && !isStepUnlocked(challenge, mapProgress(existingProgress), step.id)) {
     throw new Error(`Step "${step.id}" is not unlocked for user "${payload.userId}"`);

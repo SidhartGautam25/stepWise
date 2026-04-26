@@ -248,17 +248,21 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
     successfulCommands().filter((log) => log.command.trim() === command && (!path || pathToString(log.cwd ?? []) === path)).length;
 
   const checkStepCompletion = (stepId: string): boolean => {
+    if (completedStepIds.includes(stepId)) {
+      return true;
+    }
+
     const homeStudent = getDirNode(["home", "student"]);
     const projects = homeStudent?.["projects"];
     const projectDir = projects?.type === "directory" ? projects.children : undefined;
     const notes = projectDir?.["notes.txt"];
 
-    if (stepId === "00-orientation") {
-      return hasCommand("continue");
+    if (stepId === "00-welcome" || stepId === "00-why-os") {
+      return completedStepIds.includes(stepId);
     }
 
-    if (stepId === "00-welcome") {
-      return completedStepIds.includes(stepId);
+    if (stepId === "00-orientation") {
+      return hasCommand("continue");
     }
 
     if (stepId === "01-directories") {
