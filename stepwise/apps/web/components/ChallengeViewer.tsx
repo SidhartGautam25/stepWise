@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import type { ChallengeDetail } from "@/lib/api";
 import { MarkdownViewer } from "./MarkdownViewer";
 import { CodeSection } from "./CodeSection";
@@ -30,8 +30,38 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
 
   const isWebMode = (challenge as any).mode === "web" || challenge.id === "linux-aethera";
 
+  // ── Load saved progress from server on mount ──────────────────────────────
+  useEffect(() => {
+    const token = (session as any)?.fastifyToken;
+    if (!token) return;
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4000";
+    fetch(`${apiUrl}/dashboard`, {
+      headers: { authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((data: any) => {
+        const prog = data?.progress?.find(
+          (p: any) => p.challengeId === challenge.id,
+        );
+        if (prog) {
+          const completed: string[] = prog.completedStepKeys ?? [];
+          setPassedStepIds(completed);
+          // Resume from current step, or first uncompleted
+          const resumeStepKey =
+            prog.currentStepKey ||
+            challenge.steps.find((s) => !completed.includes(s.id))?.id ||
+            challenge.steps[0]?.id;
+          if (resumeStepKey) setActiveStepId(resumeStepKey);
+        }
+      })
+      .catch(() => { /* no progress yet — stay at step 0 */ });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [(session as any)?.fastifyToken, challenge.id]);
+
   const activeStep = challenge.steps.find((s) => s.id === activeStepId) || challenge.steps[0];
   const activeStepIndex = challenge.steps.findIndex((s) => s.id === activeStepId);
+  // A step is unlocked if it is already passed OR it is the very next step after the last passed one
   const highestUnlockedIndex = Math.min(passedStepIds.length, challenge.steps.length - 1);
 
   const handleStepPassed = useCallback(() => {
@@ -372,7 +402,8 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
             {challenge.steps.map((step, idx) => {
               const isActive = step.id === activeStepId;
               const isPassed = passedStepIds.includes(step.id);
-              const isLocked = isWebMode && idx > highestUnlockedIndex;
+              // Completed steps are always accessible; only lock future unseen steps
+              const isLocked = isWebMode && !isPassed && idx > highestUnlockedIndex;
               const isLast = idx === challenge.steps.length - 1;
 
               return (
