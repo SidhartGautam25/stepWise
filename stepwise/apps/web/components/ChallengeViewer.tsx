@@ -24,7 +24,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   const [successMessage, setSuccessMessage] = useState("");
   const [terminalVisible, setTerminalVisible] = useState(false);
   // Panels: "visualizer" | "content" — shown left of terminal in web mode
-  const [leftPanel, setLeftPanel] = useState<"visualizer" | "content">("visualizer");
+  const [leftPanel, setLeftPanel] = useState<"visualizer" | "content">("content");
 
   // Ref passed down so WebTerminal can re-focus input after step advance
   const terminalFocusRef = useRef<() => void>(() => {});
@@ -69,6 +69,8 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   useEffect(() => {
     const needsTerminal = activeStep?.requiresTerminal !== false;
     setTerminalVisible(needsTerminal);
+    // Always open the content/guide panel first when navigating to a new step
+    setLeftPanel("content");
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStepId]);
 
@@ -99,6 +101,38 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
         <span style={{ fontSize: 22, fontWeight: 900, color: "var(--color-indigo)" }}>{activeStepIndex + 1}.</span>
         <h2 style={{ fontSize: 20, fontWeight: 800, color: "var(--color-text)", letterSpacing: "-0.02em" }}>{activeStep?.title}</h2>
       </div>
+
+      {/* Visualizer prompt callout — shown when the step has a visualizer or terminal */}
+      {(activeStep?.requiresTerminal !== false || activeStep?.interactiveLesson) && (
+        <div
+          onClick={() => setLeftPanel("visualizer")}
+          style={{
+            marginBottom: 24,
+            padding: "14px 18px",
+            borderRadius: 12,
+            background: "linear-gradient(135deg, rgba(99,102,241,0.1), rgba(34,197,94,0.08))",
+            border: "1px solid rgba(99,102,241,0.25)",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 14,
+            transition: "all 0.2s",
+          }}
+        >
+          <span style={{ fontSize: 28, flexShrink: 0 }}>{activeStep?.interactiveLesson ? "🗺" : "💻"}</span>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: "var(--color-text)", marginBottom: 3 }}>
+              {activeStep?.interactiveLesson ? "See the visual lesson" : "Open the Visualizer"}
+            </div>
+            <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5 }}>
+              {activeStep?.interactiveLesson
+                ? "Click to explore this concept visually with interactive slides."
+                : "Click to see your filesystem state and run commands in the terminal."}
+            </div>
+          </div>
+          <span style={{ marginLeft: "auto", fontSize: 13, fontWeight: 700, color: "var(--color-indigo)", flexShrink: 0 }}>Open →</span>
+        </div>
+      )}
 
       {activeStep?.prompt && (
         <div style={{ marginBottom: 32, fontSize: 14, color: "var(--color-text)", lineHeight: 1.75 }}>
