@@ -1,7 +1,12 @@
 import path from "path";
 import fs from "fs";
 import pc from "picocolors";
-import { runChallenge, loadChallengeManifest, installRuntime } from "@repo/challenge-runner";
+import {
+  runChallenge,
+  loadChallengeManifest,
+  installRuntime,
+  resolveChallengeStep,
+} from "@repo/challenge-runner";
 import { NodeTester } from "@repo/tester-node";
 import { ServerTester } from "@repo/tester-server";
 import {
@@ -56,13 +61,28 @@ export async function main() {
     userId: config.userId,
     stepId: config.stepId,
   });
+  const resolvedStep = resolveChallengeStep(challengePath, startedAttempt.step.id);
+
+  if (!resolvedStep.defaultUserCodePath) {
+    throw new Error(
+      `Step "${startedAttempt.step.id}" does not declare a runnable entrypoint.`,
+    );
+  }
+
+  const relativeEntrypoint = path.relative(
+    resolvedStep.workspacePath,
+    resolvedStep.defaultUserCodePath,
+  );
 
   // For server challenges: pass the workspace DIRECTORY (ServerTester uses it to
   //   find server.js and start the process). For function challenges: path to index.js.
   const baseDir = config.workspaceDir ?? getInvocationDir();
+  const defaultLocalCodePath = config.workspaceDir
+    ? path.resolve(baseDir, relativeEntrypoint || "index.js")
+    : resolvedStep.defaultUserCodePath;
   const userCodePath = isServerChallenge
     ? baseDir  // ServerTester resolves server.js within this directory
-    : (config.userCodePath ?? path.resolve(baseDir, "index.js"));
+    : (config.userCodePath ?? defaultLocalCodePath);
 
   // ── Isolate BYOB Runtime Environment ─────────────────────────────────────
   let executablePath: string | undefined;
@@ -96,6 +116,7 @@ export async function main() {
 
   const output = {
     attempt: startedAttempt,
+    workspaceDir: config.workspaceDir ?? baseDir,
     result,
     progression: submittedResult,
   };
@@ -160,5 +181,3 @@ async function tryAdvanceWorkspace(
     // Non-fatal — workspace advance is a convenience, not required
   }
 }
-
-

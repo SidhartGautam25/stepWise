@@ -6,6 +6,7 @@ import { RunChallengeResult } from "@repo/challenge-runner";
 
 interface StudentResultOutput {
   attempt: StartAttemptResponse;
+  workspaceDir?: string;
   result: RunChallengeResult;
   progression: SubmitResultResponse;
 }
@@ -23,6 +24,9 @@ export function renderStudentFacingResult(
   lines.push(
     "Mode: Build the current project step locally, then submit this step for validation.",
   );
+  if (output.workspaceDir) {
+    lines.push(`Workspace: ${output.workspaceDir}`);
+  }
   lines.push("");
 
   if (output.progression.outcome === "passed") {

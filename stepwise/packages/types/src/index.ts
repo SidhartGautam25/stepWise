@@ -30,6 +30,9 @@ export interface ChallengeStepInfo {
   title: string;
   prompt?: string;
   hasStarter: boolean;
+  starterRoot?: string;
+  workspaceRoot?: string;
+  entrypoint?: string;
 }
 
 export interface ChallengeInfoResponse {
@@ -93,6 +96,14 @@ export function parseChallengeInfoResponse(payload: unknown): ChallengeInfoRespo
         title: readString(step.title, `steps[${index}].title`),
         prompt: typeof step.prompt === "string" ? step.prompt : undefined,
         hasStarter: readBoolean(step.hasStarter, `steps[${index}].hasStarter`),
+        starterRoot:
+          typeof step.starterRoot === "string" ? step.starterRoot : undefined,
+        workspaceRoot:
+          typeof step.workspaceRoot === "string"
+            ? step.workspaceRoot
+            : undefined,
+        entrypoint:
+          typeof step.entrypoint === "string" ? step.entrypoint : undefined,
       };
     }),
   };

@@ -22,6 +22,9 @@ export interface StepInfo {
   explanation?: string;
   solution?: string;
   hasStarter: boolean;
+  starterRoot?: string;
+  workspaceRoot?: string;
+  entrypoint?: string;
   position: number;
   codeFiles?: CodeFile[];
 }
@@ -77,7 +80,22 @@ export function getChallengeInfo(challengeId: string): ChallengeInfo {
 
     const stepId = readString(s.id, `steps[${i}].id`);
     const stepDir = path.resolve(challengePath, "steps", stepId);
-    const starterDir = path.resolve(stepDir, "starter");
+    const workspaceConfig = isRecord(s.workspace) ? s.workspace : undefined;
+    const workspaceRoot =
+      typeof workspaceConfig?.root === "string"
+        ? workspaceConfig.root
+        : `steps/${stepId}/workspace`;
+    const starterRoot =
+      typeof workspaceConfig?.starter === "string"
+        ? workspaceConfig.starter
+        : `steps/${stepId}/starter`;
+    const entrypoint =
+      typeof workspaceConfig?.entrypoint === "string"
+        ? workspaceConfig.entrypoint
+        : typeof s.entrypoint === "string"
+          ? s.entrypoint
+          : "index.js";
+    const starterDir = path.resolve(challengePath, starterRoot);
 
     let prompt: string | undefined;
     if (typeof s.prompt === "string") {
@@ -123,6 +141,9 @@ export function getChallengeInfo(challengeId: string): ChallengeInfo {
       explanation,
       solution,
       hasStarter: fs.existsSync(starterDir),
+      starterRoot,
+      workspaceRoot,
+      entrypoint,
       position: i + 1,
       codeFiles,
     };
