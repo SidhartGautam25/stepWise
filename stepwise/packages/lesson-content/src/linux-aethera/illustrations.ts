@@ -4,41 +4,33 @@
  * All content/strings used by the interactive slide illustrations
  * for the "Intro to Linux" (linux-aethera) quest.
  *
+ * Types for items come from @repo/interactive-engine so slide-configs.ts
+ * can reference them without any type mismatches.
+ *
  * To update slide content, edit the arrays below.
- * To add a new slide illustration, add a new export here and
- * create the matching React component in InteractiveLessonSequence.tsx.
  */
 
-// ── Shared types ──────────────────────────────────────────────────────────────
+// ── Shared types (re-used here without React dependency) ─────────────────────
 
+/** Matches ExpandableCardItem in @repo/interactive-engine */
 export interface ClickItem {
   id: string;
   icon: string;
   label: string;
+  /** Maps to the `reveal` field on ExpandableCardItem */
   reveal: string;
 }
 
+/** Matches ActivityItem used in ClickRevealGrid items */
 export interface ActivityItem {
   id: string;
   icon: string;
   label: string;
+  /** The OS explanation — maps to `detail` field in ClickRevealItem */
   os: string;
 }
 
-export interface JourneyStep {
-  icon: string;
-  action: string;
-  result: string;
-  color: string;
-  border: string;
-}
-
-export interface SimStep {
-  from: string;
-  to: string;
-  action: string;
-}
-
+/** Structurally matches TreeNode in @repo/interactive-engine */
 export interface FolderTree {
   name: string;
   type: "folder" | "file";
@@ -101,8 +93,24 @@ export const WELCOME_EVERYDAY_ACTIVITIES: ActivityItem[] = [
 ];
 
 // ── Slide: welcome-manager (restaurant simulation) ────────────────────────────
+// Types are structurally compatible with SimActor / SimStep in @repo/interactive-engine
 
-export const WELCOME_MANAGER_ACTORS = [
+export interface SimActorData {
+  icon: string;
+  label: string;
+  sublabel: string;
+  color: string;
+  border: string;
+  isManager?: boolean;
+}
+
+export interface SimStepData {
+  from: string;
+  to: string;
+  action: string;
+}
+
+export const WELCOME_MANAGER_ACTORS: SimActorData[] = [
   {
     icon: "👨‍🍳",
     label: "Music App",
@@ -127,19 +135,23 @@ export const WELCOME_MANAGER_ACTORS = [
   },
 ];
 
-export const WELCOME_MANAGER_STEPS: SimStep[] = [
+export const WELCOME_MANAGER_STEPS: SimStepData[] = [
   { from: "👨‍🍳 Music App", to: "👩‍💼 Manager", action: "\"I need the CPU!\"" },
-  {
-    from: "👩‍💼 Manager",
-    to: "🍳 CPU",
-    action: "\"Music App gets it for 2ms\"",
-  },
-  { from: "🍳 CPU", to: "👨‍🍳 Music App", action: "\"Done! CPU is free again.\"" },
+  { from: "👩‍💼 Manager", to: "🍳 CPU",        action: "\"Music App gets it for 2ms\"" },
+  { from: "🍳 CPU",        to: "👨‍🍳 Music App", action: "\"Done! CPU is free again.\"" },
 ];
 
 // ── Slide: storage-your-stuff ─────────────────────────────────────────────────
 
-export const STORAGE_JOURNEY_STEPS: JourneyStep[] = [
+export interface JourneyStepData {
+  icon: string;
+  action: string;
+  result: string;
+  color: string;
+  border: string;
+}
+
+export const STORAGE_JOURNEY_STEPS: JourneyStepData[] = [
   {
     icon: "📸",
     action: "Take a photo",
@@ -181,8 +193,8 @@ export const STORAGE_FOLDER_TREE: FolderTree = {
       type: "folder",
       children: [
         { name: "📄 holiday-2024.jpg", type: "file" },
-        { name: "📄 birthday.jpg", type: "file" },
-        { name: "📄 selfie.png", type: "file" },
+        { name: "📄 birthday.jpg",     type: "file" },
+        { name: "📄 selfie.png",       type: "file" },
       ],
     },
     {
@@ -190,7 +202,7 @@ export const STORAGE_FOLDER_TREE: FolderTree = {
       type: "folder",
       children: [
         { name: "🎵 favorites.mp3", type: "file" },
-        { name: "🎵 workout.mp3", type: "file" },
+        { name: "🎵 workout.mp3",   type: "file" },
       ],
     },
     { name: "Documents", type: "folder", children: [] },
@@ -201,9 +213,9 @@ export const STORAGE_FOLDER_TREE: FolderTree = {
 
 export const HOME_FOLDER_TREE: Record<string, Record<string, null> | null> = {
   projects: {
-    "todo.txt": null,
-    "ideas.md": null,
+    "todo.txt":  null,
+    "ideas.md":  null,
   },
-  "notes.txt": null,
+  "notes.txt":   null,
   "welcome.txt": null,
 };

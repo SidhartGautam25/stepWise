@@ -10,3 +10,4 @@
  */
 
 export * from "./linux-aethera/illustrations";
+export * from "./linux-aethera/slide-configs";
