@@ -9,6 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@repo/interactive-engine": "workspace:*",
     "@repo/lesson-content": "workspace:*",
     "next": "16.2.0",
     "next-auth": "^4.24.14",
