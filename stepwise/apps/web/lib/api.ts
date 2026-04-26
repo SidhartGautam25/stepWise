@@ -43,6 +43,7 @@ export interface StepInfo {
   position: number;
   codeFiles?: CodeFile[];
   interactiveLesson?: InteractiveLesson;
+  requiresTerminal?: boolean;
 }
 
 export interface ChallengeDetail {
