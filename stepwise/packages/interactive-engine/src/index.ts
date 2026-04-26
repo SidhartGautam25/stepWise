@@ -38,6 +38,7 @@ export { InteractiveBuckets }   from "./components/InteractiveBuckets";
 export { CollapsibleTree }      from "./components/CollapsibleTree";
 export { FileNavigator }        from "./components/FileNavigator";
 export { InfoCallout }          from "./components/InfoCallout";
+export { LessonSequenceShell }  from "./components/LessonSequenceShell";
 
 export { T }                    from "./tokens";
 export { useEngineStyles }      from "./useEngineStyles";
@@ -53,3 +54,4 @@ export type { BucketConfig, InteractiveBucketsProps }         from "./components
 export type { TreeNode, CollapsibleTreeProps }                 from "./components/CollapsibleTree";
 export type { FileSystemTree, FileNavigatorProps }            from "./components/FileNavigator";
 export type { InfoCalloutVariant, InfoCalloutProps }          from "./components/InfoCallout";
+export type { LessonSlide, LessonSequenceShellProps }         from "./components/LessonSequenceShell";
