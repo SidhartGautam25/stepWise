@@ -65,12 +65,13 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   // A step is unlocked if it is already passed OR it is the very next step after the last passed one
   const highestUnlockedIndex = Math.min(passedStepIds.length, challenge.steps.length - 1);
 
-  // Sync terminal visibility when step changes
+  // Sync terminal visibility and default panel when step changes
   useEffect(() => {
     const needsTerminal = activeStep?.requiresTerminal !== false;
     setTerminalVisible(needsTerminal);
-    // Always open the content/guide panel first when navigating to a new step
-    setLeftPanel("content");
+    // Interactive lesson steps (visual guide): open the visualizer by default
+    // Terminal/task steps: open the step guide so users read instructions first
+    setLeftPanel(activeStep?.interactiveLesson ? "visualizer" : "content");
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStepId]);
 
