@@ -113,6 +113,36 @@
   --gradient-hero:    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(108,99,255,0.22) 0%, transparent 70%);
   --gradient-cta:     linear-gradient(135deg, rgba(108,99,255,0.18) 0%, rgba(16,185,129,0.12) 100%);
   --gradient-card:    linear-gradient(160deg, rgba(108,99,255,0.06) 0%, transparent 60%);
+
+  --aethera-panel-top: rgba(8, 8, 24, 0.98);
+  --aethera-panel-bottom: rgba(10, 10, 22, 0.95);
+  --aethera-panel-border: rgba(108, 99, 255, 0.2);
+  --aethera-panel-shadow: rgba(5, 5, 18, 0.28);
+  --aethera-divider: rgba(255, 255, 255, 0.08);
+  --aethera-card-bg: rgba(255, 255, 255, 0.04);
+  --aethera-card-border: rgba(255, 255, 255, 0.08);
+  --aethera-terminal-header: rgba(0, 0, 0, 0.35);
+  --aethera-terminal-text: #e8e8f2;
+  --aethera-terminal-success: #34d399;
+  --aethera-terminal-error: #f87171;
+
+  --interactive-bg-top: rgba(8, 8, 24, 0.98);
+  --interactive-bg-bottom: rgba(10, 10, 22, 0.95);
+  --interactive-spot-1: rgba(56, 189, 248, 0.16);
+  --interactive-spot-2: rgba(99, 102, 241, 0.14);
+  --interactive-border: rgba(108, 99, 255, 0.2);
+  --interactive-shadow: rgba(5, 5, 18, 0.26);
+  --interactive-divider: rgba(255, 255, 255, 0.08);
+  --interactive-card-bg: rgba(255, 255, 255, 0.04);
+  --interactive-card-border: rgba(255, 255, 255, 0.08);
+  --interactive-pill-bg: rgba(99, 102, 241, 0.16);
+  --interactive-pill-text: var(--color-indigo-light);
+  --interactive-pill-border: rgba(99, 102, 241, 0.25);
+  --interactive-kicker: var(--color-cyan);
+  --interactive-body: var(--color-muted);
+  --interactive-muted: var(--color-muted);
+  --interactive-footer-bg: rgba(0, 0, 0, 0.18);
+  --interactive-dot: rgba(255, 255, 255, 0.16);
 }
 
 /* ══════════════════════════════════════════════════
@@ -120,10 +150,10 @@
    ══════════════════════════════════════════════════ */
 :root[data-theme='light'] {
   /* Backgrounds */
-  --color-bg:            #f7f7fb;
-  --color-surface:       #ffffff;
-  --color-surface-2:     #f0f0f8;
-  --color-surface-glass: rgba(255, 255, 255, 0.78);
+  --color-bg:            #f6f3ee;
+  --color-surface:       #fffdf9;
+  --color-surface-2:     #f3efe7;
+  --color-surface-glass: rgba(255, 253, 249, 0.82);
 
   /* Borders */
   --color-border:        rgba(0, 0, 0, 0.07);
@@ -159,27 +189,57 @@
   /* Text */
   --color-text:          #18182a;
   --color-text-2:        #3a3a55;
-  --color-muted:         #6060808;
+  --color-muted:         #66657b;
 
   /* Misc */
-  --color-terminal-bg:   #0a0a16;
+  --color-terminal-bg:   #f8f4ec;
   --color-badge:         #5b46f1;
   --color-white:         #ffffff;
 
   /* Background pattern */
   --bg-pattern:
-    radial-gradient(at 10% 0%, rgba(91, 70, 241, 0.06) 0px, transparent 50%),
-    radial-gradient(at 90% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(91, 70, 241, 0.05) 0px, transparent 50%),
+    radial-gradient(at 12% 8%, rgba(91, 70, 241, 0.1) 0px, transparent 42%),
+    radial-gradient(at 88% 10%, rgba(8, 145, 178, 0.08) 0px, transparent 38%),
+    radial-gradient(at 50% 100%, rgba(5, 150, 105, 0.08) 0px, transparent 42%),
     radial-gradient(circle, rgba(91, 70, 241, 0.04) 1px, transparent 1px);
   --bg-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px;
 
   /* Gradient presets */
   --gradient-primary: linear-gradient(135deg, #5b46f1 0%, #7c6ef7 50%, #059669 100%);
   --gradient-indigo:  linear-gradient(135deg, #5b46f1, #7c6ef7);
-  --gradient-hero:    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(91,70,241,0.16) 0%, transparent 70%);
-  --gradient-cta:     linear-gradient(135deg, rgba(91,70,241,0.1) 0%, rgba(5,150,105,0.07) 100%);
-  --gradient-card:    linear-gradient(160deg, rgba(91,70,241,0.05) 0%, transparent 60%);
+  --gradient-hero:    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(91,70,241,0.18) 0%, transparent 70%), linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0));
+  --gradient-cta:     linear-gradient(135deg, rgba(91,70,241,0.11) 0%, rgba(5,150,105,0.08) 100%);
+  --gradient-card:    linear-gradient(160deg, rgba(91,70,241,0.06) 0%, rgba(8,145,178,0.03) 100%);
+
+  --aethera-panel-top: rgba(255, 253, 249, 0.98);
+  --aethera-panel-bottom: rgba(247, 243, 235, 0.98);
+  --aethera-panel-border: rgba(91, 70, 241, 0.16);
+  --aethera-panel-shadow: rgba(103, 87, 66, 0.08);
+  --aethera-divider: rgba(24, 24, 42, 0.08);
+  --aethera-card-bg: rgba(255, 255, 255, 0.76);
+  --aethera-card-border: rgba(24, 24, 42, 0.08);
+  --aethera-terminal-header: rgba(255, 255, 255, 0.7);
+  --aethera-terminal-text: #18182a;
+  --aethera-terminal-success: #059669;
+  --aethera-terminal-error: #dc2626;
+
+  --interactive-bg-top: rgba(255, 253, 249, 0.98);
+  --interactive-bg-bottom: rgba(246, 241, 232, 0.98);
+  --interactive-spot-1: rgba(8, 145, 178, 0.12);
+  --interactive-spot-2: rgba(91, 70, 241, 0.1);
+  --interactive-border: rgba(91, 70, 241, 0.16);
+  --interactive-shadow: rgba(103, 87, 66, 0.08);
+  --interactive-divider: rgba(24, 24, 42, 0.08);
+  --interactive-card-bg: rgba(255, 255, 255, 0.76);
+  --interactive-card-border: rgba(24, 24, 42, 0.08);
+  --interactive-pill-bg: rgba(91, 70, 241, 0.12);
+  --interactive-pill-text: var(--color-indigo);
+  --interactive-pill-border: rgba(91, 70, 241, 0.14);
+  --interactive-kicker: var(--color-cyan);
+  --interactive-body: var(--color-text-2);
+  --interactive-muted: var(--color-muted);
+  --interactive-footer-bg: rgba(255, 255, 255, 0.6);
+  --interactive-dot: rgba(24, 24, 42, 0.14);
 }
 
 /* ══════════════════════════════════════════════════
@@ -190,7 +250,7 @@ html {
 }
 
 body {
-  background: var(--color-bg);
+  background: linear-gradient(180deg, rgba(255,255,255,0.28), transparent 22%), var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
   min-height: 100vh;

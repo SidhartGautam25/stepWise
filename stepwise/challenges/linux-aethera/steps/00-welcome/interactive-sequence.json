@@ -1,0 +1,45 @@
+{
+  "slides": [
+    {
+      "id": "welcome",
+      "heading": "You do not need to be a computer person",
+      "body": "You do not need to be a \"computer person\" to understand how systems work.\n\nThere is no requirement to already know things, no expectation to move fast, and no need to prove anything. What matters is simple: you are curious about how this works beneath the surface.\n\nThat curiosity is enough.\n\nThis is not about becoming a \"power user\" or fitting into a category. It is about understanding what is happening inside a machine you already use every day.\n\nSo we will begin from there, looking at things directly, without assumptions.",
+      "bullets": [
+        "No prior background required",
+        "No pressure to move fast",
+        "Curiosity is the starting point"
+      ]
+    },
+    {
+      "id": "why-linux-exists",
+      "heading": "Why Linux Exists",
+      "body": "Most operating systems are designed like closed machines. You can use them, but you cannot see how they work internally, modify them freely, or control their behavior completely.\n\nLinux comes from a different idea: your system should be transparent and modifiable.\n\nIt also runs across a wide range of systems, from embedded devices to large-scale servers. Its design prioritizes control and flexibility over abstraction.",
+      "bullets": [
+        "You can inspect how it works",
+        "You can change it",
+        "You are not restricted by a single vendor's decisions"
+      ]
+    },
+    {
+      "id": "what-linux-is",
+      "heading": "What Linux Actually Is",
+      "body": "Linux is not the interface you see or the applications you run.\n\nAt its core, it is a kernel, a layer that sits between hardware and software.\n\nIt is responsible for managing memory, handling processes, coordinating input and output, and allowing software to interact with hardware safely.\n\nEverything else, including desktop environments, tools, and applications, is built on top of this layer.",
+      "bullets": [
+        "Manages memory",
+        "Handles processes",
+        "Coordinates input and output",
+        "Lets software talk to hardware safely"
+      ]
+    },
+    {
+      "id": "how-it-started",
+      "heading": "How It Started",
+      "body": "In 1991, Linus Torvalds began writing a kernel as a personal project while studying in Finland.\n\nHe shared it publicly, and others began contributing. Over time, it evolved into a collaborative system maintained by developers across the world.\n\nToday, it powers a significant portion of global infrastructure, from servers to supercomputers.",
+      "bullets": [
+        "Started as a personal kernel project in 1991",
+        "Became collaborative through public contributions",
+        "Now powers major global infrastructure"
+      ]
+    }
+  ]
+}

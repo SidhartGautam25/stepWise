@@ -1,0 +1,58 @@
+{
+  "slides": [
+    {
+      "id": "hardware-parts",
+      "heading": "A computer starts as hardware parts doing different jobs",
+      "body": "At the physical level, a computer is not one thing. It is a collection of parts, each responsible for a different kind of work.\n\nThe CPU executes instructions. Memory holds data that needs to be accessed quickly. Storage keeps information for the long term. Input and output devices connect the machine to the outside world.\n\nBy themselves, these parts do not feel like a usable system. They are capabilities, not yet a coherent working environment.",
+      "bullets": [
+        "CPU executes instructions",
+        "Memory holds actively used data",
+        "Storage keeps data over time",
+        "Input and output connect the machine to the outside world"
+      ]
+    },
+    {
+      "id": "why-os",
+      "heading": "Why we need an operating system",
+      "body": "If every program had to talk to hardware directly, computing would be chaotic.\n\nSoftware would need to know device details, compete for CPU time, overwrite each other's data, and handle storage manually. Even simple tasks would become fragile.\n\nAn operating system exists to coordinate all of this. It gives programs a consistent environment and prevents the hardware from becoming a mess of conflicting requests.",
+      "bullets": [
+        "Programs need a consistent interface",
+        "Hardware access must be coordinated",
+        "Resources must be shared safely",
+        "The system needs rules and boundaries"
+      ]
+    },
+    {
+      "id": "os-manages-resources",
+      "heading": "How the operating system manages CPU, memory, and storage",
+      "body": "The operating system decides which process gets CPU time, which data stays in memory, and how long-term data is written to storage.\n\nIt acts like a coordinator between software and hardware. Instead of every program negotiating with the machine from scratch, the OS handles scheduling, protection, access, and organization.\n\nThat is why programs can feel stable even though many things are happening underneath at the same time.",
+      "bullets": [
+        "Schedules CPU time across processes",
+        "Controls what lives in memory",
+        "Coordinates reads and writes to storage",
+        "Protects programs from interfering with one another"
+      ]
+    },
+    {
+      "id": "storage-bits",
+      "heading": "Storage at the bit level is too raw for people to use directly",
+      "body": "At the lowest level, storage is just patterns of bits. Bits become bytes, bytes become blocks, and blocks become larger regions on a disk or SSD.\n\nThat representation is efficient for machines, but not for humans. You do not want to remember that your notes begin at one physical block and continue across several others.\n\nSo the operating system introduces higher-level structure on top of raw storage.",
+      "bullets": [
+        "Storage is physically represented as low-level binary data",
+        "Machines can work with raw blocks",
+        "Humans need something more meaningful and navigable"
+      ]
+    },
+    {
+      "id": "files-and-directories",
+      "heading": "Files and directories are the operating system's answer to storage organization",
+      "body": "A file is a named unit of stored information. A directory is a way of grouping files and other directories into a navigable structure.\n\nThis is how the operating system turns raw storage into something people can reason about.\n\nInstead of thinking in blocks and addresses, you think in names, paths, folders, and contents. That is why your next step in this course is about files and directories: they are the human-facing structure built on top of low-level storage.",
+      "bullets": [
+        "Files give stored data names and boundaries",
+        "Directories organize files into paths",
+        "The filesystem makes storage navigable",
+        "This is the bridge between hardware and everyday Linux usage"
+      ]
+    }
+  ]
+}

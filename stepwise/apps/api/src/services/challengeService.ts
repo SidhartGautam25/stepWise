@@ -15,6 +15,18 @@ export interface CodeFile {
   finalCode: string;
 }
 
+export interface InteractiveLessonSlide {
+  id: string;
+  heading: string;
+  body: string;
+  bullets?: string[];
+}
+
+export interface InteractiveLesson {
+  type: "sequence";
+  slides: InteractiveLessonSlide[];
+}
+
 export interface StepInfo {
   id: string;
   title: string;
@@ -22,6 +34,10 @@ export interface StepInfo {
   explanation?: string;
   solution?: string;
   hasStarter: boolean;
+  starterRoot?: string;
+  workspaceRoot?: string;
+  entrypoint?: string;
+  interactiveLesson?: InteractiveLesson;
   position: number;
   codeFiles?: CodeFile[];
 }
@@ -56,6 +72,54 @@ function readString(v: unknown, field: string): string {
   return v;
 }
 
+function parseInteractiveLesson(
+  challengePath: string,
+  stepDir: string,
+  value: unknown,
+): InteractiveLesson | undefined {
+  if (!isRecord(value)) {
+    return undefined;
+  }
+
+  if (value.type !== "sequence" || typeof value.content !== "string") {
+    return undefined;
+  }
+
+  const lessonPath = path.resolve(stepDir, value.content);
+
+  if (!fs.existsSync(lessonPath)) {
+    throw new Error(`Interactive lesson file not found: ${lessonPath}`);
+  }
+
+  const parsed = JSON.parse(fs.readFileSync(lessonPath, "utf-8")) as unknown;
+
+  if (!isRecord(parsed) || !Array.isArray(parsed.slides)) {
+    throw new Error(`Invalid interactive lesson content for ${challengePath}`);
+  }
+
+  return {
+    type: "sequence",
+    slides: parsed.slides.map((slide, index) => {
+      if (!isRecord(slide)) {
+        throw new Error(`Invalid interactive lesson slide at index ${index}`);
+      }
+
+      return {
+        id: readString(slide.id, `interactiveLesson.slides[${index}].id`),
+        heading: readString(
+          slide.heading,
+          `interactiveLesson.slides[${index}].heading`,
+        ),
+        body: readString(slide.body, `interactiveLesson.slides[${index}].body`),
+        bullets: Array.isArray(slide.bullets)
+          ? slide.bullets
+              .filter((bullet): bullet is string => typeof bullet === "string")
+          : undefined,
+      };
+    }),
+  };
+}
+
 export function getChallengePath(challengeId: string): string {
   const p = path.resolve(CHALLENGES_ROOT, challengeId);
   if (!fs.existsSync(p)) throw new Error(`Challenge "${challengeId}" not found`);
@@ -77,7 +141,22 @@ export function getChallengeInfo(challengeId: string): ChallengeInfo {
 
     const stepId = readString(s.id, `steps[${i}].id`);
     const stepDir = path.resolve(challengePath, "steps", stepId);
-    const starterDir = path.resolve(stepDir, "starter");
+    const workspaceConfig = isRecord(s.workspace) ? s.workspace : undefined;
+    const workspaceRoot =
+      typeof workspaceConfig?.root === "string"
+        ? workspaceConfig.root
+        : `steps/${stepId}/workspace`;
+    const starterRoot =
+      typeof workspaceConfig?.starter === "string"
+        ? workspaceConfig.starter
+        : `steps/${stepId}/starter`;
+    const entrypoint =
+      typeof workspaceConfig?.entrypoint === "string"
+        ? workspaceConfig.entrypoint
+        : typeof s.entrypoint === "string"
+          ? s.entrypoint
+          : "index.js";
+    const starterDir = path.resolve(challengePath, starterRoot);
 
     let prompt: string | undefined;
     if (typeof s.prompt === "string") {
@@ -116,6 +195,12 @@ export function getChallengeInfo(challengeId: string): ChallengeInfo {
       }
     }
 
+    const interactiveLesson = parseInteractiveLesson(
+      challengePath,
+      stepDir,
+      s.interactiveLesson,
+    );
+
     return {
       id: stepId,
       title: readString(s.title, `steps[${i}].title`),
@@ -123,6 +208,10 @@ export function getChallengeInfo(challengeId: string): ChallengeInfo {
       explanation,
       solution,
       hasStarter: fs.existsSync(starterDir),
+      starterRoot,
+      workspaceRoot,
+      entrypoint,
+      interactiveLesson,
       position: i + 1,
       codeFiles,
     };

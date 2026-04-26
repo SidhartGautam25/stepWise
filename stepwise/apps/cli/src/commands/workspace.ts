@@ -42,16 +42,20 @@ export function provisionWorkspace(
   // Create the step directory
   fs.mkdirSync(stepDir, { recursive: true });
 
-  // Copy starter files from the server-side challenge path
-  const starterSrc = path.resolve(challenge.challengePath, "steps", step.id, "starter");
+  // Copy starter files from the step manifest rather than assuming a fixed folder shape
+  const starterSrc = step.starterRoot
+    ? path.resolve(challenge.challengePath, step.starterRoot)
+    : undefined;
   let hadStarter = false;
 
-  if (fs.existsSync(starterSrc)) {
+  if (starterSrc && fs.existsSync(starterSrc)) {
     copyDirRecursive(starterSrc, stepDir);
     hadStarter = true;
   } else {
-    // No starter — write a minimal placeholder so the student has something to open
-    const placeholderPath = path.resolve(stepDir, "index.js");
+    // No starter — write a minimal placeholder at the declared entrypoint if available
+    const entrypoint = step.entrypoint ?? "index.js";
+    const placeholderPath = path.resolve(stepDir, entrypoint);
+    fs.mkdirSync(path.dirname(placeholderPath), { recursive: true });
     if (!fs.existsSync(placeholderPath)) {
       fs.writeFileSync(
         placeholderPath,

@@ -32,9 +32,11 @@ export function VisualWorld() {
       flexDirection: "column",
       height: "100%",
       overflow: "hidden",
-      background: "linear-gradient(180deg, rgba(8,8,24,0.98), rgba(10,10,22,0.95))",
+      background:
+        "linear-gradient(180deg, var(--aethera-panel-top), var(--aethera-panel-bottom))",
       borderRadius: 8,
-      border: "1px solid var(--color-border-glass)",
+      border: "1px solid var(--aethera-panel-border)",
+      boxShadow: "0 16px 36px var(--aethera-panel-shadow)",
     }}>
       {/* Header */}
       <div style={{
@@ -42,7 +44,7 @@ export function VisualWorld() {
         justifyContent: "space-between",
         alignItems: "center",
         padding: "12px 16px",
-        borderBottom: "1px solid rgba(255,255,255,0.08)",
+        borderBottom: "1px solid var(--aethera-divider)",
         flexShrink: 0,
         flexWrap: "wrap",
         gap: 8,
@@ -80,7 +82,7 @@ export function VisualWorld() {
       }}>
         {/* Left: Root directory tree */}
         <div style={{
-          borderRight: "1px solid rgba(255,255,255,0.07)",
+          borderRight: "1px solid var(--aethera-divider)",
           padding: "14px 12px",
           overflowY: "auto",
         }}>
@@ -97,15 +99,15 @@ export function VisualWorld() {
                   gap: 8,
                   padding: "8px 10px",
                   borderRadius: 6,
-                  background: isActive ? "rgba(16, 185, 129, 0.12)" : "rgba(255,255,255,0.03)",
-                  border: isActive ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid rgba(255,255,255,0.06)",
+                  background: isActive ? "rgba(16, 185, 129, 0.12)" : "var(--aethera-card-bg)",
+                  border: isActive ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid var(--aethera-card-border)",
                   cursor: "default",
                 }}>
                   <div style={{
                     width: 26,
                     height: 26,
                     borderRadius: 5,
-                    background: isActive ? "rgba(16,185,129,0.18)" : "rgba(99,102,241,0.14)",
+                    background: isActive ? "rgba(16,185,129,0.18)" : "var(--color-indigo-muted)",
                     display: "grid",
                     placeItems: "center",
                     fontSize: 11,
@@ -142,7 +144,7 @@ export function VisualWorld() {
               fontSize: 13,
               textAlign: "center",
               padding: "40px 0",
-              border: "1px dashed rgba(255,255,255,0.12)",
+              border: "1px dashed var(--aethera-card-border)",
               borderRadius: 8,
             }}>
               Empty directory. Create files or directories to see them here.
@@ -157,7 +159,7 @@ export function VisualWorld() {
                   display: "flex",
                   flexDirection: "column",
                   padding: "12px 14px",
-                  background: isDir ? "rgba(8, 145, 178, 0.1)" : "rgba(245, 158, 11, 0.08)",
+                  background: isDir ? "var(--color-cyan-muted)" : "var(--color-amber-muted)",
                   borderRadius: 8,
                   border: isDir ? "1px solid rgba(6,182,212,0.22)" : "1px solid rgba(251,191,36,0.2)",
                   minHeight: 120,
@@ -170,7 +172,7 @@ export function VisualWorld() {
                       width: 36,
                       height: 36,
                       borderRadius: 7,
-                      background: "rgba(255,255,255,0.06)",
+                      background: "var(--aethera-card-bg)",
                       display: "grid",
                       placeItems: "center",
                       fontSize: 18,

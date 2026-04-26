@@ -21,6 +21,18 @@ export interface CodeFile {
   finalCode: string;
 }
 
+export interface InteractiveLessonSlide {
+  id: string;
+  heading: string;
+  body: string;
+  bullets?: string[];
+}
+
+export interface InteractiveLesson {
+  type: "sequence";
+  slides: InteractiveLessonSlide[];
+}
+
 export interface StepInfo {
   id: string;
   title: string;
@@ -30,6 +42,7 @@ export interface StepInfo {
   hasStarter: boolean;
   position: number;
   codeFiles?: CodeFile[];
+  interactiveLesson?: InteractiveLesson;
 }
 
 export interface ChallengeDetail {
