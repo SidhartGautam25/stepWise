@@ -9,6 +9,8 @@ import { AetheraProvider } from "../contexts/AetheraContext";
 import { VisualWorld } from "./Aethera/VisualWorld";
 import { WebTerminal } from "./Aethera/WebTerminal";
 import { AetheraEvaluator } from "./Aethera/AetheraEvaluator";
+import { InteractiveLessonSequence } from "./interactive/InteractiveLessonSequence";
+import { useAethera } from "../contexts/AetheraContext";
 
 interface ChallengeViewerProps {
   challenge: ChallengeDetail;
@@ -413,7 +415,10 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
         <div style={{ flex: "0 0 55%", display: "flex", flexDirection: "column", overflow: "hidden", borderRight: "1px solid var(--color-border)" }}>
           {leftPanel === "visualizer" ? (
             <div style={{ flex: 1, overflow: "auto", padding: 16 }}>
-              <VisualWorld />
+              <WebVisualizerPanel
+                stepId={activeStep?.id || ""}
+                interactiveLesson={activeStep?.interactiveLesson}
+              />
             </div>
           ) : (
             <div style={{ flex: 1, overflowY: "auto", background: "var(--color-surface)" }}>
@@ -453,4 +458,26 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   }
 
   return nonWebContent;
+}
+
+function WebVisualizerPanel({
+  stepId,
+  interactiveLesson,
+}: {
+  stepId: string;
+  interactiveLesson?: ChallengeDetail["steps"][number]["interactiveLesson"];
+}) {
+  const { markStepComplete } = useAethera();
+
+  if (interactiveLesson?.type === "sequence") {
+    return (
+      <InteractiveLessonSequence
+        lesson={interactiveLesson}
+        stepId={stepId}
+        onCompleted={markStepComplete}
+      />
+    );
+  }
+
+  return <VisualWorld />;
 }

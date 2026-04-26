@@ -15,6 +15,18 @@ export interface CodeFile {
   finalCode: string;
 }
 
+export interface InteractiveLessonSlide {
+  id: string;
+  heading: string;
+  body: string;
+  bullets?: string[];
+}
+
+export interface InteractiveLesson {
+  type: "sequence";
+  slides: InteractiveLessonSlide[];
+}
+
 export interface StepInfo {
   id: string;
   title: string;
@@ -25,6 +37,7 @@ export interface StepInfo {
   starterRoot?: string;
   workspaceRoot?: string;
   entrypoint?: string;
+  interactiveLesson?: InteractiveLesson;
   position: number;
   codeFiles?: CodeFile[];
 }
@@ -57,6 +70,54 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 function readString(v: unknown, field: string): string {
   if (typeof v !== "string" || !v) throw new Error(`Manifest field "${field}" is required`);
   return v;
+}
+
+function parseInteractiveLesson(
+  challengePath: string,
+  stepDir: string,
+  value: unknown,
+): InteractiveLesson | undefined {
+  if (!isRecord(value)) {
+    return undefined;
+  }
+
+  if (value.type !== "sequence" || typeof value.content !== "string") {
+    return undefined;
+  }
+
+  const lessonPath = path.resolve(stepDir, value.content);
+
+  if (!fs.existsSync(lessonPath)) {
+    throw new Error(`Interactive lesson file not found: ${lessonPath}`);
+  }
+
+  const parsed = JSON.parse(fs.readFileSync(lessonPath, "utf-8")) as unknown;
+
+  if (!isRecord(parsed) || !Array.isArray(parsed.slides)) {
+    throw new Error(`Invalid interactive lesson content for ${challengePath}`);
+  }
+
+  return {
+    type: "sequence",
+    slides: parsed.slides.map((slide, index) => {
+      if (!isRecord(slide)) {
+        throw new Error(`Invalid interactive lesson slide at index ${index}`);
+      }
+
+      return {
+        id: readString(slide.id, `interactiveLesson.slides[${index}].id`),
+        heading: readString(
+          slide.heading,
+          `interactiveLesson.slides[${index}].heading`,
+        ),
+        body: readString(slide.body, `interactiveLesson.slides[${index}].body`),
+        bullets: Array.isArray(slide.bullets)
+          ? slide.bullets
+              .filter((bullet): bullet is string => typeof bullet === "string")
+          : undefined,
+      };
+    }),
+  };
 }
 
 export function getChallengePath(challengeId: string): string {
@@ -134,6 +195,12 @@ export function getChallengeInfo(challengeId: string): ChallengeInfo {
       }
     }
 
+    const interactiveLesson = parseInteractiveLesson(
+      challengePath,
+      stepDir,
+      s.interactiveLesson,
+    );
+
     return {
       id: stepId,
       title: readString(s.title, `steps[${i}].title`),
@@ -144,6 +211,7 @@ export function getChallengeInfo(challengeId: string): ChallengeInfo {
       starterRoot,
       workspaceRoot,
       entrypoint,
+      interactiveLesson,
       position: i + 1,
       codeFiles,
     };

@@ -26,7 +26,9 @@ interface AetheraState {
   history: CommandLog[];
   execute: (input: string) => void;
   appendSystemLog: (msg: string) => void;
+  markStepComplete: (stepId: string) => void;
   checkStepCompletion: (stepId: string) => boolean;
+  completionVersion: number;
 }
 
 const initialState: Record<string, VfsNode> = {
@@ -60,6 +62,7 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
   const [vfs, setVfs] = useState<Record<string, VfsNode>>(initialState);
   const [cwd, setCwd] = useState<string[]>(["home", "student"]);
   const [history, setHistory] = useState<CommandLog[]>([]);
+  const [completedStepIds, setCompletedStepIds] = useState<string[]>([]);
 
   const pathToString = (path: string[]) => `/${path.join("/")}`;
 
@@ -234,6 +237,10 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
     setHistory(prev => [...prev, { command: "", output: msg, isError: false }]);
   }, []);
 
+  const markStepComplete = useCallback((stepId: string) => {
+    setCompletedStepIds((prev) => (prev.includes(stepId) ? prev : [...prev, stepId]));
+  }, []);
+
   const successfulCommands = () => history.filter((log) => log.command && !log.isError);
   const hasCommand = (command: string, path?: string) =>
     successfulCommands().some((log) => log.command.trim() === command && (!path || pathToString(log.cwd ?? []) === path));
@@ -248,6 +255,10 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
 
     if (stepId === "00-orientation") {
       return hasCommand("continue");
+    }
+
+    if (stepId === "00-welcome") {
+      return completedStepIds.includes(stepId);
     }
 
     if (stepId === "01-directories") {
@@ -287,7 +298,18 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AetheraContext.Provider value={{ vfs, cwd, history, execute, checkStepCompletion, appendSystemLog }}>
+    <AetheraContext.Provider
+      value={{
+        vfs,
+        cwd,
+        history,
+        execute,
+        checkStepCompletion,
+        appendSystemLog,
+        markStepComplete,
+        completionVersion: completedStepIds.length,
+      }}
+    >
       {children}
     </AetheraContext.Provider>
   );

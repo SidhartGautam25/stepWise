@@ -3,7 +3,7 @@ import { useAethera } from "../../contexts/AetheraContext";
 import { submitAttemptResult } from "./apiAdapter";
 
 export function AetheraEvaluator({ challengeId, stepId, userId, token, onPassed }: { challengeId: string, stepId: string, userId: string, token: string, onPassed: () => void }) {
-  const { history, checkStepCompletion } = useAethera();
+  const { history, checkStepCompletion, completionVersion } = useAethera();
   const submittedStepsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export function AetheraEvaluator({ challengeId, stepId, userId, token, onPassed 
           .catch(console.error);
       }
     }
-  }, [history, stepId, challengeId, userId, token, checkStepCompletion, onPassed]);
+  }, [history, stepId, challengeId, userId, token, checkStepCompletion, onPassed, completionVersion]);
 
   return null;
 }

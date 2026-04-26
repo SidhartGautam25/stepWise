@@ -2,6 +2,11 @@ import React, { useState, useRef, useEffect, MutableRefObject } from "react";
 import { useAethera } from "../../contexts/AetheraContext";
 
 const STEP_GUIDANCE: Record<string, string[]> = {
+  "00-welcome": [
+    "[SYSTEM] Step 0: Start with the interactive lesson on the left.",
+    "Use the Next button in the visual panel to move through the Linux introduction.",
+    "You do not need to type anything in the terminal for this step.",
+  ],
   "00-orientation": [
     "[SYSTEM] Step 0: How to read this screen.",
     "The visualizer on the left always shows your current directory and its contents.",
