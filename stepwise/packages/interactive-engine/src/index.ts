@@ -39,6 +39,7 @@ export { CollapsibleTree }      from "./components/CollapsibleTree";
 export { FileNavigator }        from "./components/FileNavigator";
 export { InfoCallout }          from "./components/InfoCallout";
 export { LessonSequenceShell }  from "./components/LessonSequenceShell";
+export { renderIllustration }   from "./renderIllustration";
 
 export { T }                    from "./tokens";
 export { useEngineStyles }      from "./useEngineStyles";
@@ -55,3 +56,18 @@ export type { TreeNode, CollapsibleTreeProps }                 from "./component
 export type { FileSystemTree, FileNavigatorProps }            from "./components/FileNavigator";
 export type { InfoCalloutVariant, InfoCalloutProps }          from "./components/InfoCallout";
 export type { LessonSlide, LessonSequenceShellProps }         from "./components/LessonSequenceShell";
+
+// IllustrationConfig — data-driven discriminated union + all variant types
+export type {
+  IllustrationConfig,
+  ExpandableCardListConfig,
+  ClickRevealGridConfig,
+  StepSimulatorConfig,
+  ComparePanelConfig,
+  JourneyFlowConfig,
+  InteractiveBucketsConfig,
+  CollapsibleTreeConfig,
+  FileNavigatorConfig,
+  InfoCalloutConfig,
+  MultiConfig,
+} from "./IllustrationConfig";

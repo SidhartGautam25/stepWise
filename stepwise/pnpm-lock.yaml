@@ -262,6 +262,9 @@ importers:
 
   packages/lesson-content:
     devDependencies:
+      '@repo/interactive-engine':
+        specifier: workspace:*
+        version: link:../interactive-engine
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
