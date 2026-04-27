@@ -123,7 +123,7 @@ export function SimulatedTerminal({
                 <div style={{ display: "flex", gap: 6, alignItems: "baseline", flexWrap: "wrap" }}>
                   <span style={{ color: "var(--terminal-prompt, #4ade80)", fontWeight: 700 }}>student</span>
                   <span style={{ color: "var(--terminal-text, rgba(200,200,200,0.5))" }}>:</span>
-                  <span style={{ color: "var(--terminal-path, #818cf8)" }}>~/{(state.cwd).join("/")}</span>
+                  <span style={{ color: "var(--terminal-path, #818cf8)" }}>{getDisplayPath(state.cwd)}</span>
                   {state.git?.initialized && (
                     <span style={{ color: "var(--terminal-branch, #fbbf24)", fontSize: 11 }}>({state.git.branch})</span>
                   )}
@@ -138,7 +138,7 @@ export function SimulatedTerminal({
                   whiteSpace: "pre-wrap",
                   fontFamily: "var(--font-mono, monospace)",
                 }}>
-                  {line}
+                  <AnsiText text={line} />
                 </div>
               ))}
             </div>
@@ -148,7 +148,7 @@ export function SimulatedTerminal({
           <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
             <span style={{ color: "var(--terminal-prompt, #4ade80)", fontWeight: 700 }}>student</span>
             <span style={{ color: "var(--terminal-text, rgba(200,200,200,0.5))" }}>:</span>
-            <span style={{ color: "var(--terminal-path, #818cf8)" }}>~/{(state.cwd).join("/")}</span>
+            <span style={{ color: "var(--terminal-path, #818cf8)" }}>{getDisplayPath(state.cwd)}</span>
             {state.git?.initialized && (
               <span style={{ color: "var(--terminal-branch, #fbbf24)", fontSize: 11 }}>({state.git.branch})</span>
             )}
@@ -166,7 +166,7 @@ export function SimulatedTerminal({
                 color: "var(--terminal-text, #e2e8f0)", fontFamily: "var(--font-mono, monospace)", fontSize: 13,
                 caretColor: "var(--terminal-path, #818cf8)",
               }}
-              placeholder={prompt}
+              // placeholder removed to avoid duplicate prompt text
             />
           </div>
         </div>
@@ -175,8 +175,55 @@ export function SimulatedTerminal({
   );
 }
 
-function buildPrompt(state: TerminalState, lang: TerminalLanguage): string {
-  const dir = state.cwd.join("/");
-  const branch = state.git?.initialized ? ` (${state.git.branch})` : "";
-  return lang === "git" ? `~/${dir}${branch} $ ` : `~/${dir} $ `;
+function getDisplayPath(cwd: string[]): string {
+  const path = cwd.join("/");
+  if (path === "home/student") return "~";
+  if (path.startsWith("home/student/")) {
+    return "~/" + path.slice("home/student/".length);
+  }
+  return "/" + path;
 }
+
+function buildPrompt(state: TerminalState, lang: TerminalLanguage): string {
+  const display = getDisplayPath(state.cwd);
+  const branch = state.git?.initialized ? ` (${state.git.branch})` : "";
+  return lang === "git" ? `${display}${branch} $ ` : `${display} $ `;
+}
+
+/**
+ * Lightweight ANSI escape sequence parser for basic colors.
+ * Supports: [34m (blue), [33m (yellow), [32m (green), [31m (red), [0m (reset)
+ */
+function AnsiText({ text }: { text: string }) {
+  // Use regex to find ANSI escape sequences (ESC character + [ + numbers + m)
+  const parts = text.split(/(\x1b\[[0-9;]*m)/g);
+  const segments: React.ReactNode[] = [];
+  let currentColor = "";
+
+  parts.forEach((part, i) => {
+    if (part.startsWith("\x1b[")) {
+      // Map ANSI codes to colors
+      if (part === "\x1b[0m") {
+        currentColor = "";
+      } else if (part === "\x1b[34m") {
+        currentColor = "#60a5fa"; // Bright Blue
+      } else if (part === "\x1b[33m") {
+        currentColor = "#fbbf24"; // Amber/Yellow
+      } else if (part === "\x1b[32m") {
+        currentColor = "#4ade80"; // Green
+      } else if (part === "\x1b[31m") {
+        currentColor = "#f87171"; // Red
+      }
+    } else if (part) {
+      segments.push(
+        <span key={i} style={{ color: currentColor || "inherit" }}>
+          {part}
+        </span>
+      );
+    }
+  });
+
+  if (segments.length === 0) return <>{text}</>;
+  return <>{segments}</>;
+}
+

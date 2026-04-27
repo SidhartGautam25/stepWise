@@ -104,8 +104,8 @@ export const linuxInterpreter: Interpreter = (raw, state) => {
     default:
       return err([
         `bash: ${cmd}: command not found`,
-        `\x1b[90mThis interactive lesson only supports specific commands: continue, pwd, cd, ls, mkdir, touch, echo, cat, rm, clear.\x1b[0m`,
-        `\x1b[90mPlease verify your spelling and try sticking to the lesson objectives!\x1b[0m`
+        `This interactive lesson only supports specific commands: continue, pwd, cd, ls, mkdir, touch, echo, cat, rm, clear.`,
+        `Please verify your spelling and try sticking to the lesson objectives!`
       ], state);
   }
 };
