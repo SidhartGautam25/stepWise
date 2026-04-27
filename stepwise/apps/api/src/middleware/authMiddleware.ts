@@ -7,6 +7,8 @@
 
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { verifyToken, type AuthContext } from "@repo/auth";
+import { findUserById } from "../repositories/userRepository";
+
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -32,9 +34,19 @@ export async function requireAuth(request: FastifyRequest, reply: FastifyReply):
   }
 
   try {
-    const user = await verifyToken(token);
-    request.user = user;
-    request.userId = user.sub;
+    const context = await verifyToken(token);
+
+    // Verify user exists in database
+    const user = await findUserById(context.sub);
+    if (!user) {
+      await reply.status(401).send({
+        error: "User not found. Your session may have been cleared. Please log in again.",
+      });
+      return;
+    }
+
+    request.user = context;
+    request.userId = context.sub;
   } catch {
     await reply.status(401).send({
       error: "Invalid or expired token. Run `stepwise login` to refresh.",
@@ -47,8 +59,11 @@ export async function optionalAuth(request: FastifyRequest, _reply: FastifyReply
   if (!token) return;
 
   try {
-    const user = await verifyToken(token);
-    request.user = user;
-    request.userId = user.sub;
+    const context = await verifyToken(token);
+    const user = await findUserById(context.sub);
+    if (user) {
+      request.user = context;
+      request.userId = context.sub;
+    }
   } catch { /* treat as unauthenticated */ }
 }
