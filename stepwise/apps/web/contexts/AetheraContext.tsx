@@ -24,6 +24,7 @@ interface AetheraState {
   vfs: Record<string, VfsNode>;
   cwd: string[];
   history: CommandLog[];
+  gitInited: boolean;
   execute: (input: string) => void;
   appendSystemLog: (msg: string) => void;
   markStepComplete: (stepId: string) => void;
@@ -465,26 +466,48 @@ export function AetheraProvider({ children, questMode = "linux" }: { children: R
   const successfulCommands = () => history.filter((log) => log.command && !log.isError);
   const hasCommand = (command: string, path?: string) =>
     successfulCommands().some((log) => log.command.trim() === command && (!path || pathToString(log.cwd ?? []) === path));
+  const hasCommandPrefix = (prefix: string) =>
+    successfulCommands().some((log) => log.command.trim().startsWith(prefix));
   const commandCount = (command: string, path?: string) =>
     successfulCommands().filter((log) => log.command.trim() === command && (!path || pathToString(log.cwd ?? []) === path)).length;
 
   const checkStepCompletion = (stepId: string): boolean => {
-    if (completedStepIds.includes(stepId)) {
-      return true;
+    if (completedStepIds.includes(stepId)) return true;
+
+    // ── Git quest steps ──────────────────────────────────────────────────────
+    if (stepId === "01-init") {
+      return gitInitedRef.current && hasCommandPrefix("git init") && hasCommandPrefix("ls");
     }
 
+    if (stepId === "02-first-commit") {
+      const branch = gitCurrentBranchRef.current;
+      const commits = gitCommitsRef.current.filter(c => c.branch === branch);
+      return commits.length >= 1 && hasCommandPrefix("git status") && hasCommandPrefix("git add") && hasCommandPrefix("git commit");
+    }
+
+    if (stepId === "03-history") {
+      const branch = gitCurrentBranchRef.current;
+      const commits = gitCommitsRef.current.filter(c => c.branch === branch);
+      return commits.length >= 2 && hasCommandPrefix("git log");
+    }
+
+    if (stepId === "04-branch") {
+      return gitBranchesRef.current.length >= 2 && hasCommandPrefix("git checkout");
+    }
+
+    // ── Git guide-only steps (completed via interactive lesson) ──────────────
+    if (["00-welcome", "00-world-before", "00-snapshot-idea", "00-git-the-answer"].includes(stepId)) {
+      return completedStepIds.includes(stepId);
+    }
+
+    // ── Linux quest steps ────────────────────────────────────────────────────
     const homeStudent = getDirNode(["home", "student"]);
     const projects = homeStudent?.["projects"];
     const projectDir = projects?.type === "directory" ? projects.children : undefined;
     const notes = projectDir?.["notes.txt"];
 
-    if (stepId === "00-welcome" || stepId === "00-why-os") {
-      return completedStepIds.includes(stepId);
-    }
-
-    if (stepId === "00-orientation") {
-      return hasCommand("continue");
-    }
+    if (stepId === "00-why-os") return completedStepIds.includes(stepId);
+    if (stepId === "00-orientation") return hasCommand("continue");
 
     if (stepId === "01-directories") {
       return !!(
@@ -528,6 +551,7 @@ export function AetheraProvider({ children, questMode = "linux" }: { children: R
         vfs,
         cwd,
         history,
+        gitInited: gitInitedRef.current,
         execute,
         checkStepCompletion,
         appendSystemLog,

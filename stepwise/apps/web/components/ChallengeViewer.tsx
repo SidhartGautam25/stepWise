@@ -23,8 +23,8 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   const [passedStepIds, setPassedStepIds] = useState<string[]>([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [terminalVisible, setTerminalVisible] = useState(false);
-  // Panels: "visualizer" | "content" — shown left of terminal in web mode
-  const [leftPanel, setLeftPanel] = useState<"visualizer" | "content">("content");
+  // Panels: "visualizer" | "content" | "both" — shown left of terminal in web mode
+  const [leftPanel, setLeftPanel] = useState<"visualizer" | "content" | "both">("content");
 
   // Ref passed down so WebTerminal can re-focus input after step advance
   const terminalFocusRef = useRef<() => void>(() => {});
@@ -70,8 +70,9 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   useEffect(() => {
     const needsTerminal = activeStep?.requiresTerminal !== false;
     setTerminalVisible(needsTerminal);
-    // Interactive lesson steps (visual guide): open the visualizer by default
-    // Terminal/task steps: open the step guide so users read instructions first
+    // Open interactive slides automatically if present, otherwise start on the story content.
+    // The user will read the story, then click 'Open Visualizer' when ready. The terminal 
+    // now has an inline checklist so they don't need to switch back to the story tab.
     setLeftPanel(activeStep?.interactiveLesson ? "visualizer" : "content");
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStepId]);
@@ -104,37 +105,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
         <h2 style={{ fontSize: 20, fontWeight: 800, color: "var(--color-text)", letterSpacing: "-0.02em" }}>{activeStep?.title}</h2>
       </div>
 
-      {/* Visualizer prompt callout — shown when the step has a visualizer or terminal */}
-      {(activeStep?.requiresTerminal !== false || activeStep?.interactiveLesson) && (
-        <div
-          onClick={() => setLeftPanel("visualizer")}
-          style={{
-            marginBottom: 24,
-            padding: "14px 18px",
-            borderRadius: 12,
-            background: "linear-gradient(135deg, rgba(99,102,241,0.1), rgba(34,197,94,0.08))",
-            border: "1px solid rgba(99,102,241,0.25)",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: 14,
-            transition: "all 0.2s",
-          }}
-        >
-          <span style={{ fontSize: 28, flexShrink: 0 }}>{activeStep?.interactiveLesson ? "🗺" : "💻"}</span>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: "var(--color-text)", marginBottom: 3 }}>
-              {activeStep?.interactiveLesson ? "See the visual lesson" : "Open the Visualizer"}
-            </div>
-            <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5 }}>
-              {activeStep?.interactiveLesson
-                ? "Click to explore this concept visually with interactive slides."
-                : "Click to see your filesystem state and run commands in the terminal."}
-            </div>
-          </div>
-          <span style={{ marginLeft: "auto", fontSize: 13, fontWeight: 700, color: "var(--color-indigo)", flexShrink: 0 }}>Open →</span>
-        </div>
-      )}
+
 
       {activeStep?.prompt && (
         <div style={{ marginBottom: 32, fontSize: 14, color: "var(--color-text)", lineHeight: 1.75 }}>
@@ -199,6 +170,79 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
             )}
           </div>
         </details>
+      )}
+
+      {/* Visualizer prompt callout — moved to bottom aligned with narrative flow */}
+      {(activeStep?.requiresTerminal !== false || activeStep?.interactiveLesson) && (
+        <div style={{
+          marginTop: 40,
+          padding: "20px 22px",
+          borderRadius: 16,
+          background: "linear-gradient(135deg, rgba(99,102,241,0.08), rgba(34,197,94,0.06))",
+          border: "1px solid rgba(99,102,241,0.25)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <span style={{ fontSize: 32, flexShrink: 0 }}>{activeStep?.interactiveLesson ? "🗺" : "💻"}</span>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "var(--color-text)", marginBottom: 4 }}>
+                {activeStep?.interactiveLesson ? "Ready to see the visual lesson?" : "Ready to enter the Visualizer?"}
+              </div>
+              <div style={{ fontSize: 13, color: "var(--color-muted)", lineHeight: 1.5 }}>
+                {activeStep?.interactiveLesson
+                  ? "Open the interactive slides to learn visually."
+                  : "Open your workspace to see files and run commands."}
+              </div>
+            </div>
+          </div>
+          
+          <div style={{ display: "flex", gap: 12, marginTop: 4 }}>
+            <button
+              onClick={() => setLeftPanel("visualizer")}
+              style={{
+                background: "var(--color-indigo)",
+                color: "#fff",
+                border: "none",
+                borderRadius: 8,
+                padding: "10px 20px",
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(99,102,241,0.3)",
+                transition: "all 0.2s",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              <span>{activeStep?.interactiveLesson ? "🗺" : "🗂"}</span>
+              Open Visualizer Only
+            </button>
+
+            <button
+              onClick={() => setLeftPanel("both")}
+              style={{
+                background: "var(--color-surface-2)",
+                color: "var(--color-text)",
+                border: "1px solid var(--color-border)",
+                borderRadius: 8,
+                padding: "10px 20px",
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "all 0.2s",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              <span>🗂 + 📖</span>
+              Open Visualizer + Guide Together
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -401,7 +445,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
 
         {/* Left panel switcher */}
         <div style={{ display: "flex", gap: 4, background: "var(--color-surface-2)", borderRadius: "var(--radius-sm)", padding: 3 }}>
-          {(["visualizer", "content"] as const).map((tab) => (
+          {(["visualizer", "content", "both"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setLeftPanel(tab)}
@@ -417,7 +461,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                 transition: "all 0.18s ease",
               }}
             >
-              {tab === "visualizer" ? "🗂 Visualizer" : "📖 Step Guide"}
+              {tab === "visualizer" ? "🗂 Visualizer" : tab === "content" ? "📖 Step Guide" : "🗂 + 📖 Split"}
             </button>
           ))}
         </div>
@@ -505,7 +549,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
         </div>
 
         {/* Left panel: Visualizer or Step Guide — expands to fill when terminal hidden */}
-        <div style={{ flex: terminalVisible ? "0 0 55%" : 1, display: "flex", flexDirection: "column", overflow: "hidden", borderRight: terminalVisible ? "1px solid var(--color-border)" : "none", transition: "flex 0.3s ease" }}>
+        <div style={{ flex: terminalVisible ? "0 0 55%" : 1, display: "flex", flexDirection: "column", overflow: "hidden", borderRight: terminalVisible ? "1px solid var(--color-border)" : "none", transition: "flex 0.3s ease", background: "var(--color-surface)" }}>
           {leftPanel === "visualizer" ? (
             <div style={{ flex: 1, overflow: "auto", padding: 16 }}>
               <WebVisualizerPanel
@@ -513,9 +557,21 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                 interactiveLesson={activeStep?.interactiveLesson}
               />
             </div>
-          ) : (
-            <div style={{ flex: 1, overflowY: "auto", background: "var(--color-surface)" }}>
+          ) : leftPanel === "content" ? (
+            <div style={{ flex: 1, overflowY: "auto" }}>
               {stepContent}
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
+              <div style={{ flex: "1 1 50%", overflowY: "auto", borderBottom: "1px solid var(--color-border)" }}>
+                {stepContent}
+              </div>
+              <div style={{ flex: "1 1 50%", overflow: "auto", padding: 16, background: "var(--color-surface-main)" }}>
+                <WebVisualizerPanel
+                  stepId={activeStep?.id || ""}
+                  interactiveLesson={activeStep?.interactiveLesson}
+                />
+              </div>
             </div>
           )}
         </div>

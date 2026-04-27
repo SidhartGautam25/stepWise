@@ -1,43 +1,24 @@
-# 📜 Reading Your History
+# 📜 Build and Read the Timeline
 
 This is Kavya's favourite part. She can finally see the *story* of her project — all the problems she solved, all the features she added — in clean, labelled order.
 
-Let's build a short history first, then explore it.
+Before we can see what a real timeline looks like, she needs to do some actual work. 
 
-## Build 2 more snapshots
+In this step, you will:
+1. Write a new function into an `app.js` file and take a snapshot.
+2. Edit that same `app.js` file to add a second function, and take another snapshot.
 
-```bash
-# Add Kavya's first feature
-echo "function addTask(text) { console.log('Added:', text); }" > app.js
-git add app.js
-git commit -m "Add addTask function"
+After you have three snapshots total (the one from the last step, plus these two), you will use the exact command that makes Git so powerful: `git log`.
 
-# Add another feature
-echo "function deleteTask(id) { console.log('Deleted:', id); }" >> app.js
-git add app.js
-git commit -m "Add deleteTask function"
-```
+### `git log`
 
-## Now read the timeline
+This command fetches a report directly from the hidden `.git` vault. It lists every snapshot taken, in the exact order they were taken. Adding `--oneline` tells Git to keep it short and sweet: just the ID and the description label you provided.
 
-```bash
-git log --oneline
-```
+No more "Folder of Doom". No more `working-v2-final.zip`. Just a crystal-clear history of what was done, and when.
 
-You'll see:
-```
-9g8h7i6 Add deleteTask function
-f4e5d6c Add addTask function
-a1b2c3d Start Kavya's todo app
-```
+---
 
-**That's it.** That's the timeline she always wished she had. Every snapshot. Every label. In order. Forever.
-
-No more folder of doom. No more "which version was working?"
-
-```bash
-# Want even more detail on one snapshot?
-git show HEAD
-```
-
-> **Run these in the terminal →**
+> **💻 Time to make history!**
+>
+> 1. Open the **Visualizer**. 
+> 2. Follow the checklist in the **Git Terminal** above your code to build the snapshots and view the log.

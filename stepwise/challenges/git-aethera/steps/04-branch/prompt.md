@@ -1,32 +1,26 @@
-# 🌿 Parallel Worlds — Branching
+# 🔀 Try dark mode — safely on a branch
 
-First, open the **Visual Guide** to understand branches — then practice in the terminal below.
+Kavya remembers her "Undo Spiral disaster". Remember when she tried to add dark mode, broke her app, hit Ctrl+Z 40 times, and lost everything?
 
-## Practice in the terminal
+This time, she will use a **Branch**.
 
-```bash
-# Set up a starting point
-git init
-echo "# Kavya's Todo App" > README.md
-git add . && git commit -m "Working todo app"
+A branch is like a parallel universe. When she creates a branch, Git instantly duplicates her *entire project* into a new timeline. She can code, experiment, and break everything in this parallel universe, and the main universe (called `main`) will be completely unaffected.
 
-# Create and switch to a dark mode branch
-git checkout -b feature/darkmode
+In this step, we will:
+1. Quickly run a setup command to get `main` ready.
+2. Tell Git to create and immediately switch to a new branch for her dark mode experiment.
+3. Pretend to edit code and take a snapshot on the *new* branch.
+4. Do the magic trick: tell Git to switch us back to `main`, and watch the experimental code instantly disappear to safety.
 
-# Experiment freely — this doesn't touch main
-echo "dark-mode=true" >> README.md
-git add . && git commit -m "Experiment: add dark mode setting"
+### What is `git checkout`?
 
-# See all branches
-git branch
+Think of `git checkout` as a time machine / teleporter.
+If you say `git checkout main`, the Git librarian instantly reaches into the `.git` vault, pulls out the exact state of the `main` branch, and replaces all the files in your folder so they perfectly match `main`.
+If you say `git checkout feature/darkmode`, the librarian instantly rips out those files and replaces them with your dark mode files.
 
-# Switch back to main — experiment disappears from your files!
-git checkout main
-cat README.md
+---
 
-# The experiment is safe on its branch
-git checkout feature/darkmode
-cat README.md
-```
-
-> **Start with the Visual Guide, then practice below →**
+> **💻 Time to branch out!**
+>
+> 1. Open the **Visualizer**. 
+> 2. Follow the checklist in the **Git Terminal** above your code to create a branch, write an experiment, and switch branches. Watch the `README.md` length change instantly depending on which branch you are on!
