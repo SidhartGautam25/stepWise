@@ -1,117 +1,121 @@
 import React, { useState, useRef, useEffect, MutableRefObject } from "react";
 import { useAethera } from "../../contexts/AetheraContext";
 
-const STEP_GUIDANCE: Record<string, string[]> = {
-  "00-welcome": [
-    "[SYSTEM] Step 0: Start with the interactive lesson on the left.",
-    "Use the Next button in the visual panel to move through the Linux introduction.",
-    "You do not need to type anything in the terminal for this step.",
-  ],
-  "00-why-os": [
-    "[SYSTEM] Step 1: Continue with the interactive operating systems lesson.",
-    "Use the Next button in the visual panel to understand hardware, storage, and why files and directories exist.",
-    "You do not need to type anything in the terminal for this step either.",
-  ],
+// ── Step guidance: system log (terminal history announcement) ─────────────────
+const STEP_LOG: Record<string, string[]> = {
+  // linux
   "00-orientation": [
-    "[SYSTEM] Step 0: How to read this screen.",
-    "The visualizer on the left always shows your current directory and its contents.",
-    "Each tile is a directory or file — showing name, owner, permissions, and content.",
-    "Green terminal output means the command worked. Red means Linux rejected it.",
-    "Type: continue",
+    "[SYSTEM] How to read this screen.",
+    "The visualizer shows your current directory and contents.",
+    "Green = success · Red = error. Type: continue",
   ],
   "01-directories": [
     "[SYSTEM] Step 1: Directories and listing.",
-    "Run these commands in order: pwd, ls, mkdir projects, ls",
-    "pwd prints where you are. ls lists what is here. mkdir creates a new directory.",
+    "Run in order: pwd, ls, mkdir projects, ls",
   ],
   "02-navigation": [
     "[SYSTEM] Step 2: Moving between directories.",
-    "Practice using the directory you created earlier.",
-    "Run these commands: cd projects, pwd, cd .., cd projects",
-    "cd moves your current directory. cd .. moves one level up.",
+    "Run: cd projects, pwd, cd .., cd projects",
   ],
   "03-files-and-listing": [
-    "[SYSTEM] Step 3: Files, content, and listing.",
-    "Stay inside /home/student/projects.",
-    "Run these commands: touch notes.txt, echo hello linux > notes.txt, ls, cat notes.txt",
-    "touch creates a file. echo writes text. cat prints file content.",
+    "[SYSTEM] Step 3: Files, content, listing.",
+    "Run: touch notes.txt, echo hello linux > notes.txt, ls, cat notes.txt",
   ],
-  // ── git-aethera ────────────────────────────────────────────────────────────
-  "01-init": [
-    "[SYSTEM] Git Step 1: Turn a folder into a repository.",
-    "Run: mkdir todo-app && cd todo-app",
-    "Run: git init",
-    "Run: ls -la   → look for the .git folder Git created",
-  ],
-  "02-first-commit": [
-    "[SYSTEM] Git Step 2: Take your first snapshot.",
-    "Run: echo \"# Kavya's Todo App\" > README.md",
-    "Run: git status   → file is 'untracked' (Git sees it but hasn't saved it)",
-    "Run: git add README.md   → put it in the bag (staging)",
-    "Run: git status   → notice it changed to 'Changes to be committed'",
-    "Run: git commit -m \"Start Kavya's todo app\"   → take the snapshot!",
-    "Run: git status   → 'nothing to commit' = snapshot saved",
-  ],
-  "03-history": [
-    "[SYSTEM] Git Step 3: Build a history and explore it.",
-    "Run: echo \"function addTask(text) {}\" > app.js && git add app.js && git commit -m \"Add addTask\"",
-    "Run: echo \"function deleteTask(id) {}\" >> app.js && git add app.js && git commit -m \"Add deleteTask\"",
-    "Run: git log --oneline   → your clean timeline!",
-  ],
-  "04-branch": [
-    "[SYSTEM] Git Step 4: Create a branch for safe experiments.",
-    "First set up: git init && echo '# Todo App' > README.md && git add . && git commit -m \"Working todo app\"",
-    "Run: git checkout -b feature/darkmode",
-    "Run: echo \"dark-mode=true\" >> README.md && git add . && git commit -m \"Experiment with dark mode\"",
-    "Run: git branch   → see both branches",
-    "Run: git checkout main && cat README.md   → experiment gone from view, but safe!",
-    "Run: git checkout feature/darkmode && cat README.md   → the experiment is here",
-  ],
+};
+
+// ── Step command checklist for git terminal steps ─────────────────────────────
+interface CheckItem { cmd: string; hint: string; }
+const GIT_STEP_GUIDE: Record<string, { title: string; context: string; items: CheckItem[] }> = {
+  "01-init": {
+    title: "Turn Kavya's folder into a Git repository",
+    context: "Kavya is ready. She has her todo-app code. Now she's going to tell Git to keep an eye on this folder — forever. One command does it.",
+    items: [
+      { cmd: "mkdir todo-app", hint: "Create the project folder" },
+      { cmd: "cd todo-app", hint: "Go inside it" },
+      { cmd: "git init", hint: "Tell Git: 'watch this folder'" },
+      { cmd: "ls -la", hint: "See the hidden .git folder Git created" },
+    ],
+  },
+  "02-first-commit": {
+    title: "Take Kavya's first snapshot",
+    context: "Kavya creates her first file, then goes through Git's 3 zones: Working → Staging → Committed. Each git status call shows her exactly where things are.",
+    items: [
+      { cmd: 'echo "# Kavya\'s Todo App" > README.md', hint: "Create the first file" },
+      { cmd: "git status", hint: "See: README.md is untracked" },
+      { cmd: "git add README.md", hint: "Stage it (pack it in the bag)" },
+      { cmd: "git status", hint: "See: now says 'to be committed'" },
+      { cmd: 'git commit -m "Start Kavya\'s todo app"', hint: "Take the snapshot!" },
+      { cmd: "git status", hint: "See: nothing to commit — done ✓" },
+    ],
+  },
+  "03-history": {
+    title: "Build a history of snapshots",
+    context: "Kavya adds two more features and commits each. Then she runs git log to see her clean timeline — no more mystery zip files.",
+    items: [
+      { cmd: 'echo "function addTask(text) {}" > app.js', hint: "Write a function" },
+      { cmd: "git add app.js", hint: "Stage it" },
+      { cmd: 'git commit -m "Add addTask"', hint: "Snapshot 2" },
+      { cmd: 'echo "function deleteTask(id) {}" >> app.js', hint: "Add another function" },
+      { cmd: "git add app.js", hint: "Stage it" },
+      { cmd: 'git commit -m "Add deleteTask"', hint: "Snapshot 3" },
+      { cmd: "git log --oneline", hint: "See the clean timeline!" },
+    ],
+  },
+  "04-branch": {
+    title: "Try dark mode — safely on a branch",
+    context: "Kavya remembers the dark mode disaster. This time she creates a branch — a separate timeline — so her main code is never touched.",
+    items: [
+      { cmd: "git checkout -b feature/darkmode", hint: "Create + switch to new branch" },
+      { cmd: 'echo "dark-mode=true" >> README.md', hint: "Add dark mode code" },
+      { cmd: "git add .", hint: "Stage all changes" },
+      { cmd: 'git commit -m "Experiment with dark mode"', hint: "Snapshot on the new branch" },
+      { cmd: "git branch", hint: "See both branches" },
+      { cmd: "git checkout main", hint: "Switch back to main" },
+      { cmd: "cat README.md", hint: "Dark mode gone! But it's safe on the other branch" },
+    ],
+  },
 };
 
 interface WebTerminalProps {
   activeStepId?: string;
   activeStepTitle?: string;
-  /** Mutable ref — ChallengeViewer assigns a focus() callback here */
   focusRef?: MutableRefObject<() => void>;
 }
 
 export function WebTerminal({ activeStepId, activeStepTitle, focusRef }: WebTerminalProps) {
-  const { cwd, history, execute, appendSystemLog } = useAethera();
+  const { cwd, history, execute, appendSystemLog, questMode } = useAethera();
+  const isGit = questMode === "git";
   const [input, setInput] = useState("");
+  const [guideCollapsed, setGuideCollapsed] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const announcedStepRef = useRef<string | undefined>(undefined);
 
-  // Expose focus() to parent via ref
   useEffect(() => {
-    if (focusRef) {
-      focusRef.current = () => inputRef.current?.focus();
-    }
+    if (focusRef) focusRef.current = () => inputRef.current?.focus();
   }, [focusRef]);
 
-  // Auto-scroll terminal history to bottom on every new entry
   useEffect(() => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
     }
   }, [history]);
 
-  // Announce step guidance when step changes
   useEffect(() => {
     if (!activeStepId || announcedStepRef.current === activeStepId) return;
     announcedStepRef.current = activeStepId;
+    setGuideCollapsed(false); // open guide on each new step
 
-    const messages = STEP_GUIDANCE[activeStepId] ?? [
-      `[SYSTEM] Quest Goal: ${activeStepTitle ?? "Continue the lesson."}`,
-      "Read the prompt on the left, then enter the required command here.",
-    ];
+    const logMessages = STEP_LOG[activeStepId] ?? [];
+    if (logMessages.length > 0) {
+      logMessages.forEach(appendSystemLog);
+    } else if (!isGit) {
+      appendSystemLog(`[SYSTEM] Quest Goal: ${activeStepTitle ?? "Continue the lesson."}`);
+      appendSystemLog("Read the prompt on the left, then enter the required command here.");
+    }
 
-    messages.forEach(appendSystemLog);
-
-    // Focus input whenever a new step starts
     window.setTimeout(() => inputRef.current?.focus(), 60);
-  }, [activeStepId, activeStepTitle, appendSystemLog]);
+  }, [activeStepId, activeStepTitle, appendSystemLog, isGit]);
 
   const handleRun = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && input.trim()) {
@@ -119,6 +123,25 @@ export function WebTerminal({ activeStepId, activeStepTitle, focusRef }: WebTerm
       setInput("");
     }
   };
+
+  // Calculate which checklist items are done based on command history
+  const gitGuide = activeStepId ? GIT_STEP_GUIDE[activeStepId] : undefined;
+  const successCmds = history.filter(l => l.command && !l.isError).map(l => l.command.trim());
+  const isDone = (itemCmd: string): boolean => {
+    const cleaned = itemCmd.replace(/\\/g, "").trim();
+    return successCmds.some(cmd => {
+      const c = cmd.trim();
+      if (c === cleaned) return true;
+      // fuzzy: if the item's first word matches and full prefix matches
+      const firstWord = cleaned.split(" ")[0] || "";
+      if (firstWord === "git" && c.startsWith(cleaned.split(" ").slice(0, 2).join(" "))) return true;
+      if (c.startsWith(firstWord) && cleaned.length > 3 && c.includes(cleaned.slice(0, 8))) return true;
+      return false;
+    });
+  };
+
+  const doneCount = gitGuide ? gitGuide.items.filter(item => isDone(item.cmd)).length : 0;
+  const totalCount = gitGuide?.items.length ?? 0;
 
   return (
     <div style={{
@@ -146,13 +169,105 @@ export function WebTerminal({ activeStepId, activeStepTitle, focusRef }: WebTerm
         <div style={{ width: 11, height: 11, borderRadius: "50%", background: "#f59e0b" }} />
         <div style={{ width: 11, height: 11, borderRadius: "50%", background: "#10b981" }} />
         <span style={{ marginLeft: 10, fontSize: 12, color: "var(--color-muted)", fontWeight: 600, letterSpacing: "0.05em" }}>
-          Linux Practice Terminal
+          {isGit ? "Git Terminal" : "Linux Practice Terminal"}
         </span>
         <div style={{ flex: 1 }} />
         <span style={{ fontSize: 11, color: "var(--color-muted)", fontFamily: "var(--font-mono)" }}>
           /{cwd.join("/")}
         </span>
       </div>
+
+      {/* ── Git Step Guide Strip ─────────────────────────────────────────────── */}
+      {isGit && gitGuide && (
+        <div style={{
+          background: "rgba(99,102,241,0.06)",
+          borderBottom: "1px solid rgba(99,102,241,0.2)",
+          flexShrink: 0,
+          overflow: "hidden",
+        }}>
+          {/* Guide header — always visible */}
+          <div
+            onClick={() => setGuideCollapsed(v => !v)}
+            style={{
+              padding: "10px 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              cursor: "pointer",
+              userSelect: "none",
+            }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 11, fontWeight: 800, color: "var(--color-indigo-light)", letterSpacing: "-0.01em" }}>
+                {gitGuide.title}
+              </div>
+              <div style={{ fontSize: 10, color: "var(--color-muted)", marginTop: 2 }}>
+                {doneCount}/{totalCount} commands done
+              </div>
+            </div>
+            {/* Progress bar */}
+            <div style={{ width: 80, height: 4, background: "rgba(99,102,241,0.15)", borderRadius: 2, overflow: "hidden" }}>
+              <div style={{
+                height: "100%",
+                width: `${totalCount > 0 ? (doneCount / totalCount) * 100 : 0}%`,
+                background: doneCount === totalCount ? "var(--color-emerald)" : "var(--color-indigo)",
+                borderRadius: 2,
+                transition: "width 0.4s ease",
+              }} />
+            </div>
+            <span style={{ fontSize: 10, color: "var(--color-muted)" }}>{guideCollapsed ? "▼" : "▲"}</span>
+          </div>
+
+          {/* Context + checklist — collapsible */}
+          {!guideCollapsed && (
+            <div style={{ padding: "0 16px 12px" }}>
+              <div style={{ fontSize: 11, color: "var(--color-muted)", lineHeight: 1.6, marginBottom: 10, fontFamily: "var(--font-sans, sans-serif)" }}>
+                {gitGuide.context}
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                {gitGuide.items.map((item, idx) => {
+                  const done = isDone(item.cmd);
+                  return (
+                    <div key={idx} style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: 8,
+                      opacity: done ? 0.6 : 1,
+                      transition: "opacity 0.3s",
+                    }}>
+                      <div style={{
+                        width: 16, height: 16, borderRadius: 4, flexShrink: 0, marginTop: 1,
+                        background: done ? "rgba(34,197,94,0.2)" : "rgba(99,102,241,0.12)",
+                        border: `1px solid ${done ? "rgba(34,197,94,0.4)" : "rgba(99,102,241,0.3)"}`,
+                        display: "grid", placeItems: "center",
+                        fontSize: 9,
+                        color: done ? "var(--color-emerald)" : "transparent",
+                        transition: "all 0.3s",
+                      }}>
+                        {done ? "✓" : ""}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <code style={{
+                          fontSize: 11,
+                          color: done ? "var(--color-muted)" : "var(--color-indigo-light)",
+                          textDecoration: done ? "line-through" : "none",
+                          display: "block",
+                          overflowX: "auto",
+                          whiteSpace: "pre",
+                        }}>
+                          {item.cmd}
+                        </code>
+                        <div style={{ fontSize: 10, color: "var(--color-muted)", marginTop: 1 }}>
+                          {item.hint}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* History scroll area */}
       <div
@@ -189,7 +304,7 @@ export function WebTerminal({ activeStepId, activeStepTitle, focusRef }: WebTerm
           return (
             <div key={idx} style={{ marginBottom: 10 }}>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "baseline" }}>
-                <span style={{ color: "var(--color-emerald)", fontWeight: 700, fontSize: 12 }}>student@linux</span>
+                <span style={{ color: "var(--color-emerald)", fontWeight: 700, fontSize: 12 }}>{isGit ? "kavya@git" : "student@linux"}</span>
                 <span style={{ color: "var(--color-muted)", fontSize: 12 }}>:</span>
                 <span style={{ color: "var(--color-indigo-light)", fontWeight: 600, fontSize: 12 }}>/{(log.cwd ?? cwd).join("/")}</span>
                 <span style={{ color: "var(--color-muted)", fontSize: 12 }}>$</span>
@@ -213,7 +328,7 @@ export function WebTerminal({ activeStepId, activeStepTitle, focusRef }: WebTerm
 
         {/* Active input line */}
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
-          <span style={{ color: "var(--color-emerald)", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>student@linux</span>
+          <span style={{ color: "var(--color-emerald)", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>{isGit ? "kavya@git" : "student@linux"}</span>
           <span style={{ color: "var(--color-muted)", fontSize: 12, flexShrink: 0 }}>:</span>
           <span style={{ color: "var(--color-indigo-light)", fontWeight: 600, fontSize: 12, flexShrink: 0 }}>/{cwd.join("/")}</span>
           <span style={{ color: "var(--color-muted)", fontSize: 12, margin: "0 2px", flexShrink: 0 }}>$</span>

@@ -47,19 +47,7 @@
       "workspace": {},
       "tests": {}
     },
-    {
-      "id": "00-git-the-answer",
-      "title": "Meet Git — Your Version Control System",
-      "prompt": "prompt.md",
-      "explanation": "explanation.md",
-      "requiresTerminal": false,
-      "interactiveLesson": {
-        "type": "sequence",
-        "content": "interactive-sequence.json"
-      },
-      "workspace": {},
-      "tests": {}
-    },
+
     {
       "id": "01-init",
       "title": "Starting a Repository",
