@@ -24,7 +24,7 @@ import type { FileSystemTree }       from "./components/FileNavigator";
 import type { InfoCalloutVariant }   from "./components/InfoCallout";
 import type { CommitNode, GitBranchLine }      from "./components/GitCommitGraph";
 import type { StagingFile }          from "./components/GitStagingArea";
-import type { FileNode as TermFileNode } from "@repo/terminal-engine";
+import type { VfsNode as TermVfsNode } from "@repo/terminal-engine";
 
 // Each variant is `{ type: "<ComponentName>" } & relevant props`
 
@@ -135,7 +135,7 @@ export interface SimulatedTerminalConfig {
   type: "SimulatedTerminal";
   language?: "git" | "linux";
   hint?: string;
-  initialFiles?: TermFileNode[];
+  initialVfs?: Record<string, TermVfsNode>;
   preHistory?: string[];
   height?: number;
 }

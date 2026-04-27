@@ -167,7 +167,7 @@ export function renderIllustration(config: IllustrationConfig): ReactNode {
         <SimulatedTerminal
           language={config.language}
           hint={config.hint}
-          initialFiles={config.initialFiles}
+          initialVfs={config.initialVfs}
           preHistory={config.preHistory}
           height={config.height ?? 280}
         />

@@ -59,6 +59,23 @@ The platform is broadly split into two root directories:
 
 ---
 
+## 💎 The Hybrid Content Strategy
+
+StepWise employs a "Best of Both Worlds" data strategy to ensure high-performance curriculum delivery while maintaining rich interactive depth.
+
+### 1. Database Seeding (The Backbone)
+- **What**: Challenge manifests (`challenge.json`), step metadata, and file paths.
+- **Why**: Allows for fast querying of course lists, progress tracking, and high-level routing. 
+- **Tooling**: `@repo/db`'s `seed.ts` script automates this process by scraping the `challenges/` directory.
+
+### 2. `@repo/lesson-content` (The Brain)
+- **What**: React illustrations, interactive slide configurations, and logic-heavy assets.
+- **Why**: Many interactive elements (like the Git Commit Graph or custom Linux simulations) require non-serializable logic and complex Typescript/React code that shouldn't live in a DB string.
+- **Linkage**: The UI uses the `challengeId` or `stepId` from the DB to dynamically import the corresponding rich logic from this package.
+
+
+---
+
 ## 🔄 The Data Flow Blueprint (How they work together)
 
 Let's walk through an entire student cycle:

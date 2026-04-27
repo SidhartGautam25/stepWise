@@ -3,77 +3,57 @@
 /**
  * SimulatedTerminal — Language-aware in-browser terminal
  *
- * Renders a fully functional simulated terminal that interprets commands
- * locally using the appropriate interpreter (git or linux).
- * No Docker container needed — great for interactive lesson slides.
- *
- * Props:
- *   language        – "git" | "linux"
- *   initialFiles    – files to seed in the working directory
- *   preHistory      – commands to pre-run and show on mount
- *   hint            – small label shown above the terminal
- *   height          – optional fixed height
+ * Renders a fully functional simulated terminal.
+ * Can be controlled via `terminalProps`, or operates autonomously if none provided.
  */
 
 import React, { useEffect, useRef, useState } from "react";
-import type { FileNode, TerminalState, CommandResult } from "../types";
-import { makeDefaultState } from "../types";
-import { gitInterpreter } from "../interpreters/gitInterpreter";
-import { linuxInterpreter } from "../interpreters/linuxInterpreter";
-
-export type TerminalLanguage = "git" | "linux";
+import type { TerminalState, VfsNode } from "../types";
+import { TerminalLanguage } from "../types";
+import { useTerminal, TerminalLog } from "../useTerminal";
 
 export interface SimulatedTerminalProps {
   language?: TerminalLanguage;
-  initialFiles?: FileNode[];
+  initialVfs?: Record<string, VfsNode>;
   preHistory?: string[];
   hint?: string;
   height?: number | string;
+  // Controlled state
+  state?: TerminalState;
+  history?: TerminalLog[];
+  execute?: (cmd: string) => void;
 }
 
-interface HistoryEntry {
-  command?: string;
-  lines: string[];
-  error: boolean;
-}
-
-function getInterpreter(lang: TerminalLanguage) {
-  return lang === "git" ? gitInterpreter : linuxInterpreter;
-}
-
-function runCommand(raw: string, state: TerminalState, lang: TerminalLanguage): CommandResult {
-  return getInterpreter(lang)(raw, state);
-}
 
 export function SimulatedTerminal({
   language = "git",
-  initialFiles = [],
+  initialVfs = {},
   preHistory = [],
   hint,
   height = "100%",
+  state: extState,
+  history: extHistory,
+  execute: extExecute,
 }: SimulatedTerminalProps) {
-  const [state, setState] = useState<TerminalState>(() => makeDefaultState({ files: initialFiles }));
-  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  // If controlled externally, ignore internal hook. If uncontrolled, use internal hook.
+  const internal = useTerminal({ language, initialVfs });
+  const isControlled = extState !== undefined && extExecute !== undefined;
+
+  // Run preHistory commands on mount (only for uncontrolled mode)
+  const didPre = React.useRef(false);
+  React.useEffect(() => {
+    if (isControlled || didPre.current || preHistory.length === 0) return;
+    didPre.current = true;
+    preHistory.forEach(cmd => internal.execute(cmd));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const state = isControlled ? extState! : internal.state;
+  const history = isControlled ? (extHistory || []) : internal.history;
+  const execute = isControlled ? extExecute! : internal.execute;
+
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const didPre = useRef(false);
-
-  // Run preHistory commands on mount
-  useEffect(() => {
-    if (didPre.current || preHistory.length === 0) return;
-    didPre.current = true;
-    let s = makeDefaultState({ files: initialFiles });
-    const entries: HistoryEntry[] = [];
-    preHistory.forEach(cmd => {
-      const res = runCommand(cmd, s, language);
-      entries.push({ command: cmd, lines: res.lines, error: res.error });
-      s = res.newState;
-    });
-    setState(s);
-    setHistory(entries);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Auto-scroll
   useEffect(() => {
@@ -85,10 +65,7 @@ export function SimulatedTerminal({
     const cmd = input.trim();
     setInput("");
     if (!cmd) return;
-    if (cmd === "clear") { setHistory([]); return; }
-    const res = runCommand(cmd, state, language);
-    setState(res.newState);
-    setHistory(h => [...h, { command: cmd, lines: res.lines, error: res.error }]);
+    execute(cmd);
   };
 
   const prompt = buildPrompt(state, language);
@@ -106,11 +83,11 @@ export function SimulatedTerminal({
           minHeight: 0,
           display: "flex",
           flexDirection: "column",
-          background: "#0d1117",
+          background: "var(--terminal-bg, #0d1117)",
           borderRadius: 12,
-          border: "1px solid rgba(255,255,255,0.08)",
+          border: "1px solid var(--terminal-border, rgba(255,255,255,0.08))",
           overflow: "hidden",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
           fontFamily: "var(--font-mono, monospace)",
           fontSize: 13,
         }}
@@ -118,8 +95,8 @@ export function SimulatedTerminal({
         {/* Title bar */}
         <div style={{
           display: "flex", alignItems: "center", gap: 7, padding: "10px 16px",
-          borderBottom: "1px solid rgba(255,255,255,0.07)",
-          background: "rgba(255,255,255,0.03)", flexShrink: 0,
+          borderBottom: "1px solid var(--terminal-border, rgba(255,255,255,0.07))",
+          background: "var(--terminal-titlebar, rgba(255,255,255,0.03))", flexShrink: 0,
         }}>
           <div style={{ width: 11, height: 11, borderRadius: "50%", background: "#ef4444" }} />
           <div style={{ width: 11, height: 11, borderRadius: "50%", background: "#f59e0b" }} />
@@ -144,24 +121,24 @@ export function SimulatedTerminal({
             <div key={i} style={{ marginBottom: 10 }}>
               {entry.command && (
                 <div style={{ display: "flex", gap: 6, alignItems: "baseline", flexWrap: "wrap" }}>
-                  <span style={{ color: "#4ade80", fontWeight: 700 }}>student</span>
-                  <span style={{ color: "rgba(255,255,255,0.3)" }}>:</span>
-                  <span style={{ color: "#818cf8" }}>~/{(state.cwd).join("/")}</span>
+                  <span style={{ color: "var(--terminal-prompt, #4ade80)", fontWeight: 700 }}>student</span>
+                  <span style={{ color: "var(--terminal-text, rgba(200,200,200,0.5))" }}>:</span>
+                  <span style={{ color: "var(--terminal-path, #818cf8)" }}>{getDisplayPath(state.cwd)}</span>
                   {state.git?.initialized && (
-                    <span style={{ color: "#fbbf24", fontSize: 11 }}>({state.git.branch})</span>
+                    <span style={{ color: "var(--terminal-branch, #fbbf24)", fontSize: 11 }}>({state.git.branch})</span>
                   )}
-                  <span style={{ color: "rgba(255,255,255,0.4)" }}>$</span>
-                  <span style={{ color: "#e2e8f0" }}>{entry.command}</span>
+                  <span style={{ color: "var(--terminal-text, #e2e8f0)", opacity: 0.5 }}>$</span>
+                  <span style={{ color: "var(--terminal-text, #e2e8f0)" }}>{entry.command}</span>
                 </div>
               )}
               {entry.lines.map((line, li) => (
                 <div key={li} style={{
-                  color: entry.error ? "#f87171" : "#86efac",
+                  color: entry.error ? "var(--terminal-error, #f87171)" : "var(--terminal-success, #86efac)",
                   fontSize: 12, lineHeight: 1.55, paddingLeft: 2,
                   whiteSpace: "pre-wrap",
                   fontFamily: "var(--font-mono, monospace)",
                 }}>
-                  {line}
+                  <AnsiText text={line} />
                 </div>
               ))}
             </div>
@@ -169,13 +146,13 @@ export function SimulatedTerminal({
 
           {/* Active input */}
           <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-            <span style={{ color: "#4ade80", fontWeight: 700 }}>student</span>
-            <span style={{ color: "rgba(255,255,255,0.3)" }}>:</span>
-            <span style={{ color: "#818cf8" }}>~/{(state.cwd).join("/")}</span>
+            <span style={{ color: "var(--terminal-prompt, #4ade80)", fontWeight: 700 }}>student</span>
+            <span style={{ color: "var(--terminal-text, rgba(200,200,200,0.5))" }}>:</span>
+            <span style={{ color: "var(--terminal-path, #818cf8)" }}>{getDisplayPath(state.cwd)}</span>
             {state.git?.initialized && (
-              <span style={{ color: "#fbbf24", fontSize: 11 }}>({state.git.branch})</span>
+              <span style={{ color: "var(--terminal-branch, #fbbf24)", fontSize: 11 }}>({state.git.branch})</span>
             )}
-            <span style={{ color: "rgba(255,255,255,0.4)" }}>$</span>
+            <span style={{ color: "var(--terminal-text, #e2e8f0)", opacity: 0.5 }}>$</span>
             <input
               ref={inputRef}
               value={input}
@@ -186,10 +163,10 @@ export function SimulatedTerminal({
               autoComplete="off"
               style={{
                 flex: 1, minWidth: 0, background: "transparent", border: "none", outline: "none",
-                color: "#e2e8f0", fontFamily: "var(--font-mono, monospace)", fontSize: 13,
-                caretColor: "#818cf8",
+                color: "var(--terminal-text, #e2e8f0)", fontFamily: "var(--font-mono, monospace)", fontSize: 13,
+                caretColor: "var(--terminal-path, #818cf8)",
               }}
-              placeholder={prompt}
+              // placeholder removed to avoid duplicate prompt text
             />
           </div>
         </div>
@@ -198,8 +175,55 @@ export function SimulatedTerminal({
   );
 }
 
-function buildPrompt(state: TerminalState, lang: TerminalLanguage): string {
-  const dir = state.cwd.join("/");
-  const branch = state.git?.initialized ? ` (${state.git.branch})` : "";
-  return lang === "git" ? `~/${dir}${branch} $ ` : `~/${dir} $ `;
+function getDisplayPath(cwd: string[]): string {
+  const path = cwd.join("/");
+  if (path === "home/student") return "~";
+  if (path.startsWith("home/student/")) {
+    return "~/" + path.slice("home/student/".length);
+  }
+  return "/" + path;
 }
+
+function buildPrompt(state: TerminalState, lang: TerminalLanguage): string {
+  const display = getDisplayPath(state.cwd);
+  const branch = state.git?.initialized ? ` (${state.git.branch})` : "";
+  return lang === "git" ? `${display}${branch} $ ` : `${display} $ `;
+}
+
+/**
+ * Lightweight ANSI escape sequence parser for basic colors.
+ * Supports: [34m (blue), [33m (yellow), [32m (green), [31m (red), [0m (reset)
+ */
+function AnsiText({ text }: { text: string }) {
+  // Use regex to find ANSI escape sequences (ESC character + [ + numbers + m)
+  const parts = text.split(/(\x1b\[[0-9;]*m)/g);
+  const segments: React.ReactNode[] = [];
+  let currentColor = "";
+
+  parts.forEach((part, i) => {
+    if (part.startsWith("\x1b[")) {
+      // Map ANSI codes to colors
+      if (part === "\x1b[0m") {
+        currentColor = "";
+      } else if (part === "\x1b[34m") {
+        currentColor = "#60a5fa"; // Bright Blue
+      } else if (part === "\x1b[33m") {
+        currentColor = "#fbbf24"; // Amber/Yellow
+      } else if (part === "\x1b[32m") {
+        currentColor = "#4ade80"; // Green
+      } else if (part === "\x1b[31m") {
+        currentColor = "#f87171"; // Red
+      }
+    } else if (part) {
+      segments.push(
+        <span key={i} style={{ color: currentColor || "inherit" }}>
+          {part}
+        </span>
+      );
+    }
+  });
+
+  if (segments.length === 0) return <>{text}</>;
+  return <>{segments}</>;
+}
+

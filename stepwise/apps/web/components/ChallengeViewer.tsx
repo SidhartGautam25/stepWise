@@ -5,12 +5,11 @@ import type { ChallengeDetail } from "@/lib/api";
 import { MarkdownViewer } from "./MarkdownViewer";
 import { CodeSection } from "./CodeSection";
 import { useSession } from "next-auth/react";
-import { AetheraProvider } from "../contexts/AetheraContext";
-import { VisualWorld } from "./Aethera/VisualWorld";
-import { WebTerminal } from "./Aethera/WebTerminal";
-import { AetheraEvaluator } from "./Aethera/AetheraEvaluator";
+import { useTerminal, SimulatedTerminal } from "@repo/terminal-engine";
+import { VisualWorld } from "@repo/interactive-engine";
+import { QuestEvaluator } from "./evaluator/QuestEvaluator";
 import { InteractiveLessonSequence } from "./interactive/InteractiveLessonSequence";
-import { useAethera } from "../contexts/AetheraContext";
+import { useQuestEvaluator } from "../hooks/useQuestEvaluator";
 
 interface ChallengeViewerProps {
   challenge: ChallengeDetail;
@@ -25,8 +24,22 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   const [viewMode, setViewMode] = useState<"visualizer" | "content" | "split-v" | "split-h">("content");
   const [terminalMode, setTerminalMode] = useState<"right" | "bottom" | "hidden">("right");
 
-  // Ref passed down so WebTerminal can re-focus input after step advance
-  const terminalFocusRef = useRef<() => void>(() => {});
+  const terminalFocusRef = useRef<() => void>(null);
+
+  // Engine Integration
+  const isGit = challenge.id === "git-aethera";
+  const terminal = useTerminal({ language: isGit ? "git" : "linux" });
+  const { checkStepCompletion } = useQuestEvaluator(terminal.state, terminal.history);
+  // Stable callback — only changes when passedStepIds or the evaluator itself changes.
+  // IMPORTANT: Returns false for already-passed steps to prevent re-submission cascades
+  // when saved progress is loaded from the server on mount.
+  const evalStep = useCallback(
+    (stepId: string) => {
+      if (passedStepIds.includes(stepId)) return false; // already submitted — never re-trigger
+      return checkStepCompletion(stepId, passedStepIds);
+    },
+    [checkStepCompletion, passedStepIds]
+  );
 
   const WEB_QUESTS = ["linux-aethera", "git-aethera"];
   const isWebMode = (challenge as any).mode === "web" || WEB_QUESTS.includes(challenge.id);
@@ -585,6 +598,9 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                 <WebVisualizerPanel
                   stepId={activeStep?.id || ""}
                   interactiveLesson={activeStep?.interactiveLesson}
+                  terminalState={terminal.state}
+                  isGit={isGit}
+                  onCompleted={() => handleStepPassed()}
                 />
               </div>
             ) : viewMode === "content" ? (
@@ -600,6 +616,9 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                   <WebVisualizerPanel
                     stepId={activeStep?.id || ""}
                     interactiveLesson={activeStep?.interactiveLesson}
+                    terminalState={terminal.state}
+                    isGit={isGit}
+                    onCompleted={() => handleStepPassed()}
                   />
                 </div>
               </div>
@@ -609,10 +628,13 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
           {/* Terminal Area — conditionally visible */}
           {terminalMode !== "hidden" && (
             <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 200, minHeight: 200 }}>
-              <WebTerminal
-                activeStepId={activeStep?.id || ""}
-                activeStepTitle={activeStep?.title || ""}
-                focusRef={terminalFocusRef}
+              <SimulatedTerminal
+                state={terminal.state}
+                history={terminal.history}
+                execute={terminal.execute}
+                language={isGit ? "git" : "linux"}
+                hint={activeStep?.title || ""}
+                height="100%"
               />
             </div>
           )}
@@ -620,11 +642,13 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
         </div>
       </div>
 
-      <AetheraEvaluator
+      <QuestEvaluator
         challengeId={challenge.id}
         stepId={activeStep?.id || ""}
         userId={(session?.user as any)?.id || "local"}
         token={(session as any)?.fastifyToken || ""}
+        historyLength={terminal.history.length}
+        checkStepCompletion={evalStep}
         onPassed={handleStepPassed}
       />
     </div>
@@ -632,11 +656,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   );
 
   if (isWebMode) {
-    return (
-      <AetheraProvider questMode={challenge.id === "git-aethera" ? "git" : "linux"}>
-        {webContent}
-      </AetheraProvider>
-    );
+    return <>{webContent}</>;
   }
 
   return nonWebContent;
@@ -645,21 +665,32 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
 function WebVisualizerPanel({
   stepId,
   interactiveLesson,
+  terminalState,
+  isGit,
+  onCompleted,
 }: {
   stepId: string;
   interactiveLesson?: ChallengeDetail["steps"][number]["interactiveLesson"];
+  terminalState: any;
+  isGit: boolean;
+  onCompleted: (stepId: string) => void;
 }) {
-  const { markStepComplete } = useAethera();
-
   if (interactiveLesson?.type === "sequence") {
     return (
       <InteractiveLessonSequence
         lesson={interactiveLesson}
         stepId={stepId}
-        onCompleted={markStepComplete}
+        onCompleted={onCompleted}
       />
     );
   }
 
-  return <VisualWorld />;
+  return (
+    <VisualWorld 
+      vfs={terminalState.vfs} 
+      cwd={terminalState.cwd} 
+      isGit={isGit} 
+      gitInited={terminalState.git?.initialized} 
+    />
+  );
 }

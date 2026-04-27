@@ -75,8 +75,8 @@ export function HeroAnimation() {
         vy: (Math.random() - 0.5) * 0.25 - 0.12,
         opacity: Math.random() * 0.35 + 0.08,
         size: Math.random() * 2.5 + 10,
-        text: CODE_FRAGMENTS[Math.floor(Math.random() * CODE_FRAGMENTS.length)],
-        color: colors[Math.floor(Math.random() * colors.length)],
+        text: CODE_FRAGMENTS[Math.floor(Math.random() * CODE_FRAGMENTS.length)] ?? "",
+        color: colors[Math.floor(Math.random() * colors.length)] ?? "",
       }));
     };
     initParticles();
@@ -106,8 +106,8 @@ export function HeroAnimation() {
           p.vy = (Math.random() - 0.5) * 0.2 - 0.15;
           p.vx = (Math.random() - 0.5) * 0.3;
           p.opacity = Math.random() * 0.3 + 0.08;
-          p.text = CODE_FRAGMENTS[Math.floor(Math.random() * CODE_FRAGMENTS.length)];
-          p.color = colors[Math.floor(Math.random() * colors.length)];
+          p.text = CODE_FRAGMENTS[Math.floor(Math.random() * CODE_FRAGMENTS.length)] ?? "";
+          p.color = colors[Math.floor(Math.random() * colors.length)] ?? "";
         }
       }
 

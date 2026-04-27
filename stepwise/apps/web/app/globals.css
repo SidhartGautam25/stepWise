@@ -126,6 +126,17 @@
   --aethera-terminal-success: #34d399;
   --aethera-terminal-error: #f87171;
 
+  /* Engine terminal vars — used by SimulatedTerminal in @repo/terminal-engine */
+  --terminal-bg:         #0d1117;
+  --terminal-border:     rgba(255,255,255,0.08);
+  --terminal-titlebar:   rgba(255,255,255,0.03);
+  --terminal-text:       #e2e8f0;
+  --terminal-prompt:     #4ade80;
+  --terminal-path:       #818cf8;
+  --terminal-branch:     #fbbf24;
+  --terminal-success:    #86efac;
+  --terminal-error:      #f87171;
+
   --interactive-bg-top: rgba(8, 8, 24, 0.98);
   --interactive-bg-bottom: rgba(10, 10, 22, 0.95);
   --interactive-spot-1: rgba(56, 189, 248, 0.16);
@@ -222,6 +233,17 @@
   --aethera-terminal-text: #18182a;
   --aethera-terminal-success: #059669;
   --aethera-terminal-error: #dc2626;
+
+  /* Engine terminal vars — light mode */
+  --terminal-bg:         #f3f4f6;
+  --terminal-border:     rgba(0,0,0,0.1);
+  --terminal-titlebar:   rgba(0,0,0,0.04);
+  --terminal-text:       #1e2030;
+  --terminal-prompt:     #16a34a;
+  --terminal-path:       #4f46e5;
+  --terminal-branch:     #b45309;
+  --terminal-success:    #15803d;
+  --terminal-error:      #dc2626;
 
   --interactive-bg-top: rgba(255, 253, 249, 0.98);
   --interactive-bg-bottom: rgba(246, 241, 232, 0.98);

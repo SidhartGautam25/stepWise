@@ -1,5 +1,22 @@
 import React, { useState } from "react";
-import { useAethera, VfsNode } from "../../contexts/AetheraContext";
+
+// Local types matching what terminal-engine outputs
+export type NodeType = "directory" | "file";
+export interface VfsNode {
+  name: string;
+  type: NodeType;
+  owner: string;
+  permissions: string;
+  content?: string;
+  children?: Record<string, VfsNode>;
+}
+
+export interface VisualWorldProps {
+  vfs: Record<string, VfsNode>;
+  cwd: string[];
+  isGit?: boolean;
+  gitInited?: boolean;
+}
 
 // ── Styles ───────────────────────────────────────────────────────────────────
 
@@ -19,9 +36,7 @@ const card = (bg: string, border: string, opacity = 1): React.CSSProperties => (
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function VisualWorld() {
-  const { vfs, cwd, questMode, gitInited } = useAethera();
-  const isGit = questMode === "git";
+export function VisualWorld({ vfs, cwd, isGit = false, gitInited = false }: VisualWorldProps) {
   const [expandedGit, setExpandedGit] = useState(false);
 
   const getCwdContents = (): Record<string, VfsNode> => {
@@ -50,16 +65,16 @@ export function VisualWorld() {
       flexDirection: "column",
       height: "100%",
       overflow: "hidden",
-      background: "linear-gradient(180deg, var(--aethera-panel-top), var(--aethera-panel-bottom))",
+      background: "linear-gradient(180deg, var(--aethera-panel-top, #1e293b), var(--aethera-panel-bottom, #0f172a))",
       borderRadius: 8,
-      border: "1px solid var(--aethera-panel-border)",
-      boxShadow: "0 16px 36px var(--aethera-panel-shadow)",
+      border: "1px solid var(--aethera-panel-border, rgba(255,255,255,0.1))",
+      boxShadow: "0 16px 36px var(--aethera-panel-shadow, rgba(0,0,0,0.5))",
     }}>
 
       {/* Header */}
       <div style={{
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        padding: "12px 16px", borderBottom: "1px solid var(--aethera-divider)",
+        padding: "12px 16px", borderBottom: "1px solid var(--aethera-divider, rgba(255,255,255,0.05))",
         flexShrink: 0, flexWrap: "wrap", gap: 8,
       }}>
         <div>
@@ -73,8 +88,8 @@ export function VisualWorld() {
           </div>
         </div>
         <div style={{
-          background: "var(--color-indigo-muted)", padding: "5px 11px", borderRadius: 6,
-          color: "var(--color-indigo-light)", fontFamily: "var(--font-mono)",
+          background: "var(--color-indigo-muted, rgba(99,102,241,0.1))", padding: "5px 11px", borderRadius: 6,
+          color: "var(--color-indigo-light, #a5b4fc)", fontFamily: "var(--font-mono)",
           fontSize: 12, fontWeight: 700, border: "1px solid var(--color-border-glass)", flexShrink: 0,
         }}>
           /{cwd.join("/")}
@@ -91,7 +106,7 @@ export function VisualWorld() {
 
         {/* Left: Root tree (Linux only) */}
         {!isGit && (
-          <div style={{ borderRight: "1px solid var(--aethera-divider)", padding: "14px 12px", overflowY: "auto" }}>
+          <div style={{ borderRight: "1px solid var(--aethera-divider, rgba(255,255,255,0.05))", padding: "14px 12px", overflowY: "auto" }}>
             <div style={{ fontSize: 10, color: "var(--color-muted)", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.1em", marginBottom: 12 }}>Root /</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {rootDirectories.map((node) => {
@@ -100,8 +115,8 @@ export function VisualWorld() {
                   <div key={node.name} style={{
                     display: "flex", alignItems: "center", gap: 8, padding: "8px 10px",
                     borderRadius: 6,
-                    background: isActive ? "rgba(16, 185, 129, 0.12)" : "var(--aethera-card-bg)",
-                    border: isActive ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid var(--aethera-card-border)",
+                    background: isActive ? "rgba(16, 185, 129, 0.12)" : "var(--aethera-card-bg, transparent)",
+                    border: isActive ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid var(--aethera-card-border, transparent)",
                   }}>
                     <div style={{
                       width: 26, height: 26, borderRadius: 5, fontSize: 11, fontWeight: 900,
@@ -217,7 +232,7 @@ export function VisualWorld() {
             <div style={{
               color: "var(--color-muted)", fontStyle: "italic", fontSize: 13,
               textAlign: "center", padding: "40px 0",
-              border: "1px dashed var(--aethera-card-border)", borderRadius: 8,
+              border: "1px dashed var(--aethera-card-border, rgba(255,255,255,0.1))", borderRadius: 8,
             }}>
               Empty directory. Create files or directories to see them here.
             </div>
@@ -227,7 +242,7 @@ export function VisualWorld() {
             <div style={{
               color: "var(--color-muted)", fontStyle: "italic", fontSize: 12,
               textAlign: "center", padding: "24px 0",
-              border: "1px dashed var(--aethera-card-border)", borderRadius: 8,
+              border: "1px dashed var(--aethera-card-border, rgba(255,255,255,0.1))", borderRadius: 8,
             }}>
               No files yet — create one with<br />
               <code style={{ color: "var(--color-indigo-light)", fontFamily: "var(--font-mono)" }}>echo "text" &gt; filename.md</code>
@@ -236,17 +251,19 @@ export function VisualWorld() {
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 10 }}>
             {Object.values(currentContents).map((node) => {
+              // hide internal git repo visualization from simple listing
+              if (node.name === ".git") return null;
               const isDir = node.type === "directory";
               const isGitTracked = isGit && gitInited;
               return (
                 <div key={node.name} style={card(
-                  isDir ? "var(--color-cyan-muted)" : "var(--color-amber-muted)",
+                  isDir ? "var(--color-cyan-muted, rgba(6,182,212,0.1))" : "var(--color-amber-muted, rgba(251,191,36,0.1))",
                   isDir ? "rgba(6,182,212,0.22)" : "rgba(251,191,36,0.2)",
                 )}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
                     <div style={{
                       width: 34, height: 34, borderRadius: 7,
-                      background: "var(--aethera-card-bg)",
+                      background: "var(--aethera-card-bg, rgba(255,255,255,0.05))",
                       display: "grid", placeItems: "center", fontSize: 16,
                     }}>
                       {isDir ? "📁" : "📄"}

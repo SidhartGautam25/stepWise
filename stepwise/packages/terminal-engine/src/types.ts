@@ -7,10 +7,15 @@
 
 // ── Filesystem ────────────────────────────────────────────────────────────────
 
-export interface FileNode {
+export type NodeType = "directory" | "file";
+
+export interface VfsNode {
   name: string;
-  isDir: boolean;
-  content?: string;    // undefined for directories
+  type: NodeType;
+  owner: string;
+  permissions: string;
+  content?: string;
+  children?: Record<string, VfsNode>;
 }
 
 // ── Git ───────────────────────────────────────────────────────────────────────
@@ -32,8 +37,8 @@ export interface GitBranch {
 export interface TerminalState {
   /** Current working directory segments, e.g. ["home","student"] */
   cwd: string[];
-  /** All files in the current working directory */
-  files: FileNode[];
+  /** Full virtual file system tree */
+  vfs: Record<string, VfsNode>;
   /** Git-specific state — present only once `git init` is run */
   git?: {
     initialized: boolean;
@@ -64,11 +69,23 @@ export type TerminalLanguage = "linux" | "git";
 // ── Default State ─────────────────────────────────────────────────────────────
 
 export function makeDefaultState(
-  opts: Partial<TerminalState> & { files?: FileNode[] } = {},
+  opts: Partial<TerminalState> = {},
 ): TerminalState {
+  const cwd = opts.cwd ?? ["home", "student"];
+  let baseVfs = opts.vfs ?? {};
+
+  // Ensure the default CWD path exists in the VFS
+  if (Object.keys(baseVfs).length === 0 && cwd.length > 0) {
+    let current = baseVfs;
+    for (const p of cwd) {
+      current[p] = { name: p, type: "directory", permissions: "755", owner: "student", children: {} };
+      current = current[p].children as Record<string, VfsNode>;
+    }
+  }
+
   return {
-    cwd: opts.cwd ?? ["home", "student"],
-    files: opts.files ?? [],
+    cwd,
+    vfs: baseVfs,
     git: opts.git,
   };
 }
