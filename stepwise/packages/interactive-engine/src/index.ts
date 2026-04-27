@@ -57,6 +57,7 @@ export type { BucketConfig, InteractiveBucketsProps }         from "./components
 export type { TreeNode, CollapsibleTreeProps }                 from "./components/CollapsibleTree";
 export type { FileSystemTree, FileNavigatorProps }            from "./components/FileNavigator";
 export type { InfoCalloutVariant, InfoCalloutProps }          from "./components/InfoCallout";
+export { VisualWorld }        from "./components/VisualWorld";
 export type { LessonSlide, LessonSequenceShellProps }         from "./components/LessonSequenceShell";
 export type { CommitNode, GitBranchLine, GitCommitGraphProps } from "./components/GitCommitGraph";
 export type { StagingFile, GitStagingAreaProps }              from "./components/GitStagingArea";

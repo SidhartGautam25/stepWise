@@ -1,14 +1,6 @@
-/**
- * Git Interpreter
- *
- * Simulates git commands in the terminal engine.
- * Supports: git init, git status, git add, git commit, git log, git branch,
- *           git checkout, git diff (simplified)
- * Also delegates non-git commands to the linux interpreter.
- */
-
-import type { Interpreter, CommandResult, TerminalState, GitBranch, GitCommitRecord } from "../types";
+import type { Interpreter, CommandResult, TerminalState, GitBranch, GitCommitRecord, VfsNode } from "../types";
 import { linuxInterpreter } from "./linuxInterpreter";
+import { getDirNode, traverseAndSet } from "../utils/vfs";
 
 function ok(lines: string[], newState: TerminalState): CommandResult {
   return { lines, error: false, newState };
@@ -38,13 +30,16 @@ function ensureGit(state: TerminalState): TerminalState {
 function handleGitCommand(gitArgs: string[], state: TerminalState): CommandResult {
   const git = state.git!;
   const sub = gitArgs[0] ?? "";
+  const dirNode = getDirNode(state.cwd, [], state.vfs);
+  const currentFiles = dirNode ? Object.values(dirNode) : [];
 
   // ── git init ──────────────────────────────────────────────────────────────
   if (sub === "init") {
     if (git.initialized) return ok(["Reinitialized existing Git repository in .git/"], state);
+    const vfs = traverseAndSet(state.cwd, { name: ".git", type: "directory", owner: "student", permissions: "755", children: {} }, state.vfs);
     const newState: TerminalState = {
       ...state,
-      files: [...state.files, { name: ".git", isDir: true }],
+      vfs,
       git: { ...git, initialized: true, branches: [{ name: "main", head: null }] },
     };
     return ok(["Initialized empty Git repository in .git/"], newState);
@@ -56,8 +51,8 @@ function handleGitCommand(gitArgs: string[], state: TerminalState): CommandResul
 
   // ── git status ────────────────────────────────────────────────────────────
   if (sub === "status") {
-    const untracked = state.files
-      .filter(f => !f.isDir && f.name !== ".git" && !git.staged.includes(f.name))
+    const untracked = currentFiles
+      .filter(f => f.type === "file" && f.name !== ".git" && !git.staged.includes(f.name))
       .map(f => f.name);
     const lines: string[] = [`On branch ${git.branch}`];
     if (git.staged.length === 0 && untracked.length === 0) {
@@ -80,9 +75,9 @@ function handleGitCommand(gitArgs: string[], state: TerminalState): CommandResul
     const target = gitArgs[1] ?? "";
     let toStage: string[] = [];
     if (target === "." || target === "-A") {
-      toStage = state.files.filter(f => !f.isDir && f.name !== ".git").map(f => f.name);
+      toStage = currentFiles.filter(f => f.type === "file" && f.name !== ".git").map(f => f.name);
     } else {
-      const f = state.files.find(f => f.name === target && !f.isDir);
+      const f = currentFiles.find(f => f.name === target && f.type === "file");
       if (!f) return err([`error: pathspec '${target}' did not match any files`], state);
       toStage = [target];
     }
@@ -169,7 +164,7 @@ function handleGitCommand(gitArgs: string[], state: TerminalState): CommandResul
 
   // ── git diff ─────────────────────────────────────────────────────────────
   if (sub === "diff") {
-    const unstaged = state.files.filter(f => !f.isDir && f.name !== ".git" && !git.staged.includes(f.name));
+    const unstaged = currentFiles.filter(f => f.type === "file" && f.name !== ".git" && !git.staged.includes(f.name));
     if (unstaged.length === 0 && git.staged.length === 0) return ok([], state);
     const lines: string[] = [];
     unstaged.forEach(f => {
