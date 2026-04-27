@@ -546,7 +546,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
 
   if (isWebMode) {
     return (
-      <AetheraProvider>
+      <AetheraProvider questMode={challenge.id === "git-aethera" ? "git" : "linux"}>
         {webContent}
       </AetheraProvider>
     );

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useCallback, useState, ReactNode } from "react";
+import React, { createContext, useContext, useCallback, useRef, useState, ReactNode } from "react";
 
 export type NodeType = "directory" | "file";
 
@@ -29,6 +29,7 @@ interface AetheraState {
   markStepComplete: (stepId: string) => void;
   checkStepCompletion: (stepId: string) => boolean;
   completionVersion: number;
+  questMode: "linux" | "git";
 }
 
 const initialState: Record<string, VfsNode> = {
@@ -58,11 +59,237 @@ const initialState: Record<string, VfsNode> = {
 
 const AetheraContext = createContext<AetheraState | undefined>(undefined);
 
-export function AetheraProvider({ children }: { children: ReactNode }) {
-  const [vfs, setVfs] = useState<Record<string, VfsNode>>(initialState);
+// ── Git VFS ───────────────────────────────────────────────────────────────────
+const GIT_INITIAL_VFS: Record<string, VfsNode> = {
+  "home": { name: "home", type: "directory", owner: "root", permissions: "755", children: {
+    "student": { name: "student", type: "directory", owner: "student", permissions: "755", children: {} },
+  }},
+};
+
+// ── Git state types ───────────────────────────────────────────────────────────
+interface GitCommit { hash: string; message: string; branch: string; files: Record<string, string>; }
+
+export function AetheraProvider({ children, questMode = "linux" }: { children: ReactNode; questMode?: "linux" | "git" }) {
+  const isGit = questMode === "git";
+  const [vfs, setVfs] = useState<Record<string, VfsNode>>(isGit ? GIT_INITIAL_VFS : initialState);
   const [cwd, setCwd] = useState<string[]>(["home", "student"]);
   const [history, setHistory] = useState<CommandLog[]>([]);
   const [completedStepIds, setCompletedStepIds] = useState<string[]>([]);
+
+  // ── Git interpreter state ─────────────────────────────────────────────────
+  const gitInitedRef = useRef(false);
+  const gitStagedRef = useRef<Record<string, string>>({});
+  const gitCommitsRef = useRef<GitCommit[]>([]);
+  const gitBranchesRef = useRef<string[]>(["main"]);
+  const gitCurrentBranchRef = useRef<string>("main");
+  const gitFilesAtBranchRef = useRef<Record<string, Record<string, string>>>({ main: {} });
+
+  const shortHash = () => Math.random().toString(36).slice(2, 9);
+
+  const executeGit = useCallback((trimmed: string): { output: string; isError: boolean } => {
+    const args = trimmed.split(/\s+/);
+    const cmd = args[0];
+
+    // ── git ──────────────────────────────────────────────────────────────────
+    if (cmd === "git") {
+      const sub = args[1];
+
+      if (sub === "init") {
+        if (gitInitedRef.current) return { output: "Reinitialized existing Git repository in .git/", isError: false };
+        gitInitedRef.current = true;
+        return { output: "Initialized empty Git repository in .git/", isError: false };
+      }
+
+      if (!gitInitedRef.current) return { output: "fatal: not a git repository (run git init first)", isError: true };
+
+      if (sub === "status") {
+        const branch = gitCurrentBranchRef.current;
+        const staged = Object.keys(gitStagedRef.current);
+        const committed = gitFilesAtBranchRef.current[branch] ?? {};
+        // get working dir files
+        const dirNode = getDirNode(cwd);
+        const workingFiles = dirNode ? Object.keys(dirNode).filter(k => dirNode[k]?.type === "file") : [];
+        const untracked = workingFiles.filter(f => !staged.includes(f) && !committed[f]);
+        const modified = workingFiles.filter(f => !staged.includes(f) && committed[f] !== undefined && dirNode?.[f]?.content !== committed[f]);
+
+        let out = `On branch ${branch}\n`;
+        if (staged.length === 0 && untracked.length === 0 && modified.length === 0) {
+          out += "nothing to commit, working tree clean";
+        } else {
+          if (staged.length > 0) out += `\nChanges to be committed:\n  (use "git restore --staged" to unstage)\n${staged.map(f => `        new file:   ${f}`).join("\n")}\n`;
+          if (modified.length > 0) out += `\nChanges not staged for commit:\n${modified.map(f => `        modified:   ${f}`).join("\n")}\n`;
+          if (untracked.length > 0) out += `\nUntracked files:\n  (use "git add <file>..." to include in what will be committed)\n${untracked.map(f => `        ${f}`).join("\n")}\n`;
+        }
+        return { output: out.trim(), isError: false };
+      }
+
+      if (sub === "add") {
+        const target = args[2];
+        if (!target) return { output: "Nothing specified, nothing added.", isError: true };
+        const dirNode = getDirNode(cwd);
+        if (!dirNode) return { output: "fatal: cannot read current directory", isError: true };
+        if (target === ".") {
+          const files = Object.entries(dirNode).filter(([, n]) => n.type === "file");
+          files.forEach(([name, node]) => { gitStagedRef.current[name] = (node as VfsNode).content ?? ""; });
+          return { output: "", isError: false };
+        }
+        const node = dirNode[target];
+        if (!node || node.type !== "file") return { output: `fatal: pathspec '${target}' did not match any files`, isError: true };
+        gitStagedRef.current[target] = node.content ?? "";
+        return { output: "", isError: false };
+      }
+
+      if (sub === "commit") {
+        const msgIdx = args.indexOf("-m");
+        const message = msgIdx !== -1 ? args.slice(msgIdx + 1).join(" ").replace(/^"|"$/g, "").replace(/^'|'$/g, "") : "";
+        if (!message) return { output: "error: commit message is required (-m \"message\")", isError: true };
+        const staged = gitStagedRef.current;
+        if (Object.keys(staged).length === 0) return { output: "nothing to commit, working tree clean", isError: true };
+        const branch = gitCurrentBranchRef.current;
+        const hash = shortHash();
+        const snapshot = { ...gitFilesAtBranchRef.current[branch], ...staged };
+        gitFilesAtBranchRef.current[branch] = snapshot;
+        gitCommitsRef.current.push({ hash, message, branch, files: { ...staged } });
+        gitStagedRef.current = {};
+        return { output: `[${branch} ${hash}] ${message}\n ${Object.keys(staged).length} file(s) changed`, isError: false };
+      }
+
+      if (sub === "log") {
+        const oneline = args.includes("--oneline");
+        const branch = gitCurrentBranchRef.current;
+        const commits = gitCommitsRef.current.filter(c => c.branch === branch);
+        if (commits.length === 0) return { output: "fatal: your current branch has no commits yet", isError: true };
+        const lines = [...commits].reverse().map(c =>
+          oneline ? `${c.hash.slice(0,7)} ${c.message}` : `commit ${c.hash}\n    ${c.message}`
+        );
+        return { output: lines.join("\n"), isError: false };
+      }
+
+      if (sub === "branch") {
+        const newBranch = args[2];
+        if (newBranch) {
+          if (gitBranchesRef.current.includes(newBranch)) return { output: `fatal: a branch named '${newBranch}' already exists`, isError: true };
+          gitBranchesRef.current.push(newBranch);
+          const currentFiles = gitFilesAtBranchRef.current[gitCurrentBranchRef.current] ?? {};
+          gitFilesAtBranchRef.current[newBranch] = { ...currentFiles };
+          return { output: "", isError: false };
+        }
+        const current = gitCurrentBranchRef.current;
+        const lines = gitBranchesRef.current.map(b => b === current ? `* ${b}` : `  ${b}`);
+        return { output: lines.join("\n"), isError: false };
+      }
+
+      if (sub === "checkout") {
+        const isNew = args[2] === "-b";
+        const branchName = isNew ? args[3] : args[2];
+        if (!branchName) return { output: "error: branch name required", isError: true };
+        if (isNew) {
+          if (gitBranchesRef.current.includes(branchName)) return { output: `fatal: A branch named '${branchName}' already exists`, isError: true };
+          gitBranchesRef.current.push(branchName);
+          const currentFiles = gitFilesAtBranchRef.current[gitCurrentBranchRef.current] ?? {};
+          gitFilesAtBranchRef.current[branchName] = { ...currentFiles };
+          gitCurrentBranchRef.current = branchName;
+          return { output: `Switched to a new branch '${branchName}'`, isError: false };
+        }
+        if (!gitBranchesRef.current.includes(branchName)) return { output: `error: pathspec '${branchName}' did not match any branch`, isError: true };
+        // Restore working directory files from that branch
+        const branchFiles = gitFilesAtBranchRef.current[branchName] ?? {};
+        setVfs(prev => {
+          const next = JSON.parse(JSON.stringify(prev));
+          const dir = getDirNodeFromVfs(cwd, next);
+          if (!dir) return prev;
+          // Remove files not in that branch, update files that are
+          const existingFiles = Object.keys(dir).filter(k => dir[k]?.type === "file");
+          existingFiles.forEach(f => { if (!branchFiles[f]) delete dir[f]; });
+          Object.entries(branchFiles).forEach(([name, content]) => {
+            dir[name] = { name, type: "file", owner: "student", permissions: "644", content: content as string };
+          });
+          return next;
+        });
+        gitCurrentBranchRef.current = branchName;
+        return { output: `Switched to branch '${branchName}'`, isError: false };
+      }
+
+      if (sub === "diff") {
+        return { output: "(no diff output in this interactive terminal)", isError: false };
+      }
+
+      return { output: `git: '${sub}' is not a supported command in this lesson`, isError: true };
+    }
+
+    // ── Non-git commands available in git mode ────────────────────────────────
+    if (cmd === "mkdir") {
+      const target = args[1];
+      if (!target) return { output: "mkdir: missing operand", isError: true };
+      const dir = getDirNode(cwd);
+      if (!dir) return { output: "mkdir: cannot find current directory", isError: true };
+      if (dir[target]) return { output: `mkdir: cannot create directory '${target}': File exists`, isError: true };
+      setVfs(prev => traverseAndSet(cwd, { name: target, type: "directory", owner: "student", permissions: "755", children: {} }, prev));
+      return { output: `created directory '${target}'`, isError: false };
+    }
+
+    if (cmd === "cd") {
+      const target = args[1] || "/home/student";
+      const newPath = resolvePath(target);
+      if (!getDirNode(newPath)) return { output: `cd: ${target}: No such file or directory`, isError: true };
+      setCwd(newPath);
+      return { output: "", isError: false };
+    }
+
+    if (cmd === "ls") {
+      const showHidden = args.includes("-la") || args.includes("-a") || args.includes("-l");
+      const dir = getDirNode(cwd);
+      if (!dir) return { output: "ls: cannot read directory", isError: true };
+      let names = Object.values(dir).map(n => n.name);
+      if (showHidden && gitInitedRef.current) names = [".git", ...names];
+      return { output: names.join("  ") || "(empty)", isError: false };
+    }
+
+    if (cmd === "touch") {
+      const target = args[1];
+      if (!target) return { output: "touch: missing file operand", isError: true };
+      const dir = getDirNode(cwd);
+      if (!dir) return { output: "touch: cannot find current directory", isError: true };
+      if (!dir[target]) setVfs(prev => traverseAndSet(cwd, { name: target, type: "file", owner: "student", permissions: "644", content: "" }, prev));
+      return { output: "", isError: false };
+    }
+
+    if (cmd === "echo") {
+      const redirectIndex = args.indexOf(">");
+      const appendIndex = args.indexOf(">>");
+      if (redirectIndex !== -1) {
+        const text = args.slice(1, redirectIndex).join(" ").replace(/^"|"$/g, "");
+        const file = args[redirectIndex + 1];
+        if (!file) return { output: "echo: missing file", isError: true };
+        setVfs(prev => traverseAndSet(cwd, { name: file, type: "file", owner: "student", permissions: "644", content: text + "\n" }, prev));
+        return { output: "", isError: false };
+      }
+      if (appendIndex !== -1) {
+        const text = args.slice(1, appendIndex).join(" ").replace(/^"|"$/g, "");
+        const file = args[appendIndex + 1];
+        if (!file) return { output: "echo: missing file", isError: true };
+        const dir = getDirNode(cwd);
+        const existing = (dir?.[file]?.content) ?? "";
+        setVfs(prev => traverseAndSet(cwd, { name: file, type: "file", owner: "student", permissions: "644", content: existing + text + "\n" }, prev));
+        return { output: "", isError: false };
+      }
+      return { output: args.slice(1).join(" ").replace(/^"|"$/g, ""), isError: false };
+    }
+
+    if (cmd === "cat") {
+      const target = args[1];
+      if (!target) return { output: "cat: missing operand", isError: true };
+      const dir = getDirNode(cwd);
+      if (!dir?.[target]) return { output: `cat: ${target}: No such file or directory`, isError: true };
+      return { output: dir[target].content ?? "", isError: false };
+    }
+
+    if (cmd === "pwd") return { output: `/${cwd.join("/")}`, isError: false };
+    if (cmd === "clear") return { output: "[CLEAR]", isError: false };
+
+    return { output: `bash: ${cmd}: command not found\nAvailable: git, mkdir, cd, ls, touch, echo, cat, pwd, clear`, isError: true };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cwd, vfs]);
 
   const pathToString = (path: string[]) => `/${path.join("/")}`;
 
@@ -88,6 +315,16 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
     return currentDir;
   };
 
+  const getDirNodeFromVfs = (path: string[], fromVfs: Record<string, VfsNode>): Record<string, VfsNode> | null => {
+    let currentDir = fromVfs;
+    for (const p of path) {
+      const next = currentDir[p];
+      if (!next || next.type !== "directory" || !next.children) return null;
+      currentDir = next.children;
+    }
+    return currentDir;
+  };
+
   const traverseAndSet = (path: string[], newNode: VfsNode, oldVfs: Record<string, VfsNode>) => {
     const newVfs = JSON.parse(JSON.stringify(oldVfs));
     let dir = newVfs;
@@ -99,15 +336,23 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
     return newVfs;
   };
 
+  // Route execute — linux mode uses the original interpreter, git mode uses executeGit
   const execute = (input: string) => {
     const trimmed = input.trim();
+    if (!trimmed) return;
+
+    if (isGit) {
+      const result = executeGit(trimmed);
+      if (result.output === "[CLEAR]") { setHistory([]); return; }
+      setHistory(prev => [...prev, { command: trimmed, output: result.output, isError: result.isError, cwd: [...cwd] }]);
+      return;
+    }
+
+    // ── Original Linux interpreter ───────────────────────────────────────────
     const args = trimmed.split(/\s+/);
     const cmd = args[0];
     let output = "";
     let isError = false;
-
-    if (!cmd) return;
-
     try {
       if (cmd === "continue") {
         output = "Intro complete. You can start using Linux commands now.";
@@ -122,7 +367,6 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
         const dir = getDirNode(cwd);
         if (!dir) throw new Error("Cannot find current directory");
         if (dir[target]) throw new Error(`mkdir: cannot create directory '${target}': File exists`);
-
         const nextVfs = traverseAndSet(cwd, {
           name: target, type: "directory", owner: "student", permissions: "755", children: {}
         }, vfs);
@@ -146,7 +390,6 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
         if (target.includes("/")) throw new Error("touch: this lesson expects a simple file name");
         const dir = getDirNode(cwd);
         if (!dir) throw new Error("Cannot find current directory");
-
         if (!dir[target]) {
           const nextVfs = traverseAndSet(cwd, {
             name: target, type: "file", owner: "student", permissions: "644", content: ""
@@ -158,38 +401,23 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
       else if (cmd === "echo") {
         const redirectIndex = args.indexOf(">");
         const appendIndex = args.indexOf(">>");
-
-        let text = "";
-        let redirectArg = "";
-        let append = false;
-
+        let text = ""; let redirectArg = ""; let append = false;
         if (redirectIndex !== -1) {
           text = args.slice(1, redirectIndex).join(" ").replace(/^["']|["']$/g, "");
           redirectArg = args[redirectIndex + 1] || "";
         } else if (appendIndex !== -1) {
           text = args.slice(1, appendIndex).join(" ").replace(/^["']|["']$/g, "");
-          redirectArg = args[appendIndex + 1] || "";
-          append = true;
+          redirectArg = args[appendIndex + 1] || ""; append = true;
         } else {
           output = args.slice(1).join(" ").replace(/^["']|["']$/g, "");
         }
-
         if (redirectArg) {
           const dir = getDirNode(cwd);
           if (!dir) throw new Error("Cannot find current directory");
-
-          let existingContent = "";
-          const targetNode = dir[redirectArg];
-          if (targetNode && targetNode.type === "file") {
-            existingContent = targetNode.content || "";
-          }
-
+          const existingContent = append ? (dir[redirectArg]?.content || "") : "";
           const nextVfs = traverseAndSet(cwd, {
-            name: redirectArg,
-            type: "file",
-            owner: "student",
-            permissions: "644",
-            content: append ? existingContent + text + "\n" : text + "\n"
+            name: redirectArg, type: "file", owner: "student", permissions: "644",
+            content: existingContent + text + "\n"
           }, vfs);
           setVfs(nextVfs);
         }
@@ -206,15 +434,10 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
         const isRecursive = args.includes("-r") || args.includes("-rf");
         const target = args.filter(a => !a.startsWith("-"))[1];
         if (!target) throw new Error("rm: missing operand");
-
         const currentVfs = JSON.parse(JSON.stringify(vfs));
         const dir = getDirNode(cwd, currentVfs);
         if (!dir || !dir[target]) throw new Error(`rm: cannot remove '${target}': No such file or directory`);
-
-        if (dir[target].type === "directory" && !isRecursive) {
-          throw new Error(`rm: cannot remove '${target}': Is a directory`);
-        }
-
+        if (dir[target].type === "directory" && !isRecursive) throw new Error(`rm: cannot remove '${target}': Is a directory`);
         delete dir[target];
         setVfs(currentVfs);
       }
@@ -226,10 +449,8 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
         throw new Error(`bash: ${cmd}: command not found.\nThis interactive lesson only supports specific commands: continue, pwd, mkdir, cd, ls, touch, echo, cat, rm, clear.\nPlease verify your spelling and try sticking to the lesson objectives!`);
       }
     } catch (e: any) {
-      isError = true;
-      output = e.message;
+      isError = true; output = e.message;
     }
-
     setHistory(prev => [...prev, { command: trimmed, output, isError, cwd: [...cwd] }]);
   };
 
@@ -312,6 +533,7 @@ export function AetheraProvider({ children }: { children: ReactNode }) {
         appendSystemLog,
         markStepComplete,
         completionVersion: completedStepIds.length,
+        questMode,
       }}
     >
       {children}

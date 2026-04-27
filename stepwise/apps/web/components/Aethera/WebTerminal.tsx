@@ -77,7 +77,8 @@ interface WebTerminalProps {
 }
 
 export function WebTerminal({ activeStepId, activeStepTitle, focusRef }: WebTerminalProps) {
-  const { cwd, history, execute, appendSystemLog } = useAethera();
+  const { cwd, history, execute, appendSystemLog, questMode } = useAethera();
+  const isGit = questMode === "git";
   const [input, setInput] = useState("");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -146,7 +147,7 @@ export function WebTerminal({ activeStepId, activeStepTitle, focusRef }: WebTerm
         <div style={{ width: 11, height: 11, borderRadius: "50%", background: "#f59e0b" }} />
         <div style={{ width: 11, height: 11, borderRadius: "50%", background: "#10b981" }} />
         <span style={{ marginLeft: 10, fontSize: 12, color: "var(--color-muted)", fontWeight: 600, letterSpacing: "0.05em" }}>
-          Linux Practice Terminal
+          {isGit ? "Git Terminal" : "Linux Practice Terminal"}
         </span>
         <div style={{ flex: 1 }} />
         <span style={{ fontSize: 11, color: "var(--color-muted)", fontFamily: "var(--font-mono)" }}>
@@ -189,7 +190,7 @@ export function WebTerminal({ activeStepId, activeStepTitle, focusRef }: WebTerm
           return (
             <div key={idx} style={{ marginBottom: 10 }}>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "baseline" }}>
-                <span style={{ color: "var(--color-emerald)", fontWeight: 700, fontSize: 12 }}>student@linux</span>
+                <span style={{ color: "var(--color-emerald)", fontWeight: 700, fontSize: 12 }}>{isGit ? "kavya@git" : "student@linux"}</span>
                 <span style={{ color: "var(--color-muted)", fontSize: 12 }}>:</span>
                 <span style={{ color: "var(--color-indigo-light)", fontWeight: 600, fontSize: 12 }}>/{(log.cwd ?? cwd).join("/")}</span>
                 <span style={{ color: "var(--color-muted)", fontSize: 12 }}>$</span>
@@ -213,7 +214,7 @@ export function WebTerminal({ activeStepId, activeStepTitle, focusRef }: WebTerm
 
         {/* Active input line */}
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
-          <span style={{ color: "var(--color-emerald)", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>student@linux</span>
+          <span style={{ color: "var(--color-emerald)", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>{isGit ? "kavya@git" : "student@linux"}</span>
           <span style={{ color: "var(--color-muted)", fontSize: 12, flexShrink: 0 }}>:</span>
           <span style={{ color: "var(--color-indigo-light)", fontWeight: 600, fontSize: 12, flexShrink: 0 }}>/{cwd.join("/")}</span>
           <span style={{ color: "var(--color-muted)", fontSize: 12, margin: "0 2px", flexShrink: 0 }}>$</span>

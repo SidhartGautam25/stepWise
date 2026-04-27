@@ -3,66 +3,100 @@
     {
       "id": "world-meet-kavya",
       "heading": "Meet Kavya 👩‍💻",
-      "body": "Kavya is learning to code. She's been at it for a few weeks and just finished something she's really proud of — a simple to-do app.\n\nIt works. Users can add tasks, check them off, delete them. It's not perfect, but it's *hers*.\n\nShe saved it as one file on her laptop.\n\nThen she decided to add something new.",
+      "body": "Let's start with a story.\n\nKavya is 22 years old. She recently discovered she loves coding. She's been learning for about two months — watching tutorials, building small things, breaking things, figuring things out.\n\nThree weeks ago, she started her biggest project yet: a simple to-do app.\n\nNothing fancy. Just a web page where you can:\n  → Add a task\n  → Check it off as done\n  → Delete it when you're finished\n\nBut it's *hers*. She wrestled with every bug. She stayed up late getting the checkboxes to work. She chose the colours herself.\n\nToday, it's working. And it feels great.",
       "bullets": [
-        "💻 One laptop, one project folder",
-        "📄 One file: todo.js",
-        "✅ Everything working well",
-        "🤔 \"I want to add a dark mode...\""
+        "💻 2 months into learning to code",
+        "📄 One file: todo.js — everything she's built",
+        "✅ Working app — add, check, delete tasks",
+        "😊 She's proud of it. And she wants to make it even better."
       ]
     },
     {
-      "id": "world-disaster-1",
-      "heading": "Disaster #1 — The working version is gone 😱",
-      "body": "Kavya spent two hours adding dark mode. She edited parts of her code she'd never touched before.\n\nThen she saved and opened the app.\n\n*Nothing worked.*\n\nThe font rendering was broken. The checkboxes disappeared. Even features she didn't touch were broken.\n\nShe pressed Ctrl+Z about 40 times. The editor undid everything — including the parts that were working before.\n\nShe sat staring at a blank file.\n\n\"If only I had saved a copy before I started...\"",
+      "id": "world-kavya-decides",
+      "heading": "\"I'll add dark mode. How hard can it be?\" 🌙",
+      "body": "It starts with a small idea.\n\nKavya uses her app late at night. The white background is bright in the dark. A few people she showed it to mentioned it too.\n\n\"I'll add a dark mode toggle. Just a button that switches the colours. Easy.\"\n\nSo she opens her file — her one todo.js — and starts editing.\n\nShe changes the background colour. She changes the text colour. She adjusts the button styles. She digs into parts of the code she hasn't touched in weeks.\n\nAn hour passes. Then two. She's so deep into it now, she barely notices.\n\n\"This is actually coming together,\" she thinks.",
       "bullets": [
-        "❌ 2 hours of work, gone",
-        "❌ The working version she had before — overwritten",
-        "❌ Ctrl+Z went too far back",
-        "😔 Starting from memory isn't the same as starting from the original"
+        "🌙 Idea: dark mode toggle for night-time use",
+        "📂 Opens todo.js — the one file with everything",
+        "✏️ Two hours of editing — changing colours, styles, layout",
+        "🤔 She's been modifying code she hasn't touched in weeks..."
       ]
     },
     {
-      "id": "world-kavya-tries-backup",
-      "heading": "Kavya gets smart — she starts making copies",
-      "body": "After that painful experience, Kavya makes a rule: \"Before I change anything, I'll make a copy.\"\n\nSo she starts saving copies of her file.\n\nAt first, it feels great. A safety net!\n\nBut then a week passes...\n\nTap each file below to see what Kavya's project folder looks like now.",
+      "id": "world-disaster-1a",
+      "heading": "Disaster — the moment everything breaks 💥",
+      "body": "Two hours in. Kavya opens her browser to check the result.\n\nThe page loads.\n\nThe checkboxes? Gone. Just... gone.\n\nThe font is wrong — it's using some browser default she never set. The delete buttons are misaligned. And a strange error is flickering in the console.\n\nShe stares at the screen, confused. She only changed the *colours*. How did the checkboxes stop working?\n\nSomething she edited — somewhere — broke something else. That's how code works. Everything is connected.\n\nShe thinks: no problem. I'll just undo it.",
       "bullets": [
-        "📁 She was careful, organized, responsible",
-        "📂 But her folder slowly turned into... a nightmare",
-        "🤔 Can you guess which file is the real one?",
-        "👇 Tap the files to find out"
+        "🖥️ Opens the browser to check her progress",
+        "❌ Checkboxes gone — completely missing from the page",
+        "❌ Font broken, buttons misaligned, console errors",
+        "🤔 She only changed colours... but everything is connected in code"
+      ]
+    },
+    {
+      "id": "world-disaster-1b",
+      "heading": "Undo... undo... undo... too far 😭",
+      "body": "Kavya opens her editor. Ctrl+Z. Ctrl+Z. Ctrl+Z.\n\nThe editor undoes her changes.\n\nBut here's the problem: she made hundreds of small edits over two hours. The undo function steps back through *every single one*.\n\nShe's watching her code change in real time. The dark mode colours disappear. But then so do the delete buttons. Then the checkbox logic. Then the styles she spent four days perfecting.\n\nShe goes too far.\n\nShe presses Ctrl+Z one too many times and now the file is *empty*.\n\nAll of it — the working todo app she spent three weeks building — gone.\n\nShe saves. She closes the file. She opens it again hoping it was a dream.\n\nBlank file. `// empty`.\n\nShe starts crying.",
+      "bullets": [
+        "⏪ Starts pressing Ctrl+Z — undoing her changes",
+        "📉 Each undo steps back through hundreds of edits from two hours of work",
+        "💀 Goes too far — undo deletes the original working code too",
+        "😭 Blank file. Three weeks of work. Gone."
+      ]
+    },
+    {
+      "id": "world-kavya-learns",
+      "heading": "Kavya rebuilds — and makes a new rule 🧠",
+      "body": "After sitting with it for a while, Kavya does what any determined person does: she rebuilds.\n\nFrom memory. From screenshots. From what she can remember.\n\nIt takes four days to get back to where she was.\n\nBut she makes herself a promise: \"Before I change *anything*, I will make a backup copy first.\"\n\nSo she starts doing that. Before every change, she duplicates the file and gives it a name.\n\nAt first it feels great! She has a safety net. It's working.\n\nBut then two weeks pass.",
+      "bullets": [
+        "💪 Spends 4 days rebuilding the app from memory",
+        "🤝 Makes a promise: always make a copy before changing anything",
+        "📂 Starts naming and saving backup files manually",
+        "😌 For a while, it feels like the right solution..."
       ]
     },
     {
       "id": "world-disaster-2",
-      "heading": "Disaster #2 — The folder of doom 🗂️",
-      "body": "Two weeks later, Kavya needs to go back to the version that had working animations.\n\nShe has 7 files. None of them are named clearly enough to know what's in them.\n\nShe opens each one. She can't tell which has the animations because the code looks almost identical.\n\nShe spends 45 minutes opening, comparing, getting confused.\n\n\"There must be a better way to keep track of what changed in each version...\"",
+      "heading": "Two weeks later — the folder of doom 🗂️",
+      "body": "Kavya needs to go back to the version that had the animations working. She added them last week, then something changed and they vanished.\n\nShe opens her project folder.\n\nShe has... seven files.\n\nTap each file below. Can you tell which one has the working animations?\n\n(Kavya can't either. She spent 45 minutes trying. She never found it.)\n\nThe backup system she invented solved ONE problem — she can go back. But it created TWO new ones:\n\n  ▸ She can't tell what's in each file without opening it\n  ▸ She's terrified to delete any of them in case she needs one",
       "bullets": [
-        "❌ 7 copies of the same project",
-        "❌ No clear way to know what's in each one",
-        "❌ 45 minutes wasted just *finding* the right version",
-        "😩 What was changed? When? Why? No one knows."
+        "🕐 45 minutes of digging through old zip files",
+        "🤷 None of the file names say what's actually inside",
+        "😰 Seven files. No idea which one is the right one.",
+        "→ Tap each file below — see if the names help you figure it out"
+      ]
+    },
+    {
+      "id": "world-disaster-3-setup",
+      "heading": "A friend wants to help — sounds good, right? 🤝",
+      "body": "Kavya's friend Rohan is also learning to code. He sees her todo app and offers to help.\n\n\"I can add a filter feature — like 'show only incomplete tasks'. It'll be great!\" he says.\n\nKavya thinks: two people working on this is twice as fast!\n\nSo they split the work:\n  → Kavya takes the search bar feature\n  → Rohan takes the filter buttons\n\nThey both download the latest version of todo.js.\nThey both open their editors.\nThey both start coding.\n\nSeparately.\n\nOn the same file.\n\nWith no way to communicate their changes to each other.\n\nCan you see where this is going?",
+      "bullets": [
+        "👩‍💻 Kavya: coding the search bar feature",
+        "👦 Rohan: coding the filter buttons feature",
+        "📂 Both editing their own copy of the same file",
+        "⏱️ Both working for 3 hours separately..."
       ]
     },
     {
       "id": "world-disaster-3",
-      "heading": "Disaster #3 — Working with someone else 🤯",
-      "body": "Kavya's friend Rohan wants to help. Great!\n\nThey split the work. Kavya works on the search feature. Rohan works on filters.\n\nThey work for 3 hours separately.\n\nRohan emails Kavya his file. She copies it into the project.\n\nHer search feature? **Gone.** His file replaced everything she wrote.\n\nNeither of them had done anything wrong. They just had no way to work on the same project safely.\n\nThat's the third and hardest problem.",
+      "heading": "The merge disaster 💥",
+      "body": "Three hours later.\n\nRohan is done first. He emails Kavya his todo.js file with the filter buttons.\n\nKavya gets the email. She sees the attachment. She copies his file into the project folder.\n\nClick. Replace.\n\nHer version is gone. All three hours of her search bar code — replaced by Rohan's file.\n\nHe didn't do anything wrong. She didn't do anything wrong. There was just no way for two people to safely work on the same file and combine their work afterward.\n\nRohan's version only has filters.\nKavya's version only had search.\nNow there's no version with both.\n\nShe stares at the screen. Rohan stares at the screen. Neither of them knows what to do.",
       "bullets": [
-        "👩‍💻 Kavya: 3 hours on search feature",
-        "👦 Rohan: 3 hours on filters",
-        "📧 Rohan sends a file. Kavya pastes it in.",
-        "💥 Kavya's 3 hours of work: gone."
+        "📧 Rohan sends his version via email",
+        "📋 Kavya copies it into the folder — replacing hers",
+        "💥 Her 3 hours of search code: gone. Only Rohan's filters remain.",
+        "😶 Nobody made a mistake. The system just doesn't work for two people."
       ]
     },
     {
       "id": "world-summary",
-      "heading": "Three real problems — every developer faces these",
-      "body": "Kavya isn't alone. Every developer who has ever worked without version control has hit these exact same walls.\n\nThey're not made-up problems. They happen every day to people learning to code.\n\nBut here's the good news:\n\n**All three of these problems have elegant solutions.** And in the next steps, we're going to discover those solutions — one by one — before we even open a terminal.\n\nTap each problem to refresh your memory.",
+      "heading": "Three problems. Every developer faces them. 🤔",
+      "body": "What happened to Kavya isn't unusual.\n\nEvery person who has ever coded without version control has hit these exact walls.\n\nThink about what each of these problems *actually* needed:\n\n  Problem 1: She needed a way to take a \"photo\" of her working code that she could always go back to — without touching the original.\n\n  Problem 2: She needed photos that came with clear labels — \"working todo app with checkboxes\" — not just a filename.\n\n  Problem 3: She needed a system where two people could save their own photos and then intelligently combine them.\n\nThese aren't complicated ideas. Humans have been doing versions of all three for centuries.\n\nIn the next step, we'll discover those ideas — before we even open a terminal.",
       "bullets": [
-        "Problem 1: Broke working code, can't go back",
-        "Problem 2: Too many copies, can't find the right one",
-        "Problem 3: Two people working together — overwriting each other"
+        "Problem 1 → Need: take a photo of working code, go back to it anytime",
+        "Problem 2 → Need: photos with clear labels that explain what's inside",
+        "Problem 3 → Need: combine two people's photos without destroying either's work",
+        "→ Next: discover the solutions — through examples you already understand"
       ]
     }
   ]
