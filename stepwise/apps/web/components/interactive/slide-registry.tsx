@@ -19,16 +19,22 @@
 
 import type { ReactNode } from "react";
 import { renderIllustration } from "@repo/interactive-engine";
-import { LINUX_SLIDE_CONFIGS, GIT_SLIDE_CONFIGS } from "@repo/lesson-content";
-
-// ── All quest registries merged — add new quests here as you build them ───────
-const ALL_SLIDE_CONFIGS = {
-  ...LINUX_SLIDE_CONFIGS,
-  ...GIT_SLIDE_CONFIGS,
-  // ...NEXT_QUEST_CONFIGS,   ← just spread in the next package export
-};
+import { SimulatedTerminal } from "@repo/terminal-engine";
+import { ALL_SLIDE_CONFIGS } from "@repo/lesson-content";
 
 export function getSlideIllustration(slideId: string): ReactNode {
   const config = ALL_SLIDE_CONFIGS[slideId];
-  return config ? renderIllustration(config) : null;
+  if (!config) return null;
+  if (config.type === "SimulatedTerminal") {
+    return (
+      <SimulatedTerminal
+        language={config.language}
+        hint={config.hint}
+          initialVfs={config.initialVfs as any}
+        preHistory={config.preHistory}
+        height={config.height ?? 280}
+      />
+    );
+  }
+  return renderIllustration(config);
 }

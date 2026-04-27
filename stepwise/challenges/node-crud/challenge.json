@@ -5,6 +5,11 @@
   "title": "Pure Node.js CRUD API",
   "language": "javascript",
   "runtime": "node",
+  "mode": "local",
+  "capabilities": [
+    "cli-runner",
+    "test-runner"
+  ],
   "type": "server",
   "description": "Learn exactly how to build enterprise REST APIs purely with standard Node.js libraries—bypassing frameworks like Express. You will manually architect routing engines, gracefully handle in-memory database persistence, dynamically parse streaming request bodies, and securely serve robust JSON responses using raw `http`.",
   "difficulty": "beginner",

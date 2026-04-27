@@ -7,6 +7,7 @@ import { CodeSection } from "./CodeSection";
 import { useSession } from "next-auth/react";
 import { useTerminal, SimulatedTerminal } from "@repo/terminal-engine";
 import { VisualWorld } from "@repo/interactive-engine";
+import { CHALLENGE_CAPABILITIES } from "@repo/challenge-schema";
 import { QuestEvaluator } from "./evaluator/QuestEvaluator";
 import { InteractiveLessonSequence } from "./interactive/InteractiveLessonSequence";
 import { useQuestEvaluator } from "../hooks/useQuestEvaluator";
@@ -29,7 +30,11 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   // Engine Integration
   const isGit = challenge.id === "git-aethera";
   const terminal = useTerminal({ language: isGit ? "git" : "linux" });
-  const { checkStepCompletion } = useQuestEvaluator(terminal.state, terminal.history);
+  const { checkStepCompletion } = useQuestEvaluator(
+    terminal.state,
+    terminal.history,
+    challenge.steps,
+  );
   // Stable callback — only changes when passedStepIds or the evaluator itself changes.
   // IMPORTANT: Returns false for already-passed steps to prevent re-submission cascades
   // when saved progress is loaded from the server on mount.
@@ -41,8 +46,10 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
     [checkStepCompletion, passedStepIds]
   );
 
-  const WEB_QUESTS = ["linux-aethera", "git-aethera"];
-  const isWebMode = (challenge as any).mode === "web" || WEB_QUESTS.includes(challenge.id);
+  const isWebMode =
+    challenge.mode === "web" ||
+    challenge.capabilities.includes(CHALLENGE_CAPABILITIES.INTERACTIVE_SEQUENCE) ||
+    challenge.capabilities.includes(CHALLENGE_CAPABILITIES.SIM_TERMINAL);
 
   // ── Load saved progress from server on mount ──────────────────────────────
   useEffect(() => {

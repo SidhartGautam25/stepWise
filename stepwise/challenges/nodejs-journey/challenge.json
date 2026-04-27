@@ -5,6 +5,11 @@
   "title": "Node.js Journey: The Fundamentals",
   "language": "javascript",
   "runtime": "node",
+  "mode": "local",
+  "capabilities": [
+    "cli-runner",
+    "test-runner"
+  ],
   "defaultTimeoutMs": 3000,
   "description": "Learn the absolute fundamentals of Node.js completely from scratch by building a functional Todo API without any frameworks.",
   "steps": [

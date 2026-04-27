@@ -3,6 +3,11 @@
  * All API calls go through these functions — no raw fetch() in components.
  */
 
+import type {
+  ChallengeCapability,
+  ChallengeMode,
+  CompletionSpec,
+} from "@repo/challenge-schema";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4000";
 
 export interface ChallengeSummary {
@@ -11,6 +16,8 @@ export interface ChallengeSummary {
   version: string;
   language: string;
   runtime: string;
+  mode: ChallengeMode;
+  capabilities: ChallengeCapability[];
   stepCount: number;
 }
 
@@ -44,6 +51,7 @@ export interface StepInfo {
   codeFiles?: CodeFile[];
   interactiveLesson?: InteractiveLesson;
   requiresTerminal?: boolean;
+  completion?: CompletionSpec;
 }
 
 export interface ChallengeDetail {
@@ -52,6 +60,8 @@ export interface ChallengeDetail {
   title: string;
   language: string;
   runtime: string;
+  mode: ChallengeMode;
+  capabilities: ChallengeCapability[];
   description?: string;
   systemRequirements?: {
     os?: string;

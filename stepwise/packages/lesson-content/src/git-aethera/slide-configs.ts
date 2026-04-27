@@ -8,14 +8,14 @@
  */
 
 import type {
-  IllustrationConfig,
   CommitNode,
   StagingFile,
 } from "@repo/interactive-engine";
+import type { LessonIllustrationConfig } from "../types";
 
 import { BRANCH_COMMITS, STAGING_FILES_DEMO, KAVYA_COMMITS } from "./illustrations";
 
-export const GIT_SLIDE_CONFIGS: Record<string, IllustrationConfig> = {
+export const GIT_SLIDE_CONFIGS: Record<string, LessonIllustrationConfig> = {
 
   // ══════════════════════════════════════════════════════════════════
   // STEP: 00-welcome

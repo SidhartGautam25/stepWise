@@ -6,6 +6,11 @@
   "language": "bash",
   "runtime": "web-terminal",
   "mode": "web",
+  "capabilities": [
+    "interactive-sequence",
+    "sim-terminal",
+    "quest-evaluator"
+  ],
   "description": "Learn the first Linux filesystem commands with a visual directory and file explorer.",
   "steps": [
     {
@@ -40,6 +45,11 @@
       "prompt": "prompt.md",
       "explanation": "explanation.md",
       "requiresTerminal": true,
+      "completion": {
+        "all": [
+          { "type": "command_exact", "command": "continue" }
+        ]
+      },
       "workspace": {},
       "tests": {}
     },
@@ -49,6 +59,14 @@
       "prompt": "prompt.md",
       "explanation": "explanation.md",
       "requiresTerminal": true,
+      "completion": {
+        "all": [
+          { "type": "vfs_dir_exists", "path": "/home/student/projects" },
+          { "type": "command_exact", "command": "pwd" },
+          { "type": "command_count_gte", "command": "ls", "count": 2 },
+          { "type": "command_exact", "command": "mkdir projects" }
+        ]
+      },
       "workspace": {},
       "tests": {}
     },
@@ -58,6 +76,15 @@
       "prompt": "prompt.md",
       "explanation": "explanation.md",
       "requiresTerminal": true,
+      "completion": {
+        "all": [
+          { "type": "vfs_dir_exists", "path": "/home/student/projects" },
+          { "type": "cwd_is", "path": "/home/student/projects" },
+          { "type": "command_exact", "command": "cd projects" },
+          { "type": "command_exact", "command": "pwd" },
+          { "type": "command_prefix", "prefix": "cd .." }
+        ]
+      },
       "workspace": {},
       "tests": {}
     },
@@ -67,6 +94,16 @@
       "prompt": "prompt.md",
       "explanation": "explanation.md",
       "requiresTerminal": true,
+      "completion": {
+        "all": [
+          { "type": "vfs_file_contains", "path": "/home/student/projects/notes.txt", "text": "hello linux" },
+          { "type": "cwd_is", "path": "/home/student/projects" },
+          { "type": "command_exact", "command": "touch notes.txt" },
+          { "type": "command_prefix", "prefix": "echo hello linux > notes.txt" },
+          { "type": "command_exact", "command": "ls" },
+          { "type": "command_exact", "command": "cat notes.txt" }
+        ]
+      },
       "workspace": {},
       "tests": {}
     }

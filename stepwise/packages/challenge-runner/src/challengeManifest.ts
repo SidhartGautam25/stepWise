@@ -1,16 +1,14 @@
-import fs from "fs";
 import path from "path";
 import {
+  loadChallengeManifestFromFile,
+  type ChallengeManifest as SharedChallengeManifest,
+} from "@repo/challenge-schema";
+import {
   ChallengeManifest,
-  ChallengeStepManifest,
   ResolvedChallengeStep,
 } from "./types";
 
 const DEFAULT_TIMEOUT_MS = 2000;
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
 
 function assertString(value: unknown, field: string): string {
   if (typeof value !== "string" || value.length === 0) {
@@ -20,122 +18,49 @@ function assertString(value: unknown, field: string): string {
   return value;
 }
 
-function parseServerConfig(value: unknown): import("./types").ServerConfig | undefined {
-  if (!isRecord(value)) return undefined;
+function toRunnerManifest(sharedManifest: SharedChallengeManifest): ChallengeManifest {
   return {
-    startScript: typeof value.startScript === "string" ? value.startScript : undefined,
-    portEnvVar: typeof value.portEnvVar === "string" ? value.portEnvVar : undefined,
-    readyEndpoint: typeof value.readyEndpoint === "string" ? value.readyEndpoint : undefined,
-    startupTimeoutMs: typeof value.startupTimeoutMs === "number" ? value.startupTimeoutMs : undefined,
-  };
-}
-
-function parseStep(step: unknown, index: number): ChallengeStepManifest {
-  if (!isRecord(step)) {
-    throw new Error(`Invalid challenge manifest step at index ${index}`);
-  }
-
-  const tests = step.tests;
-
-  if (!isRecord(tests)) {
-    throw new Error(`Invalid challenge manifest tests for step ${index}`);
-  }
-
-  const workspace = step.workspace;
-
-  return {
-    id: assertString(step.id, `steps[${index}].id`),
-    title: assertString(step.title, `steps[${index}].title`),
-    prompt:
-      typeof step.prompt === "string" && step.prompt.length > 0
-        ? step.prompt
+    schemaVersion: 1,
+    id: sharedManifest.id,
+    version: sharedManifest.version,
+    title: sharedManifest.title,
+    language: sharedManifest.language,
+    runtime: sharedManifest.runtime,
+    type: sharedManifest.type,
+    description: sharedManifest.description,
+    difficulty: sharedManifest.difficulty,
+    systemRequirements: sharedManifest.systemRequirements,
+    tags: sharedManifest.tags,
+    entrypoint: sharedManifest.entrypoint,
+    defaultTimeoutMs: sharedManifest.defaultTimeoutMs,
+    server: sharedManifest.server,
+    steps: sharedManifest.steps.map((step, index) => ({
+      id: step.id,
+      title: step.title,
+      prompt: step.prompt,
+      free: step.free ?? true,
+      tests: {
+        visible: assertString(step.tests?.visible, `steps[${index}].tests.visible`),
+        hidden: step.tests?.hidden,
+      },
+      workspace: step.workspace?.root
+        ? {
+            root: step.workspace.root,
+            starter: step.workspace.starter,
+            entrypoint: step.workspace.entrypoint,
+          }
         : undefined,
-    free: typeof step.free === "boolean" ? step.free : true,
-    tests: {
-      visible: assertString(tests.visible, `steps[${index}].tests.visible`),
-      hidden:
-        typeof tests.hidden === "string" && tests.hidden.length > 0
-          ? tests.hidden
-          : undefined,
-    },
-    workspace: isRecord(workspace)
-      ? {
-          root: assertString(workspace.root, `steps[${index}].workspace.root`),
-          starter:
-            typeof workspace.starter === "string" &&
-            workspace.starter.length > 0
-              ? workspace.starter
-              : undefined,
-          entrypoint:
-            typeof workspace.entrypoint === "string" &&
-            workspace.entrypoint.length > 0
-              ? workspace.entrypoint
-              : undefined,
-        }
-      : undefined,
-    entrypoint:
-      typeof step.entrypoint === "string" && step.entrypoint.length > 0
-        ? step.entrypoint
-        : undefined,
-    timeoutMs:
-      typeof step.timeoutMs === "number" && Number.isFinite(step.timeoutMs)
-        ? step.timeoutMs
-        : undefined,
-    server: parseServerConfig(step.server),
+      entrypoint: step.entrypoint,
+      timeoutMs: step.timeoutMs,
+      server: step.server,
+    })),
   };
 }
 
 export function loadChallengeManifest(challengePath: string): ChallengeManifest {
   const manifestPath = path.resolve(challengePath, "challenge.json");
-
-  if (!fs.existsSync(manifestPath)) {
-    throw new Error(`Challenge manifest not found at ${manifestPath}`);
-  }
-
-  const manifest = JSON.parse(
-    fs.readFileSync(manifestPath, "utf-8"),
-  ) as unknown;
-
-  if (!isRecord(manifest)) {
-    throw new Error("Challenge manifest must be an object");
-  }
-
-  const rawSteps = manifest.steps;
-
-  if (!Array.isArray(rawSteps) || rawSteps.length === 0) {
-    throw new Error("Challenge manifest must contain at least one step");
-  }
-
-  return {
-    schemaVersion: 1,
-    id: assertString(manifest.id, "id"),
-    version: assertString(manifest.version, "version"),
-    title: assertString(manifest.title, "title"),
-    language: assertString(manifest.language, "language"),
-    runtime: assertString(manifest.runtime, "runtime"),
-    type: manifest.type === "server" ? "server" : "function",
-    description: typeof manifest.description === "string" ? manifest.description : undefined,
-    difficulty:
-      manifest.difficulty === "beginner" ||
-      manifest.difficulty === "intermediate" ||
-      manifest.difficulty === "advanced"
-        ? manifest.difficulty
-        : undefined,
-    tags: Array.isArray(manifest.tags)
-      ? (manifest.tags as unknown[]).filter((t): t is string => typeof t === "string")
-      : undefined,
-    entrypoint:
-      typeof manifest.entrypoint === "string" && manifest.entrypoint.length > 0
-        ? manifest.entrypoint
-        : undefined,
-    defaultTimeoutMs:
-      typeof manifest.defaultTimeoutMs === "number" &&
-      Number.isFinite(manifest.defaultTimeoutMs)
-        ? manifest.defaultTimeoutMs
-        : undefined,
-    server: parseServerConfig(manifest.server),
-    steps: rawSteps.map(parseStep),
-  };
+  const sharedManifest = loadChallengeManifestFromFile(manifestPath);
+  return toRunnerManifest(sharedManifest);
 }
 
 export function resolveChallengeStep(

@@ -15,7 +15,6 @@
  */
 
 import type {
-  IllustrationConfig,
   TreeNode,
   FileSystemTree,
   ExpandableCardItem,
@@ -23,6 +22,7 @@ import type {
   SimStep,
   JourneyStep,
 } from "@repo/interactive-engine";
+import type { LessonIllustrationConfig } from "../types";
 
 import {
   WELCOME_HELLO_ITEMS,
@@ -45,7 +45,7 @@ const homeTree      = HOME_FOLDER_TREE       as unknown as FileSystemTree;
 
 // ─── Slide configs ────────────────────────────────────────────────────────────
 
-export const LINUX_SLIDE_CONFIGS: Record<string, IllustrationConfig> = {
+export const LINUX_SLIDE_CONFIGS: Record<string, LessonIllustrationConfig> = {
 
   // ── 00-welcome ──────────────────────────────────────────────────────────────
 

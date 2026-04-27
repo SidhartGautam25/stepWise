@@ -5,6 +5,13 @@
 
 import fs from "fs";
 import path from "path";
+import {
+  loadChallengeManifestFromFile,
+  type ChallengeCapability,
+  type CompletionSpec,
+  type ChallengeMode,
+  type ChallengeManifest,
+} from "@repo/challenge-schema";
 
 const CHALLENGES_ROOT = path.resolve(__dirname, "../../../../challenges");
 
@@ -41,6 +48,7 @@ export interface StepInfo {
   position: number;
   codeFiles?: CodeFile[];
   requiresTerminal?: boolean;
+  completion?: CompletionSpec;
 }
 
 export interface ChallengeInfo {
@@ -49,6 +57,8 @@ export interface ChallengeInfo {
   title: string;
   language: string;
   runtime: string;
+  mode: ChallengeMode;
+  capabilities: ChallengeCapability[];
   description?: string;
   systemRequirements?: Record<string, unknown>;
   steps: StepInfo[];
@@ -61,6 +71,8 @@ export interface ChallengeSummary {
   version: string;
   language: string;
   runtime: string;
+  mode: ChallengeMode;
+  capabilities: ChallengeCapability[];
   stepCount: number;
 }
 
@@ -129,20 +141,15 @@ export function getChallengePath(challengeId: string): string {
 
 export function getChallengeInfo(challengeId: string): ChallengeInfo {
   const challengePath = getChallengePath(challengeId);
-  const manifest = JSON.parse(
-    fs.readFileSync(path.resolve(challengePath, "challenge.json"), "utf-8"),
-  ) as unknown;
+  const manifestPath = path.resolve(challengePath, "challenge.json");
+  const manifest: ChallengeManifest = loadChallengeManifestFromFile(manifestPath);
+  const runtime = manifest.runtime;
+  const { mode, capabilities } = manifest;
 
-  if (!isRecord(manifest) || !Array.isArray(manifest.steps)) {
-    throw new Error(`Invalid challenge manifest for "${challengeId}"`);
-  }
-
-  const steps: StepInfo[] = manifest.steps.map((s: unknown, i: number) => {
-    if (!isRecord(s)) throw new Error(`Invalid step at index ${i}`);
-
+  const steps: StepInfo[] = manifest.steps.map((s, i: number) => {
     const stepId = readString(s.id, `steps[${i}].id`);
     const stepDir = path.resolve(challengePath, "steps", stepId);
-    const workspaceConfig = isRecord(s.workspace) ? s.workspace : undefined;
+    const workspaceConfig = s.workspace;
     const workspaceRoot =
       typeof workspaceConfig?.root === "string"
         ? workspaceConfig.root
@@ -216,18 +223,21 @@ export function getChallengeInfo(challengeId: string): ChallengeInfo {
       position: i + 1,
       codeFiles,
       requiresTerminal: typeof s.requiresTerminal === "boolean" ? s.requiresTerminal : true,
+      completion: s.completion,
     };
   });
 
   if (steps.length === 0) throw new Error(`Challenge "${challengeId}" has no steps`);
 
   return {
-    id: readString(manifest.id, "id"),
-    version: readString(manifest.version, "version"),
-    title: readString(manifest.title, "title"),
-    language: readString(manifest.language, "language"),
-    runtime: readString(manifest.runtime, "runtime"),
-    description: typeof manifest.description === "string" ? manifest.description : undefined,
+    id: manifest.id,
+    version: manifest.version,
+    title: manifest.title,
+    language: manifest.language,
+    runtime,
+    mode,
+    capabilities,
+    description: manifest.description,
     systemRequirements: isRecord(manifest.systemRequirements) ? manifest.systemRequirements : undefined,
     steps,
     challengePath,
@@ -248,6 +258,8 @@ export function listChallenges(): ChallengeSummary[] {
           version: info.version,
           language: info.language,
           runtime: info.runtime,
+          mode: info.mode,
+          capabilities: info.capabilities,
           stepCount: info.steps.length,
         }];
       } catch {

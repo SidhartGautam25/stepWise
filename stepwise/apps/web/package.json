@@ -9,8 +9,10 @@
     "start": "next start"
   },
   "dependencies": {
+    "@repo/challenge-schema": "workspace:*",
     "@repo/interactive-engine": "workspace:*",
     "@repo/lesson-content": "workspace:*",
+    "@repo/quest-evaluator": "workspace:*",
     "@repo/terminal-engine": "workspace:*",
     "next": "16.2.0",
     "next-auth": "^4.24.14",

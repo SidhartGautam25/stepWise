@@ -24,7 +24,6 @@ import type { FileSystemTree }       from "./components/FileNavigator";
 import type { InfoCalloutVariant }   from "./components/InfoCallout";
 import type { CommitNode, GitBranchLine }      from "./components/GitCommitGraph";
 import type { StagingFile }          from "./components/GitStagingArea";
-import type { VfsNode as TermVfsNode } from "@repo/terminal-engine";
 
 // Each variant is `{ type: "<ComponentName>" } & relevant props`
 
@@ -130,16 +129,6 @@ export interface GitStagingAreaConfig {
   interactive?: boolean;
 }
 
-/** Embedded in-browser simulated terminal */
-export interface SimulatedTerminalConfig {
-  type: "SimulatedTerminal";
-  language?: "git" | "linux";
-  hint?: string;
-  initialVfs?: Record<string, TermVfsNode>;
-  preHistory?: string[];
-  height?: number;
-}
-
 export type IllustrationConfig =
   | ExpandableCardListConfig
   | ClickRevealGridConfig
@@ -152,5 +141,4 @@ export type IllustrationConfig =
   | InfoCalloutConfig
   | MultiConfig
   | GitCommitGraphConfig
-  | GitStagingAreaConfig
-  | SimulatedTerminalConfig;
+  | GitStagingAreaConfig;

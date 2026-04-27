@@ -6,6 +6,11 @@
   "language": "bash",
   "runtime": "web-terminal",
   "mode": "web",
+  "capabilities": [
+    "interactive-sequence",
+    "sim-terminal",
+    "quest-evaluator"
+  ],
   "description": "Learn Git through stories and real problems. No experience needed. You'll go from zero to confidently saving, exploring, and branching your code history.",
   "steps": [
     {
@@ -54,6 +59,13 @@
       "prompt": "prompt.md",
       "explanation": "explanation.md",
       "requiresTerminal": true,
+      "completion": {
+        "all": [
+          { "type": "git_initialized" },
+          { "type": "command_prefix", "prefix": "git init" },
+          { "type": "command_prefix", "prefix": "ls" }
+        ]
+      },
       "workspace": {},
       "tests": {}
     },
@@ -63,6 +75,14 @@
       "prompt": "prompt.md",
       "explanation": "explanation.md",
       "requiresTerminal": true,
+      "completion": {
+        "all": [
+          { "type": "git_commits_gte", "count": 1, "currentBranchOnly": true },
+          { "type": "command_prefix", "prefix": "git status" },
+          { "type": "command_prefix", "prefix": "git add" },
+          { "type": "command_prefix", "prefix": "git commit" }
+        ]
+      },
       "workspace": {},
       "tests": {}
     },
@@ -72,6 +92,12 @@
       "prompt": "prompt.md",
       "explanation": "explanation.md",
       "requiresTerminal": true,
+      "completion": {
+        "all": [
+          { "type": "git_commits_gte", "count": 2, "currentBranchOnly": true },
+          { "type": "command_prefix", "prefix": "git log" }
+        ]
+      },
       "workspace": {},
       "tests": {}
     },
@@ -81,6 +107,12 @@
       "prompt": "prompt.md",
       "explanation": "explanation.md",
       "requiresTerminal": true,
+      "completion": {
+        "all": [
+          { "type": "git_branches_gte", "count": 2 },
+          { "type": "command_prefix", "prefix": "git checkout" }
+        ]
+      },
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"

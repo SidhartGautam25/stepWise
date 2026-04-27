@@ -77,5 +77,4 @@ export type {
   MultiConfig,
   GitCommitGraphConfig,
   GitStagingAreaConfig,
-  SimulatedTerminalConfig,
 } from "./IllustrationConfig";

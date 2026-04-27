@@ -1,38 +1,46 @@
 import { useCallback } from "react";
 import type { TerminalState, TerminalLog } from "@repo/terminal-engine";
+import type { CompletionSpec } from "@repo/challenge-schema";
+import { evaluateCompletionSpec } from "@repo/quest-evaluator";
 
-export function useQuestEvaluator(state: TerminalState, history: TerminalLog[]) {
-  const pathToString = (path: string[]) => `/${path.join("/")}`;
+type StepWithCompletion = { id: string; completion?: CompletionSpec };
+
+export function useQuestEvaluator(
+  state: TerminalState,
+  history: TerminalLog[],
+  steps: StepWithCompletion[],
+) {
 
   const successfulCommands = useCallback(() => history.filter((log) => log.command && !log.error), [history]);
   
-  const hasCommand = useCallback((command: string, path?: string) => {
-    // In our terminal-engine, history logs don't store cwd directly,
-    // so we evaluate commands generically unless path is required.
-    // For a more robust evaluation, we can assume the last successful commands
-    // align with the current state's cwd if it's the exact same command string.
+  const hasCommand = useCallback((command: string) => {
     return successfulCommands().some((log) => log.command?.trim() === command);
   }, [successfulCommands]);
 
   const hasCommandPrefix = useCallback((prefix: string) =>
     successfulCommands().some((log) => log.command?.trim().startsWith(prefix)), [successfulCommands]);
 
-  const commandCount = useCallback((command: string, path?: string) =>
+  const commandCount = useCallback((command: string) =>
     successfulCommands().filter((log) => log.command?.trim() === command).length, [successfulCommands]);
 
   const getDirNode = (path: string[]) => {
     let currentDir: any = state.vfs;
     for (const p of path) {
-      if (!currentDir[p] || currentDir[p].type !== "directory") return null;
-      currentDir = currentDir[p].children;
+      const node = currentDir?.[p];
+      if (!node || node.type !== "directory") return null;
+      currentDir = node.children;
     }
-    return currentDir;
+    return currentDir ?? null;
   };
 
   const checkStepCompletion = useCallback((stepId: string, completedStepIds: string[]): boolean => {
     // Note: we do NOT return true for completedStepIds.includes(stepId) here.
     // evalStep in ChallengeViewer guards against already-passed steps.
     // Only check actual completion conditions below.
+    const step = steps.find((candidate) => candidate.id === stepId);
+    if (step?.completion?.all?.length) {
+      return evaluateCompletionSpec(step.completion, state, history);
+    }
     const git = state.git;
     
     // ── Git quest steps ──────────────────────────────────────────────────────
@@ -103,7 +111,7 @@ export function useQuestEvaluator(state: TerminalState, history: TerminalLog[]) 
     }
 
     return false;
-  }, [state, commandCount, hasCommand, hasCommandPrefix]);
+  }, [state, history, commandCount, hasCommand, hasCommandPrefix, steps]);
 
   return { checkStepCompletion };
 }

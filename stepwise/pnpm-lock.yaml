@@ -29,6 +29,9 @@ importers:
       '@repo/auth':
         specifier: workspace:^
         version: link:../../packages/auth
+      '@repo/challenge-schema':
+        specifier: workspace:^
+        version: link:../../packages/challenge-schema
       '@repo/db':
         specifier: workspace:^
         version: link:../../packages/db
@@ -93,12 +96,18 @@ importers:
 
   apps/web:
     dependencies:
+      '@repo/challenge-schema':
+        specifier: workspace:*
+        version: link:../../packages/challenge-schema
       '@repo/interactive-engine':
         specifier: workspace:*
         version: link:../../packages/interactive-engine
       '@repo/lesson-content':
         specifier: workspace:*
         version: link:../../packages/lesson-content
+      '@repo/quest-evaluator':
+        specifier: workspace:*
+        version: link:../../packages/quest-evaluator
       '@repo/terminal-engine':
         specifier: workspace:*
         version: link:../../packages/terminal-engine
@@ -178,6 +187,19 @@ importers:
         version: 6.0.2
 
   packages/challenge-runner:
+    dependencies:
+      '@repo/challenge-schema':
+        specifier: workspace:^
+        version: link:../challenge-schema
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.19.17
+      typescript:
+        specifier: ^6.0.2
+        version: 6.0.2
+
+  packages/challenge-schema:
     devDependencies:
       '@types/node':
         specifier: ^22.15.3
@@ -246,9 +268,6 @@ importers:
 
   packages/interactive-engine:
     dependencies:
-      '@repo/terminal-engine':
-        specifier: workspace:*
-        version: link:../terminal-engine
       react:
         specifier: ^19.0.0
         version: 19.2.5
@@ -271,6 +290,22 @@ importers:
       '@repo/interactive-engine':
         specifier: workspace:*
         version: link:../interactive-engine
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.19.17
+      typescript:
+        specifier: 5.9.2
+        version: 5.9.2
+
+  packages/quest-evaluator:
+    dependencies:
+      '@repo/challenge-schema':
+        specifier: workspace:^
+        version: link:../challenge-schema
+    devDependencies:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config

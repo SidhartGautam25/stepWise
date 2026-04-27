@@ -28,7 +28,6 @@ import { FileNavigator }       from "./components/FileNavigator";
 import { InfoCallout }         from "./components/InfoCallout";
 import { GitCommitGraph }      from "./components/GitCommitGraph";
 import { GitStagingArea }      from "./components/GitStagingArea";
-import { SimulatedTerminal }   from "@repo/terminal-engine";
 
 export function renderIllustration(config: IllustrationConfig): ReactNode {
   switch (config.type) {
@@ -159,17 +158,6 @@ export function renderIllustration(config: IllustrationConfig): ReactNode {
           files={config.files}
           tip={config.tip}
           interactive={config.interactive}
-        />
-      );
-
-    case "SimulatedTerminal":
-      return (
-        <SimulatedTerminal
-          language={config.language}
-          hint={config.hint}
-          initialVfs={config.initialVfs}
-          preHistory={config.preHistory}
-          height={config.height ?? 280}
         />
       );
 
