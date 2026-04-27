@@ -22,9 +22,8 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   const [activeStepId, setActiveStepId] = useState(challenge.steps[0]?.id || "");
   const [passedStepIds, setPassedStepIds] = useState<string[]>([]);
   const [successMessage, setSuccessMessage] = useState("");
-  const [terminalVisible, setTerminalVisible] = useState(false);
-  // Panels: "visualizer" | "content" | "both" — shown left of terminal in web mode
-  const [leftPanel, setLeftPanel] = useState<"visualizer" | "content" | "both">("content");
+  const [viewMode, setViewMode] = useState<"visualizer" | "content" | "split-v" | "split-h">("content");
+  const [terminalMode, setTerminalMode] = useState<"right" | "bottom" | "hidden">("right");
 
   // Ref passed down so WebTerminal can re-focus input after step advance
   const terminalFocusRef = useRef<() => void>(() => {});
@@ -69,11 +68,8 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   // Sync terminal visibility and default panel when step changes
   useEffect(() => {
     const needsTerminal = activeStep?.requiresTerminal !== false;
-    setTerminalVisible(needsTerminal);
-    // Open interactive slides automatically if present, otherwise start on the story content.
-    // The user will read the story, then click 'Open Visualizer' when ready. The terminal 
-    // now has an inline checklist so they don't need to switch back to the story tab.
-    setLeftPanel(activeStep?.interactiveLesson ? "visualizer" : "content");
+    setTerminalMode(needsTerminal ? "right" : "hidden");
+    setViewMode(activeStep?.interactiveLesson ? "visualizer" : "content");
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStepId]);
 
@@ -200,7 +196,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
           
           <div style={{ display: "flex", gap: 12, marginTop: 4 }}>
             <button
-              onClick={() => setLeftPanel("visualizer")}
+              onClick={() => setViewMode("visualizer")}
               style={{
                 background: "var(--color-indigo)",
                 color: "#fff",
@@ -222,7 +218,10 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
             </button>
 
             <button
-              onClick={() => setLeftPanel("both")}
+              onClick={() => {
+                 setViewMode("split-h");
+                 setTerminalMode("bottom");
+              }}
               style={{
                 background: "var(--color-surface-2)",
                 color: "var(--color-text)",
@@ -238,8 +237,8 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                 gap: 8,
               }}
             >
-              <span>🗂 + 📖</span>
-              Open Visualizer + Guide Together
+              <span>🗂|📖</span>
+              Split Panel + Terminal Bottom
             </button>
           </div>
         </div>
@@ -443,46 +442,60 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
 
         <div style={{ flex: 1 }} />
 
-        {/* Left panel switcher */}
+        {/* Panel View switcher */}
         <div style={{ display: "flex", gap: 4, background: "var(--color-surface-2)", borderRadius: "var(--radius-sm)", padding: 3 }}>
-          {(["visualizer", "content", "both"] as const).map((tab) => (
+          {[
+            { id: "visualizer", label: "🗂 Vis" },
+            { id: "content", label: "📖 Guide" },
+            { id: "split-v", label: "🗂/📖 Top/Bot" },
+            { id: "split-h", label: "🗂|📖 Side" }
+          ].map((tab) => (
             <button
-              key={tab}
-              onClick={() => setLeftPanel(tab)}
+              key={tab.id}
+              onClick={() => setViewMode(tab.id as any)}
               style={{
-                padding: "5px 14px",
+                padding: "5px 10px",
                 borderRadius: 6,
                 border: "none",
                 cursor: "pointer",
                 fontWeight: 600,
                 fontSize: 12,
-                background: leftPanel === tab ? "var(--color-indigo)" : "transparent",
-                color: leftPanel === tab ? "#fff" : "var(--color-muted)",
+                background: viewMode === tab.id ? "var(--color-indigo)" : "transparent",
+                color: viewMode === tab.id ? "#fff" : "var(--color-muted)",
                 transition: "all 0.18s ease",
               }}
             >
-              {tab === "visualizer" ? "🗂 Visualizer" : tab === "content" ? "📖 Step Guide" : "🗂 + 📖 Split"}
+              {tab.label}
             </button>
           ))}
         </div>
 
         {/* Terminal toggle */}
-        <button
-          onClick={() => setTerminalVisible(v => !v)}
-          style={{
-            padding: "5px 12px",
-            borderRadius: 6,
-            border: "1px solid var(--color-border)",
-            cursor: "pointer",
-            fontWeight: 600,
-            fontSize: 12,
-            background: terminalVisible ? "rgba(34,197,94,0.12)" : "var(--color-surface-2)",
-            color: terminalVisible ? "var(--color-emerald)" : "var(--color-muted)",
-            transition: "all 0.18s ease",
-          }}
-        >
-          {terminalVisible ? "💻 Terminal" : "💻 Show Terminal"}
-        </button>
+        <div style={{ display: "flex", gap: 4, background: "var(--color-surface-2)", borderRadius: "var(--radius-sm)", padding: 3 }}>
+          {[
+            { id: "right", label: "💻 Right" },
+            { id: "bottom", label: "💻 Bottom" },
+            { id: "hidden", label: "🚫 Hide" }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setTerminalMode(tab.id as any)}
+              style={{
+                padding: "5px 10px",
+                borderRadius: 6,
+                border: "none",
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: 12,
+                background: terminalMode === tab.id ? "rgba(34,197,94,0.15)" : "transparent",
+                color: terminalMode === tab.id ? "var(--color-emerald)" : "var(--color-muted)",
+                transition: "all 0.18s ease",
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ── Body: Sidebar + Left Panel + Terminal ── */}
@@ -548,45 +561,63 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
           </div>
         </div>
 
-        {/* Left panel: Visualizer or Step Guide — expands to fill when terminal hidden */}
-        <div style={{ flex: terminalVisible ? "0 0 55%" : 1, display: "flex", flexDirection: "column", overflow: "hidden", borderRight: terminalVisible ? "1px solid var(--color-border)" : "none", transition: "flex 0.3s ease", background: "var(--color-surface)" }}>
-          {leftPanel === "visualizer" ? (
-            <div style={{ flex: 1, overflow: "auto", padding: 16 }}>
-              <WebVisualizerPanel
-                stepId={activeStep?.id || ""}
-                interactiveLesson={activeStep?.interactiveLesson}
-              />
-            </div>
-          ) : leftPanel === "content" ? (
-            <div style={{ flex: 1, overflowY: "auto" }}>
-              {stepContent}
-            </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
-              <div style={{ flex: "1 1 50%", overflowY: "auto", borderBottom: "1px solid var(--color-border)" }}>
-                {stepContent}
-              </div>
-              <div style={{ flex: "1 1 50%", overflow: "auto", padding: 16, background: "var(--color-surface-main)" }}>
+        {/* Content Wrapper (Holds Panels + Terminal) */}
+        <div style={{ 
+          flex: 1, 
+          display: "flex", 
+          flexDirection: terminalMode === "bottom" ? "column" : "row",
+          overflow: "hidden" 
+        }}>
+          
+          {/* Panels Area */}
+          <div style={{ 
+            flex: terminalMode === "bottom" ? "0 0 60%" : (terminalMode === "right" ? "0 0 55%" : 1), 
+            display: "flex", 
+            flexDirection: "column",
+            overflow: "hidden", 
+            borderRight: terminalMode === "right" ? "1px solid var(--color-border)" : "none", 
+            borderBottom: terminalMode === "bottom" ? "1px solid var(--color-border)" : "none",
+            transition: "all 0.3s ease", 
+            background: "var(--color-surface)" 
+          }}>
+            {viewMode === "visualizer" ? (
+              <div style={{ flex: 1, overflow: "auto", padding: 16 }}>
                 <WebVisualizerPanel
                   stepId={activeStep?.id || ""}
                   interactiveLesson={activeStep?.interactiveLesson}
                 />
               </div>
+            ) : viewMode === "content" ? (
+              <div style={{ flex: 1, overflowY: "auto" }}>
+                {stepContent}
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: viewMode === "split-h" ? "row" : "column", height: "100%", width: "100%", overflow: "hidden" }}>
+                <div style={{ flex: "1 1 50%", overflowY: "auto", minHeight: 0, minWidth: 0, borderBottom: viewMode === "split-v" ? "1px solid var(--color-border)" : "none", borderRight: viewMode === "split-h" ? "1px solid var(--color-border)" : "none" }}>
+                  {stepContent}
+                </div>
+                <div style={{ flex: "1 1 50%", overflow: "auto", minHeight: 0, minWidth: 0, padding: 16, background: "var(--color-surface-main)" }}>
+                  <WebVisualizerPanel
+                    stepId={activeStep?.id || ""}
+                    interactiveLesson={activeStep?.interactiveLesson}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Terminal Area — conditionally visible */}
+          {terminalMode !== "hidden" && (
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 200, minHeight: 200 }}>
+              <WebTerminal
+                activeStepId={activeStep?.id || ""}
+                activeStepTitle={activeStep?.title || ""}
+                focusRef={terminalFocusRef}
+              />
             </div>
           )}
+
         </div>
-
-        {/* Right panel: Terminal — conditionally visible */}
-        {terminalVisible && (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 340 }}>
-            <WebTerminal
-              activeStepId={activeStep?.id || ""}
-              activeStepTitle={activeStep?.title || ""}
-              focusRef={terminalFocusRef}
-            />
-          </div>
-        )}
-
       </div>
 
       <AetheraEvaluator
