@@ -6,7 +6,7 @@ import type { FastifyRequest, FastifyReply } from "fastify";
 import { listChallenges, getChallengeInfo } from "../services/challengeService";
 
 export async function listAllChallenges(_request: FastifyRequest, _reply: FastifyReply) {
-  return { challenges: listChallenges() };
+  return { challenges: await listChallenges() };
 }
 
 export async function getChallengeById(request: FastifyRequest, reply: FastifyReply) {
@@ -17,7 +17,7 @@ export async function getChallengeById(request: FastifyRequest, reply: FastifyRe
   }
 
   try {
-    return getChallengeInfo(id);
+    return await getChallengeInfo(id);
   } catch (err) {
     return reply.status(404).send({
       error: err instanceof Error ? err.message : "Challenge not found",

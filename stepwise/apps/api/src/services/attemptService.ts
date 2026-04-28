@@ -86,7 +86,7 @@ function mapProgress(row: UserProgress): NormalizedProgress {
 export async function startAttempt(
   payload: StartAttemptRequest & { userId: string },
 ): Promise<StartAttemptResponse> {
-  const challenge = getChallengeInfo(payload.challengeId);
+  const challenge = await getChallengeInfo(payload.challengeId);
   const active = await findActiveAttempt(payload.userId, payload.challengeId);
 
   const existingProgress = await findProgress(payload.userId, payload.challengeId);
@@ -133,6 +133,7 @@ export async function startAttempt(
     userId: payload.userId,
     challengeId: challenge.id,
     challengeVersion: challenge.version,
+    challengeVersionId: challenge.challengeVersionId,
     stepId: dbStep.id,
     stepKey: step.id,
     mode: payload.mode,
@@ -175,7 +176,7 @@ export async function submitResult(
   if (attempt.challengeVersion !== payload.result.challengeVersion) throw new Error("Challenge version mismatch");
   if (attempt.stepKey !== payload.result.stepId) throw new Error("Step mismatch");
 
-  const challenge = getChallengeInfo(attempt.challengeId);
+  const challenge = await getChallengeInfo(attempt.challengeId);
   const outcome: "passed" | "failed" = payload.result.failed === 0 ? "passed" : "failed";
   const submittedAt = new Date();
   const nextStepId = getNextStepId(challenge, attempt.stepKey);
@@ -231,11 +232,11 @@ export interface UserDashboardData {
 export async function getUserDashboard(userId: string): Promise<UserDashboardData> {
   const allProgress = await findAllProgressForUser(userId);
 
-  const progress = allProgress.map((p: UserProgress & { challenge?: unknown }) => {
+  const progress = await Promise.all(allProgress.map(async (p: UserProgress & { challenge?: unknown }) => {
     let totalSteps = 0;
     let challengeTitle = p.challengeId;
     try {
-      const info = getChallengeInfo(p.challengeId);
+      const info = await getChallengeInfo(p.challengeId);
       totalSteps = info.steps.length;
       challengeTitle = info.title;
     } catch { /* challenge might have been removed */ }
@@ -249,7 +250,7 @@ export async function getUserDashboard(userId: string): Promise<UserDashboardDat
       challengeCompleted: p.challengeCompleted,
       completedStepKeys: p.completedStepKeys,
     };
-  });
+  }));
 
   return { userId, progress };
 }

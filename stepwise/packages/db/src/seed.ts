@@ -10,67 +10,9 @@ import fs from "fs";
 import path from "path";
 import { Prisma } from "@prisma/client";
 import { prisma } from "./client";
+import { buildChallengeRegistry } from "./challengeRegistry";
 
 const CHALLENGES_ROOT = path.resolve(__dirname, "../../../challenges");
-
-interface ManifestStep {
-  id: string;
-  title: string;
-  prompt?: string;
-}
-
-interface ChallengeManifest {
-  id: string;
-  version: string;
-  title: string;
-  language: string;
-  runtime: string;
-  type?: string;
-  description?: string;
-  difficulty?: string;
-  tags?: string[];
-  systemRequirements?: Record<string, unknown>;
-  steps: ManifestStep[];
-}
-
-function isRecord(v: unknown): v is Record<string, unknown> {
-  return typeof v === "object" && v !== null;
-}
-
-function loadManifest(challengeDir: string): ChallengeManifest | null {
-  const manifestPath = path.resolve(challengeDir, "challenge.json");
-  if (!fs.existsSync(manifestPath)) return null;
-
-  try {
-    const raw = JSON.parse(fs.readFileSync(manifestPath, "utf-8")) as unknown;
-    if (!isRecord(raw) || !Array.isArray(raw.steps)) return null;
-
-    return {
-      id: String(raw.id),
-      version: String(raw.version),
-      title: String(raw.title),
-      language: String(raw.language),
-      runtime: String(raw.runtime),
-      type: typeof raw.type === "string" ? raw.type : undefined,
-      description: typeof raw.description === "string" ? raw.description : undefined,
-      difficulty: typeof raw.difficulty === "string" ? raw.difficulty : undefined,
-      tags: Array.isArray(raw.tags)
-        ? (raw.tags as unknown[]).filter((t): t is string => typeof t === "string")
-        : [],
-      systemRequirements: isRecord(raw.systemRequirements) ? raw.systemRequirements : undefined,
-      steps: (raw.steps as unknown[]).map((s, i) => {
-        if (!isRecord(s)) throw new Error(`Invalid step at index ${i}`);
-        return {
-          id: String(s.id),
-          title: String(s.title),
-          prompt: typeof s.prompt === "string" ? s.prompt : undefined,
-        };
-      }),
-    };
-  } catch {
-    return null;
-  }
-}
 
 async function seed() {
   if (!fs.existsSync(CHALLENGES_ROOT)) {
@@ -86,75 +28,133 @@ async function seed() {
 
   for (const entry of entries) {
     const challengeDir = path.resolve(CHALLENGES_ROOT, entry.name);
-    const manifest = loadManifest(challengeDir);
+    let registry;
 
-    if (!manifest) {
-      console.warn(`  ⚠ Skipping ${entry.name} (no valid challenge.json)`);
+    try {
+      registry = buildChallengeRegistry(challengeDir);
+    } catch (err) {
+      console.warn(
+        `  ⚠ Skipping ${entry.name}: ${err instanceof Error ? err.message : "invalid challenge.json"}`,
+      );
       continue;
     }
 
     // Upsert Challenge
     await prisma.challenge.upsert({
-      where: { id: manifest.id },
+      where: { id: registry.id },
       create: {
-        id: manifest.id,
-        version: manifest.version,
-        title: manifest.title,
-        language: manifest.language,
-        runtime: manifest.runtime,
-        challengeType: manifest.type ?? "function",
-        description: manifest.description,
-        difficulty: manifest.difficulty,
-        tags: JSON.stringify(manifest.tags ?? []),
-        systemRequirements: manifest.systemRequirements ? (manifest.systemRequirements as Prisma.InputJsonObject) : undefined,
+        id: registry.id,
+        version: registry.version,
+        title: registry.title,
+        language: registry.language,
+        runtime: registry.runtime,
+        challengeType: registry.type,
+        description: registry.description,
+        difficulty: registry.difficulty,
+        tags: JSON.stringify(registry.tags),
+        systemRequirements: registry.systemRequirements ? (registry.systemRequirements as Prisma.InputJsonObject) : undefined,
       },
       update: {
-        version: manifest.version,
-        title: manifest.title,
-        language: manifest.language,
-        runtime: manifest.runtime,
-        challengeType: manifest.type ?? "function",
-        description: manifest.description,
-        difficulty: manifest.difficulty,
-        tags: JSON.stringify(manifest.tags ?? []),
-        systemRequirements: manifest.systemRequirements ? (manifest.systemRequirements as Prisma.InputJsonObject) : undefined,
+        version: registry.version,
+        title: registry.title,
+        language: registry.language,
+        runtime: registry.runtime,
+        challengeType: registry.type,
+        description: registry.description,
+        difficulty: registry.difficulty,
+        tags: JSON.stringify(registry.tags),
+        systemRequirements: registry.systemRequirements ? (registry.systemRequirements as Prisma.InputJsonObject) : undefined,
       },
     });
 
-    // Upsert each step
-    for (let i = 0; i < manifest.steps.length; i++) {
-      const step = manifest.steps[i];
-      if (!step) continue;
+    const existingVersion = await prisma.challengeVersion.findUnique({
+      where: {
+        challengeId_version: {
+          challengeId: registry.id,
+          version: registry.version,
+        },
+      },
+    });
 
-      const promptPath =
-        step.prompt
-          ? `steps/${step.id}/${step.prompt}`
-          : null;
+    if (!existingVersion?.isPublished) {
+      const sourcePath = path.relative(CHALLENGES_ROOT, registry.sourcePath);
+      const stepRegistrySnapshot = JSON.parse(
+        JSON.stringify({
+          ...registry,
+          sourcePath,
+          manifestPath: path.join(sourcePath, "challenge.json"),
+        }),
+      ) as Prisma.InputJsonObject;
+
+      await prisma.challengeVersion.upsert({
+        where: {
+          challengeId_version: {
+            challengeId: registry.id,
+            version: registry.version,
+          },
+        },
+        create: {
+          challengeId: registry.id,
+          version: registry.version,
+          title: registry.title,
+          language: registry.language,
+          runtime: registry.runtime,
+          challengeType: registry.type,
+          description: registry.description,
+          difficulty: registry.difficulty,
+          tags: JSON.stringify(registry.tags),
+          capabilities: JSON.stringify(registry.capabilities),
+          systemRequirements: registry.systemRequirements ? (registry.systemRequirements as Prisma.InputJsonObject) : undefined,
+          stepRegistry: stepRegistrySnapshot,
+          sourcePath,
+          manifestHash: registry.manifestHash,
+        },
+        update: {
+          title: registry.title,
+          language: registry.language,
+          runtime: registry.runtime,
+          challengeType: registry.type,
+          description: registry.description,
+          difficulty: registry.difficulty,
+          tags: JSON.stringify(registry.tags),
+          capabilities: JSON.stringify(registry.capabilities),
+          systemRequirements: registry.systemRequirements ? (registry.systemRequirements as Prisma.InputJsonObject) : undefined,
+          stepRegistry: stepRegistrySnapshot,
+          sourcePath,
+          manifestHash: registry.manifestHash,
+        },
+      });
+    }
+
+    // Upsert each step
+    for (let i = 0; i < registry.steps.length; i++) {
+      const step = registry.steps[i];
+      if (!step) continue;
 
       await prisma.challengeStep.upsert({
         where: {
           challengeId_stepKey: {
-            challengeId: manifest.id,
+            challengeId: registry.id,
             stepKey: step.id,
           },
         },
         create: {
-          challengeId: manifest.id,
+          challengeId: registry.id,
           stepKey: step.id,
           title: step.title,
           position: i + 1,
-          promptPath,
+          promptPath: step.promptPath ?? null,
         },
         update: {
           title: step.title,
           position: i + 1,
-          promptPath,
+          promptPath: step.promptPath ?? null,
         },
       });
     }
 
     console.log(
-      `  ✓ ${manifest.id} v${manifest.version} — ${manifest.steps.length} step(s)`,
+      `  ✓ ${registry.id} v${registry.version} — ${registry.steps.length} step(s)`,
     );
     synced++;
   }

@@ -32,6 +32,7 @@ export interface CreateAttemptInput {
   userId: string;
   challengeId: string;
   challengeVersion: string;
+  challengeVersionId?: string;
   stepId: string;
   stepKey: string;
   mode: "local" | "server";
@@ -46,6 +47,7 @@ export async function createAttempt(input: CreateAttemptInput): Promise<Attempt>
       userId: input.userId,
       challengeId: input.challengeId,
       challengeVersion: input.challengeVersion,
+      challengeVersionId: input.challengeVersionId,
       stepId: input.stepId,
       stepKey: input.stepKey,
       mode: input.mode === "local" ? AttemptMode.LOCAL : AttemptMode.SERVER,
@@ -153,4 +155,33 @@ export async function getStepByKey(
   }
 
   return step;
+}
+
+// ─── ChallengeVersion lookup ─────────────────────────────────────────────────
+
+export async function getCurrentChallengeVersion(challengeId: string) {
+  const challenge = await prisma.challenge.findUnique({
+    where: { id: challengeId },
+    include: {
+      versions: {
+        where: { challengeId },
+        orderBy: { updatedAt: "desc" },
+      },
+    },
+  });
+
+  if (!challenge) {
+    throw new Error(`Challenge "${challengeId}" not found in database. Run db:seed to sync challenge manifests.`);
+  }
+
+  const currentVersion =
+    challenge.versions.find((version) => version.version === challenge.version) ??
+    challenge.versions[0] ??
+    null;
+
+  if (!currentVersion) {
+    throw new Error(`Challenge "${challengeId}" has no version snapshot. Run db:seed to create challenge_versions rows.`);
+  }
+
+  return currentVersion;
 }
