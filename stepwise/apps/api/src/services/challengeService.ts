@@ -19,6 +19,9 @@ export type CodeFile = CodeFileContent;
 export interface StepInfo {
   id: string;
   title: string;
+  difficulty?: string;
+  estimatedMinutes?: number;
+  prerequisites: string[];
   prompt?: string;
   explanation?: string;
   solution?: string;
@@ -34,6 +37,7 @@ export interface StepInfo {
   requiresTerminal?: boolean;
   timeoutMs?: number;
   server?: Record<string, unknown>;
+  interactiveLessonId?: string;
 }
 
 export interface ChallengeInfo {
@@ -60,6 +64,10 @@ export interface ChallengeSummary {
   language: string;
   runtime: string;
   stepCount: number;
+  description?: string;
+  difficulty?: string;
+  tags: string[];
+  challengeType: string;
 }
 
 function isRecord(v: unknown): v is Record<string, unknown> {
@@ -95,6 +103,7 @@ async function getCurrentVersion(challengeId: string) {
   }
 
   const version =
+    challenge.versions.find((candidate) => candidate.id === challenge.latestVersionId) ??
     challenge.versions.find((candidate) => candidate.version === challenge.version) ??
     challenge.versions[0];
 
@@ -114,6 +123,9 @@ function buildStepInfo(
   return {
     id: content.id,
     title: content.title,
+    difficulty: step.difficulty,
+    estimatedMinutes: step.estimatedMinutes,
+    prerequisites: step.prerequisites,
     prompt: content.prompt,
     explanation: content.explanation,
     solution: content.solution,
@@ -129,6 +141,7 @@ function buildStepInfo(
     requiresTerminal: content.requiresTerminal,
     timeoutMs: step.timeoutMs,
     server: step.server,
+    interactiveLessonId: step.interactiveLessonId,
   };
 }
 
@@ -164,15 +177,14 @@ export async function getChallengeInfo(challengeId: string): Promise<ChallengeIn
 export async function listChallenges(): Promise<ChallengeSummary[]> {
   const challenges = await prisma.challenge.findMany({
     include: {
-      versions: {
-        orderBy: { updatedAt: "desc" },
-      },
+      versions: { orderBy: { updatedAt: "desc" } },
     },
     orderBy: { title: "asc" },
   });
 
   return challenges.flatMap((challenge) => {
     const version =
+      challenge.versions.find((candidate) => candidate.id === challenge.latestVersionId) ??
       challenge.versions.find((candidate) => candidate.version === challenge.version) ??
       challenge.versions[0];
 
@@ -187,8 +199,23 @@ export async function listChallenges(): Promise<ChallengeSummary[]> {
       language: version.language,
       runtime: version.runtime,
       stepCount: registry.steps.length,
+      description: version.description ?? undefined,
+      difficulty: version.difficulty ?? undefined,
+      tags: safeParseJsonArray(version.tags),
+      challengeType: version.challengeType,
     }];
   });
+}
+
+function safeParseJsonArray(value: string): string[] {
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return Array.isArray(parsed)
+      ? parsed.filter((entry): entry is string => typeof entry === "string")
+      : [];
+  } catch {
+    return [];
+  }
 }
 
 export function getNextStepId(challenge: ChallengeInfo, currentStepId: string): string | undefined {

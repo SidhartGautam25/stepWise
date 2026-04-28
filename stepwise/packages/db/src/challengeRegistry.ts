@@ -8,6 +8,9 @@ export interface ChallengeStepRegistryEntry {
   id: string;
   title: string;
   position: number;
+  difficulty?: string;
+  estimatedMinutes?: number;
+  prerequisites: string[];
   promptPath?: string;
   explanationPath?: string;
   solutionPath?: string;
@@ -20,6 +23,7 @@ export interface ChallengeStepRegistryEntry {
   requiresTerminal: boolean;
   timeoutMs?: number;
   server?: Record<string, unknown>;
+  interactiveLessonId?: string;
   interactiveLesson?: {
     type: string;
     contentPath: string;
@@ -72,6 +76,10 @@ function readStringArray(value: unknown): string[] {
     : [];
 }
 
+function readOptionalNumber(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
 function relativeStepPath(stepId: string, filename: unknown): string | undefined {
   const name = readOptionalString(filename);
   return name ? `steps/${stepId}/${name}` : undefined;
@@ -109,6 +117,9 @@ function parseStep(step: unknown, index: number): ChallengeStepRegistryEntry {
     id,
     title: readRequiredString(step.title, `steps[${index}].title`),
     position: index + 1,
+    difficulty: readOptionalString(step.difficulty),
+    estimatedMinutes: readOptionalNumber(step.estimatedMinutes),
+    prerequisites: readStringArray(step.prerequisites),
     promptPath: relativeStepPath(id, step.prompt),
     explanationPath: relativeStepPath(id, step.explanation),
     solutionPath: relativeStepPath(id, step.solution),
@@ -122,10 +133,9 @@ function parseStep(step: unknown, index: number): ChallengeStepRegistryEntry {
     requiresTerminal:
       typeof step.requiresTerminal === "boolean" ? step.requiresTerminal : true,
     timeoutMs:
-      typeof step.timeoutMs === "number" && Number.isFinite(step.timeoutMs)
-        ? step.timeoutMs
-        : undefined,
+      readOptionalNumber(step.timeoutMs),
     server: isRecord(step.server) ? step.server : undefined,
+    interactiveLessonId: readOptionalString(step.interactiveLessonId),
     interactiveLesson:
       interactiveLesson && interactiveContent
         ? {

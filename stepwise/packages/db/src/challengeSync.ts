@@ -71,7 +71,7 @@ export async function syncChallengeDirectory(
       }),
     ) as Prisma.InputJsonObject;
 
-    await prisma.challengeVersion.upsert({
+    const versionRow = await prisma.challengeVersion.upsert({
       where: {
         challengeId_version: {
           challengeId: registry.id,
@@ -112,6 +112,16 @@ export async function syncChallengeDirectory(
         sourcePath,
         manifestHash: registry.manifestHash,
       },
+    });
+
+    await prisma.challenge.update({
+      where: { id: registry.id },
+      data: { latestVersionId: versionRow.id },
+    });
+  } else if (existingVersion) {
+    await prisma.challenge.update({
+      where: { id: registry.id },
+      data: { latestVersionId: existingVersion.id },
     });
   }
 
