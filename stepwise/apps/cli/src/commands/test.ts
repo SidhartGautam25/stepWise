@@ -3,6 +3,7 @@ import pc from "picocolors";
 import {
   runChallenge,
   installRuntime,
+  TesterRegistry,
   type ResolvedChallengeStep,
 } from "@repo/challenge-runner";
 import { NodeTester } from "@repo/tester-node";
@@ -39,9 +40,14 @@ export async function main() {
     process.exit(1);
   }
 
-  // ── Pick tester based on DB-backed challenge registry ────────────────────
+  // ── Pick tester from pluggable registry using DB-backed metadata ─────────
+  const testerRegistry = createCliTesterRegistry();
+  const tester = testerRegistry.getTester({
+    runtime: challengeInfo.runtime,
+    challengeType: challengeInfo.challengeType,
+    language: challengeInfo.language,
+  });
   const isServerChallenge = challengeInfo.challengeType === "server";
-  const tester = isServerChallenge ? new ServerTester() : new NodeTester();
 
   const startedAttempt = await requestStartAttempt({
     apiBaseUrl: config.apiBaseUrl,
@@ -139,6 +145,22 @@ export async function main() {
       config.userId,
     );
   }
+}
+
+function createCliTesterRegistry() {
+  return new TesterRegistry()
+    .register({
+      name: "server",
+      supportedRuntimes: ["node"],
+      supportedChallengeTypes: ["server"],
+      create: () => new ServerTester(),
+    })
+    .register({
+      name: "node",
+      supportedRuntimes: ["node"],
+      supportedChallengeTypes: ["function"],
+      create: () => new NodeTester(),
+    });
 }
 
 function resolveStepFromApiRegistry(

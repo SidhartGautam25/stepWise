@@ -14,4 +14,9 @@ export {
   type LoadedStepContent,
   type StepContentRegistryEntry,
 } from "./stepContentManager";
+export {
+  TesterRegistry,
+  type TesterRegistration,
+  type TesterSelectionInput,
+} from "./testerRegistry";
 export * from "./types";

@@ -18,6 +18,12 @@ export {
   CHALLENGE_REGISTRY_SCHEMA_VERSION,
 } from "./challengeRegistry";
 
+export {
+  CHALLENGES_ROOT,
+  syncAllChallenges,
+  syncChallengeDirectory,
+} from "./challengeSync";
+
 // Re-export Prisma generated types + enums (as values) so consumers
 // don't need to import from @prisma/client directly.
 // Enums MUST use regular export (not 'export type') to work as values.
@@ -41,6 +47,8 @@ export type {
   ChallengeRegistry,
   ChallengeStepRegistryEntry,
 } from "./challengeRegistry";
+
+export type { SyncChallengeResult } from "./challengeSync";
 
 // Store-specific input/output types
 export type {

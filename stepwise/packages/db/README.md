@@ -73,3 +73,24 @@ pnpm --filter @repo/db db:generate
 # Re-seed after adding new challenges
 pnpm --filter @repo/db db:seed
 ```
+
+## Dev Auto-Sync
+
+When the API runs with `NODE_ENV=development`, it starts a `ContentWatcher`
+that watches every `challenges/*/challenge.json`. Saving a manifest debounces
+and reuses the same sync path as `db:seed`, updating `challenges`,
+`challenge_steps`, and the editable `challenge_versions.step_registry`
+snapshot.
+
+Controls:
+
+```bash
+# Force watcher on
+STEPWISE_CONTENT_WATCHER=1 pnpm --filter api dev
+
+# Force watcher off
+STEPWISE_CONTENT_WATCHER=0 pnpm --filter api dev
+```
+
+Published snapshots are preserved; bump the challenge version before changing
+published content.
