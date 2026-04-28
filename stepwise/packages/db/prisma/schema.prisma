@@ -49,10 +49,45 @@ model Challenge {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   steps       ChallengeStep[]
+  versions    ChallengeVersion[]
   attempts    Attempt[]
   progress    UserProgress[]
 
   @@map("challenges")
+}
+
+// ─── Challenge Versions ──────────────────────────────────────────────────────
+// Immutable challenge snapshots. The legacy Challenge + ChallengeStep tables
+// remain as the current catalog/index so existing attempts and progress keep
+// working, while new attempts can pin to the exact version snapshot.
+
+model ChallengeVersion {
+  id                 String    @id @default(cuid())
+  challengeId        String    @map("challenge_id")
+  version            String
+  title              String
+  language           String
+  runtime            String
+  challengeType      String    @default("function") @map("challenge_type")
+  description        String?
+  difficulty         String?
+  tags               String    @default("[]")
+  capabilities       String    @default("[]")
+  systemRequirements Json?     @map("system_requirements")
+  stepRegistry       Json      @map("step_registry")
+  sourcePath         String?   @map("source_path")
+  manifestHash       String?   @map("manifest_hash")
+  isPublished        Boolean   @default(false) @map("is_published")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+  publishedAt        DateTime? @map("published_at")
+
+  challenge          Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  attempts           Attempt[]
+
+  @@unique([challengeId, version])
+  @@index([challengeId, updatedAt])
+  @@map("challenge_versions")
 }
 
 // ─── Challenge Steps ──────────────────────────────────────────────────────────
@@ -83,6 +118,7 @@ model Attempt {
   userId           String          @map("user_id")
   challengeId      String          @map("challenge_id")
   challengeVersion String          @map("challenge_version")
+  challengeVersionId String?       @map("challenge_version_id")
   stepId           String          @map("step_id")           // FK to ChallengeStep.id
   stepKey          String          @map("step_key")          // denormalized for fast lookup
   mode             AttemptMode     @default(LOCAL)
@@ -96,6 +132,7 @@ model Attempt {
 
   user             User            @relation(fields: [userId], references: [id])
   challenge        Challenge       @relation(fields: [challengeId], references: [id])
+  version          ChallengeVersion? @relation(fields: [challengeVersionId], references: [id])
   step             ChallengeStep   @relation(fields: [stepId], references: [id])
 
   @@index([userId, challengeId, status])

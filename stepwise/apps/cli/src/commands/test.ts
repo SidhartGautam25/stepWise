@@ -1,14 +1,14 @@
 import path from "path";
-import fs from "fs";
 import pc from "picocolors";
 import {
   runChallenge,
-  loadChallengeManifest,
   installRuntime,
-  resolveChallengeStep,
+  TesterRegistry,
+  type ResolvedChallengeStep,
 } from "@repo/challenge-runner";
-import { NodeTester } from "@repo/tester-node";
-import { ServerTester } from "@repo/tester-server";
+import { testerRegistration as nodeTesterRegistration } from "@repo/tester-node";
+import { testerRegistration as rustTesterRegistration } from "@repo/tester-rust";
+import { testerRegistration as serverTesterRegistration } from "@repo/tester-server";
 import {
   getLocalTestHelpText,
   readLocalTestCommandConfig,
@@ -18,11 +18,10 @@ import { requestStartAttempt, submitRunnerResult } from "./test-api";
 import { renderStudentFacingResult } from "./test-output";
 import { fetchChallengeInfo } from "./init-api";
 import {
-  writeWorkspaceConfig,
   advanceWorkspace,
   readWorkspaceConfig,
 } from "./workspace";
-import { parseLocalWorkspaceConfig, LOCAL_WORKSPACE_CONFIG_FILENAME } from "@repo/types";
+import type { ChallengeInfoResponse, ChallengeStepInfo } from "@repo/types";
 
 export async function main() {
   const config = readLocalTestCommandConfig();
@@ -32,28 +31,24 @@ export async function main() {
     return;
   }
 
-  // Determine the challenge source path.
-  // In zero-flag / .stepwise.json mode, challengePath is empty string.
-  // We need to fetch the challenge info from the API to get the real path.
-  let challengePath = config.challengePath;
-
-  if (!challengePath) {
-    let challengeInfo;
-    try {
-      challengeInfo = await fetchChallengeInfo(config.challengeId, config.apiBaseUrl);
-    } catch (err) {
-      console.error(
-        `\n${pc.bold(pc.red("✗ Could not resolve challenge path"))}\n\n  ${err instanceof Error ? err.message : String(err)}\n`,
-      );
-      process.exit(1);
-    }
-    challengePath = challengeInfo.challengePath;
+  let challengeInfo;
+  try {
+    challengeInfo = await fetchChallengeInfo(config.challengeId, config.apiBaseUrl);
+  } catch (err) {
+    console.error(
+      `\n${pc.bold(pc.red("✗ Could not fetch challenge registry"))}\n\n  ${err instanceof Error ? err.message : String(err)}\n`,
+    );
+    process.exit(1);
   }
 
-  // ── Pick tester based on challenge type ──────────────────────────────────
-  const manifest = loadChallengeManifest(challengePath);
-  const isServerChallenge = manifest.type === "server";
-  const tester = isServerChallenge ? new ServerTester() : new NodeTester();
+  // ── Pick tester from pluggable registry using DB-backed metadata ─────────
+  const testerRegistry = createCliTesterRegistry();
+  const tester = testerRegistry.getTester({
+    runtime: challengeInfo.runtime,
+    challengeType: challengeInfo.challengeType,
+    language: challengeInfo.language,
+  });
+  const isServerChallenge = challengeInfo.challengeType === "server";
 
   const startedAttempt = await requestStartAttempt({
     apiBaseUrl: config.apiBaseUrl,
@@ -61,7 +56,14 @@ export async function main() {
     userId: config.userId,
     stepId: config.stepId,
   });
-  const resolvedStep = resolveChallengeStep(challengePath, startedAttempt.step.id);
+  const stepInfo = challengeInfo.steps.find((step) => step.id === startedAttempt.step.id);
+  if (!stepInfo) {
+    throw new Error(
+      `Step "${startedAttempt.step.id}" was returned by the API attempt flow but is missing from the challenge registry.`,
+    );
+  }
+
+  const resolvedStep = resolveStepFromApiRegistry(challengeInfo, stepInfo);
 
   if (!resolvedStep.defaultUserCodePath) {
     throw new Error(
@@ -87,11 +89,11 @@ export async function main() {
   // ── Isolate BYOB Runtime Environment ─────────────────────────────────────
   let executablePath: string | undefined;
   
-  if (manifest.language) {
+  if (challengeInfo.language) {
     try {
       // Temporarily default to node v20.12.0 for all Javascript/Node testing natively.
-      const version = manifest.runtime === "node" ? "v20.12.0" : "latest";
-      executablePath = await installRuntime(manifest.runtime || "node", version);
+      const version = challengeInfo.runtime === "node" ? "v20.12.0" : "latest";
+      executablePath = await installRuntime(challengeInfo.runtime || "node", version);
     } catch (err) {
       console.warn(`\n${pc.yellow("⚠ Warning:")} Could not forcefully isolate local runtime. Proceeding with system fallback...\n`);
     }
@@ -99,8 +101,9 @@ export async function main() {
 
   const result = await runChallenge({
     attemptId: startedAttempt.attemptId,
-    challengePath,
+    challengePath: challengeInfo.challengePath,
     tester,
+    resolvedChallenge: resolvedStep,
     userCodePath,
     stepId: startedAttempt.step.id,
     mode: "local",
@@ -143,6 +146,60 @@ export async function main() {
       config.userId,
     );
   }
+}
+
+function createCliTesterRegistry() {
+  return new TesterRegistry()
+    .registerMany([
+      serverTesterRegistration,
+      nodeTesterRegistration,
+      rustTesterRegistration,
+    ])
+    .registerFromEnv();
+}
+
+function resolveStepFromApiRegistry(
+  challenge: ChallengeInfoResponse,
+  step: ChallengeStepInfo,
+): ResolvedChallengeStep {
+  if (!step.visibleTestPath) {
+    throw new Error(
+      `Step "${step.id}" does not declare a visible test path in the DB registry.`,
+    );
+  }
+
+  const challengePath = path.resolve(challenge.challengePath);
+  const workspaceRelativePath = step.workspaceRoot ?? ".";
+  const workspacePath = path.resolve(challengePath, workspaceRelativePath);
+  const entrypoint =
+    step.entrypoint ?? challenge.entrypoint ?? "index.js";
+
+  return {
+    challengePath,
+    manifestPath: path.resolve(challengePath, "challenge.json"),
+    challengeId: challenge.id,
+    challengeVersion: challenge.version,
+    challengeTitle: challenge.title,
+    language: challenge.language,
+    runtime: challenge.runtime,
+    challengeType: challenge.challengeType,
+    stepId: step.id,
+    stepTitle: step.title,
+    testFilePath: path.resolve(challengePath, step.visibleTestPath),
+    hiddenTestFilePath: step.hiddenTestPath
+      ? path.resolve(challengePath, step.hiddenTestPath)
+      : undefined,
+    workspacePath,
+    starterPath: step.starterRoot
+      ? path.resolve(challengePath, step.starterRoot)
+      : undefined,
+    defaultUserCodePath: path.resolve(workspacePath, entrypoint),
+    timeoutMs: step.timeoutMs ?? challenge.defaultTimeoutMs ?? 2000,
+    serverConfig:
+      challenge.challengeType === "server"
+        ? { ...challenge.server, ...step.server }
+        : undefined,
+  };
 }
 
 /**

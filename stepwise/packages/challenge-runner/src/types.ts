@@ -120,6 +120,7 @@ export interface BulkTester extends Tester {
 export interface RunChallengeInput {
   challengePath: string;
   tester: Tester;
+  resolvedChallenge?: ResolvedChallengeStep;
   userCodePath?: string;
   stepId?: string;
   timeout?: number;
