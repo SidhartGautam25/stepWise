@@ -6,27 +6,15 @@
 import fs from "fs";
 import path from "path";
 import { prisma, type ChallengeRegistry, type ChallengeStepRegistryEntry } from "@repo/db";
+import {
+  StepContentManager,
+  type CodeFileContent,
+  type InteractiveLesson,
+} from "@repo/challenge-runner";
 
 const CHALLENGES_ROOT = path.resolve(__dirname, "../../../../challenges");
 
-export interface CodeFile {
-  filename: string;
-  language: string;
-  diffContent: string;
-  finalCode: string;
-}
-
-export interface InteractiveLessonSlide {
-  id: string;
-  heading: string;
-  body: string;
-  bullets?: string[];
-}
-
-export interface InteractiveLesson {
-  type: "sequence";
-  slides: InteractiveLessonSlide[];
-}
+export type CodeFile = CodeFileContent;
 
 export interface StepInfo {
   id: string;
@@ -34,6 +22,8 @@ export interface StepInfo {
   prompt?: string;
   explanation?: string;
   solution?: string;
+  visibleTestPath?: string;
+  hiddenTestPath?: string;
   hasStarter: boolean;
   starterRoot?: string;
   workspaceRoot?: string;
@@ -42,6 +32,8 @@ export interface StepInfo {
   position: number;
   codeFiles?: CodeFile[];
   requiresTerminal?: boolean;
+  timeoutMs?: number;
+  server?: Record<string, unknown>;
 }
 
 export interface ChallengeInfo {
@@ -51,7 +43,11 @@ export interface ChallengeInfo {
   title: string;
   language: string;
   runtime: string;
+  challengeType: string;
   description?: string;
+  defaultTimeoutMs?: number;
+  entrypoint?: string;
+  server?: Record<string, unknown>;
   systemRequirements?: Record<string, unknown>;
   steps: StepInfo[];
   challengePath: string;
@@ -70,65 +66,12 @@ function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null;
 }
 
-function readString(v: unknown, field: string): string {
-  if (typeof v !== "string" || !v) throw new Error(`Manifest field "${field}" is required`);
-  return v;
-}
-
 function asRegistry(value: unknown): ChallengeRegistry {
   if (!isRecord(value) || !Array.isArray(value.steps)) {
     throw new Error("Challenge version has an invalid step registry");
   }
 
   return value as unknown as ChallengeRegistry;
-}
-
-function parseInteractiveLesson(
-  challengePath: string,
-  stepDir: string,
-  value: unknown,
-): InteractiveLesson | undefined {
-  if (!isRecord(value)) {
-    return undefined;
-  }
-
-  if (value.type !== "sequence" || typeof value.content !== "string") {
-    return undefined;
-  }
-
-  const lessonPath = path.resolve(stepDir, value.content);
-
-  if (!fs.existsSync(lessonPath)) {
-    throw new Error(`Interactive lesson file not found: ${lessonPath}`);
-  }
-
-  const parsed = JSON.parse(fs.readFileSync(lessonPath, "utf-8")) as unknown;
-
-  if (!isRecord(parsed) || !Array.isArray(parsed.slides)) {
-    throw new Error(`Invalid interactive lesson content for ${challengePath}`);
-  }
-
-  return {
-    type: "sequence",
-    slides: parsed.slides.map((slide, index) => {
-      if (!isRecord(slide)) {
-        throw new Error(`Invalid interactive lesson slide at index ${index}`);
-      }
-
-      return {
-        id: readString(slide.id, `interactiveLesson.slides[${index}].id`),
-        heading: readString(
-          slide.heading,
-          `interactiveLesson.slides[${index}].heading`,
-        ),
-        body: readString(slide.body, `interactiveLesson.slides[${index}].body`),
-        bullets: Array.isArray(slide.bullets)
-          ? slide.bullets
-              .filter((bullet): bullet is string => typeof bullet === "string")
-          : undefined,
-      };
-    }),
-  };
 }
 
 export function getChallengePath(challengeId: string): string {
@@ -162,61 +105,30 @@ async function getCurrentVersion(challengeId: string) {
   return version;
 }
 
-function readOptionalFile(root: string, relativePath?: string): string | undefined {
-  if (!relativePath) return undefined;
-
-  const filePath = path.resolve(root, relativePath);
-  return fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf-8") : undefined;
-}
-
 function buildStepInfo(
-  challengePath: string,
+  manager: StepContentManager,
   step: ChallengeStepRegistryEntry,
 ): StepInfo {
-  const stepDir = path.resolve(challengePath, "steps", step.id);
-  const workspaceRoot = step.workspaceRoot ?? `steps/${step.id}/workspace`;
-  const starterRoot = step.starterRoot ?? `steps/${step.id}/starter`;
-  const entrypoint = step.entrypoint ?? "index.js";
-  const starterDir = path.resolve(challengePath, starterRoot);
-
-  const prompt = readOptionalFile(challengePath, step.promptPath);
-  const explanation = readOptionalFile(challengePath, step.explanationPath);
-  const solution = readOptionalFile(challengePath, step.solutionPath);
-
-  let codeFiles: CodeFile[] | undefined;
-  const codeJsonPath = path.resolve(stepDir, "code.json");
-  if (fs.existsSync(codeJsonPath)) {
-    try {
-      const parsedCode = JSON.parse(fs.readFileSync(codeJsonPath, "utf-8"));
-      if (Array.isArray(parsedCode)) {
-        codeFiles = parsedCode as CodeFile[];
-      }
-    } catch (err) {
-      console.warn(`Failed to parse code.json for step ${step.id}:`, err);
-    }
-  }
-
-  const interactiveLesson = step.interactiveLesson
-    ? parseInteractiveLesson(challengePath, stepDir, {
-        type: step.interactiveLesson.type,
-        content: path.basename(step.interactiveLesson.contentPath),
-      })
-    : undefined;
+  const content = manager.loadStep(step);
 
   return {
-    id: step.id,
-    title: step.title,
-    prompt,
-    explanation,
-    solution,
-    hasStarter: fs.existsSync(starterDir),
-    starterRoot,
-    workspaceRoot,
-    entrypoint,
-    interactiveLesson,
-    position: step.position,
-    codeFiles,
-    requiresTerminal: step.requiresTerminal,
+    id: content.id,
+    title: content.title,
+    prompt: content.prompt,
+    explanation: content.explanation,
+    solution: content.solution,
+    visibleTestPath: step.visibleTestPath,
+    hiddenTestPath: step.hiddenTestPath,
+    hasStarter: content.hasStarter,
+    starterRoot: content.starterRoot,
+    workspaceRoot: content.workspaceRoot,
+    entrypoint: content.entrypoint,
+    interactiveLesson: content.interactiveLesson,
+    position: content.position,
+    codeFiles: content.codeFiles,
+    requiresTerminal: content.requiresTerminal,
+    timeoutMs: step.timeoutMs,
+    server: step.server,
   };
 }
 
@@ -224,7 +136,8 @@ export async function getChallengeInfo(challengeId: string): Promise<ChallengeIn
   const version = await getCurrentVersion(challengeId);
   const registry = asRegistry(version.stepRegistry);
   const challengePath = getChallengePath(registry.id);
-  const steps = registry.steps.map((step) => buildStepInfo(challengePath, step));
+  const manager = new StepContentManager(challengePath);
+  const steps = registry.steps.map((step) => buildStepInfo(manager, step));
 
   if (steps.length === 0) throw new Error(`Challenge "${challengeId}" has no steps`);
 
@@ -235,7 +148,11 @@ export async function getChallengeInfo(challengeId: string): Promise<ChallengeIn
     title: version.title,
     language: version.language,
     runtime: version.runtime,
+    challengeType: version.challengeType,
     description: version.description ?? undefined,
+    defaultTimeoutMs: registry.defaultTimeoutMs,
+    entrypoint: registry.entrypoint,
+    server: registry.server,
     systemRequirements: isRecord(version.systemRequirements)
       ? version.systemRequirements
       : undefined,

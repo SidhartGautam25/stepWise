@@ -29,6 +29,9 @@ importers:
       '@repo/auth':
         specifier: workspace:^
         version: link:../../packages/auth
+      '@repo/challenge-runner':
+        specifier: workspace:^
+        version: link:../../packages/challenge-runner
       '@repo/db':
         specifier: workspace:^
         version: link:../../packages/db

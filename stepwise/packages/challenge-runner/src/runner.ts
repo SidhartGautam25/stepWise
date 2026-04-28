@@ -84,7 +84,8 @@ export async function runChallenge(
     mode = "local",
     attemptId,
   } = input;
-  const challenge = resolveChallengeStep(challengePath, stepId, timeout);
+  const challenge =
+    input.resolvedChallenge ?? resolveChallengeStep(challengePath, stepId, timeout);
   const resolvedUserCodePath = userCodePath ?? challenge.defaultUserCodePath;
 
   if (!resolvedUserCodePath) {
