@@ -47,6 +47,13 @@ interface CommitNode {
 }
 ```
 
+![Git Commit Graph UI Mockup](public/docs/images/git-commit-graph.png)
+
+---
+
+#### `GitStagingArea` Structure
+![Git Staging Area UI Mockup](public/docs/images/git-staging-area.png)
+
 ---
 
 ### 🕹 Simulation & Flow
@@ -78,6 +85,8 @@ interface SimStep {
   action: string;  // Action text
 }
 ```
+
+![Step Simulator UI Mockup](public/docs/images/step-simulator.png)
 
 ---
 
@@ -115,6 +124,8 @@ interface InteractiveBucketsConfig {
   destination: BucketConfig;
 }
 ```
+
+![Interactive Buckets UI Mockup](public/docs/images/interactive-buckets.png)
 
 ---
 
@@ -169,6 +180,8 @@ interface FileSystemTree {
 }
 ```
 
+![File Navigator UI Mockup](public/docs/images/file-navigator.png)
+
 ---
 
 ### 🖱 Interactive Reveal
@@ -194,6 +207,8 @@ interface ClickRevealItem {
   detailLabel?: string;// Optional header for the detail pod
 }
 ```
+
+![Click Reveal Grid UI Mockup](public/docs/images/click-reveal-grid.png)
 
 ---
 
