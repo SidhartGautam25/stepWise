@@ -19,6 +19,7 @@ import {
   TestResult,
   RuntimeContext,
   TestCase,
+  TesterRegistration,
 } from "@repo/challenge-runner";
 
 // ─── Port utilities ───────────────────────────────────────────────────────────
@@ -196,3 +197,12 @@ export class ServerTester implements BulkTester {
     return results.map((r) => ({ ...r, visibility: r.visibility ?? "visible" }));
   }
 }
+
+export const testerRegistration: TesterRegistration = {
+  name: "server",
+  supportedRuntimes: ["node"],
+  supportedChallengeTypes: ["server"],
+  create: () => new ServerTester(),
+  canHandle: ({ runtime, challengeType }) =>
+    runtime === "node" && challengeType === "server",
+};

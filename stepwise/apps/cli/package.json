@@ -31,6 +31,7 @@
     "@repo/auth": "workspace:^",
     "@repo/challenge-runner": "workspace:^",
     "@repo/tester-node": "workspace:^",
+    "@repo/tester-rust": "workspace:^",
     "@repo/tester-server": "workspace:^",
     "@repo/types": "workspace:^",
     "@types/node": "^22.15.3",

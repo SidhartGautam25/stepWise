@@ -6,8 +6,9 @@ import {
   TesterRegistry,
   type ResolvedChallengeStep,
 } from "@repo/challenge-runner";
-import { NodeTester } from "@repo/tester-node";
-import { ServerTester } from "@repo/tester-server";
+import { testerRegistration as nodeTesterRegistration } from "@repo/tester-node";
+import { testerRegistration as rustTesterRegistration } from "@repo/tester-rust";
+import { testerRegistration as serverTesterRegistration } from "@repo/tester-server";
 import {
   getLocalTestHelpText,
   readLocalTestCommandConfig,
@@ -149,18 +150,12 @@ export async function main() {
 
 function createCliTesterRegistry() {
   return new TesterRegistry()
-    .register({
-      name: "server",
-      supportedRuntimes: ["node"],
-      supportedChallengeTypes: ["server"],
-      create: () => new ServerTester(),
-    })
-    .register({
-      name: "node",
-      supportedRuntimes: ["node"],
-      supportedChallengeTypes: ["function"],
-      create: () => new NodeTester(),
-    });
+    .registerMany([
+      serverTesterRegistration,
+      nodeTesterRegistration,
+      rustTesterRegistration,
+    ])
+    .registerFromEnv();
 }
 
 function resolveStepFromApiRegistry(

@@ -2,6 +2,7 @@ import {
   RuntimeContext,
   TestCase,
   Tester,
+  TesterRegistration,
 } from "@repo/challenge-runner";
 
 export class NodeTester implements Tester {
@@ -23,3 +24,12 @@ export class NodeTester implements Tester {
 
   async cleanup(_context?: RuntimeContext): Promise<void> {}
 }
+
+export const testerRegistration: TesterRegistration = {
+  name: "node",
+  supportedRuntimes: ["node"],
+  supportedChallengeTypes: ["function"],
+  create: () => new NodeTester(),
+  canHandle: ({ runtime, challengeType }) =>
+    runtime === "node" && challengeType === "function",
+};

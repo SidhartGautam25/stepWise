@@ -27,8 +27,35 @@ export class TesterRegistry {
     return this;
   }
 
+  registerMany(testers: TesterRegistration[]) {
+    for (const tester of testers) {
+      this.register(tester);
+    }
+
+    return this;
+  }
+
+  registerFromModule(moduleName: string) {
+    const pluginModule = require(moduleName) as unknown;
+    const registrations = readRegistrationsFromModule(pluginModule, moduleName);
+    return this.registerMany(registrations);
+  }
+
+  registerFromEnv(envValue = process.env.STEPWISE_TESTER_PLUGINS) {
+    const moduleNames = (envValue ?? "")
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+
+    for (const moduleName of moduleNames) {
+      this.registerFromModule(moduleName);
+    }
+
+    return this;
+  }
+
   getTester(input: TesterSelectionInput): Tester {
-    const registration = this.findRegistration(input);
+    const registration = this.getRegistration(input);
 
     if (!registration) {
       const available = Array.from(this.testers.keys()).join(", ") || "none";
@@ -38,6 +65,10 @@ export class TesterRegistry {
     }
 
     return registration.create();
+  }
+
+  getRegistration(input: TesterSelectionInput): TesterRegistration | undefined {
+    return this.findRegistration(input);
   }
 
   list() {
@@ -62,4 +93,45 @@ export class TesterRegistry {
       return runtimeMatches && typeMatches;
     });
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function isTesterRegistration(value: unknown): value is TesterRegistration {
+  return (
+    isRecord(value) &&
+    typeof value.name === "string" &&
+    Array.isArray(value.supportedRuntimes) &&
+    typeof value.create === "function"
+  );
+}
+
+function readRegistrationsFromModule(
+  pluginModule: unknown,
+  moduleName: string,
+): TesterRegistration[] {
+  if (!isRecord(pluginModule)) {
+    throw new Error(`Tester plugin "${moduleName}" did not export an object`);
+  }
+
+  const candidates = [
+    pluginModule.testerRegistration,
+    pluginModule.default,
+    pluginModule,
+  ];
+
+  for (const candidate of candidates) {
+    if (isTesterRegistration(candidate)) return [candidate];
+  }
+
+  const many = pluginModule.testerRegistrations;
+  if (Array.isArray(many) && many.every(isTesterRegistration)) {
+    return many;
+  }
+
+  throw new Error(
+    `Tester plugin "${moduleName}" must export testerRegistration, testerRegistrations, or a default TesterRegistration`,
+  );
 }
