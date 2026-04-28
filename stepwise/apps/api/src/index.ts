@@ -6,6 +6,10 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { registerRoutes } from "./routes/index";
+import {
+  ContentWatcher,
+  shouldStartContentWatcher,
+} from "./services/contentWatcher";
 
 export function createApp() {
   const app = Fastify({
@@ -28,6 +32,12 @@ export function createApp() {
 
 if (require.main === module) {
   const app = createApp();
+  const watcher = shouldStartContentWatcher() ? new ContentWatcher() : undefined;
+
+  watcher?.start();
+  app.addHook("onClose", async () => {
+    watcher?.stop();
+  });
 
   app.listen({ host: "127.0.0.1", port: 4000 }, (error) => {
     if (error) throw error;

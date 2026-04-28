@@ -12,6 +12,7 @@ export async function createAttempt(data: {
   userId: string;
   challengeId: string;
   challengeVersion: string;
+  challengeVersionId?: string;
   stepId: string;       // DB ChallengeStep UUID
   stepKey: string;
   mode: "local" | "server" | "web";
@@ -23,6 +24,7 @@ export async function createAttempt(data: {
       userId: data.userId,
       challengeId: data.challengeId,
       challengeVersion: data.challengeVersion,
+      challengeVersionId: data.challengeVersionId,
       stepId: data.stepId,
       stepKey: data.stepKey,
       mode: data.mode === "local" ? AttemptMode.LOCAL : AttemptMode.SERVER,

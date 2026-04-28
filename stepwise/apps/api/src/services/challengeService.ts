@@ -5,34 +5,28 @@
 
 import fs from "fs";
 import path from "path";
+import { prisma, type ChallengeRegistry, type ChallengeStepRegistryEntry } from "@repo/db";
+import {
+  StepContentManager,
+  type CodeFileContent,
+  type InteractiveLesson,
+} from "@repo/challenge-runner";
 
 const CHALLENGES_ROOT = path.resolve(__dirname, "../../../../challenges");
 
-export interface CodeFile {
-  filename: string;
-  language: string;
-  diffContent: string;
-  finalCode: string;
-}
-
-export interface InteractiveLessonSlide {
-  id: string;
-  heading: string;
-  body: string;
-  bullets?: string[];
-}
-
-export interface InteractiveLesson {
-  type: "sequence";
-  slides: InteractiveLessonSlide[];
-}
+export type CodeFile = CodeFileContent;
 
 export interface StepInfo {
   id: string;
   title: string;
+  difficulty?: string;
+  estimatedMinutes?: number;
+  prerequisites: string[];
   prompt?: string;
   explanation?: string;
   solution?: string;
+  visibleTestPath?: string;
+  hiddenTestPath?: string;
   hasStarter: boolean;
   starterRoot?: string;
   workspaceRoot?: string;
@@ -41,15 +35,23 @@ export interface StepInfo {
   position: number;
   codeFiles?: CodeFile[];
   requiresTerminal?: boolean;
+  timeoutMs?: number;
+  server?: Record<string, unknown>;
+  interactiveLessonId?: string;
 }
 
 export interface ChallengeInfo {
+  challengeVersionId: string;
   id: string;
   version: string;
   title: string;
   language: string;
   runtime: string;
+  challengeType: string;
   description?: string;
+  defaultTimeoutMs?: number;
+  entrypoint?: string;
+  server?: Record<string, unknown>;
   systemRequirements?: Record<string, unknown>;
   steps: StepInfo[];
   challengePath: string;
@@ -62,63 +64,22 @@ export interface ChallengeSummary {
   language: string;
   runtime: string;
   stepCount: number;
+  description?: string;
+  difficulty?: string;
+  tags: string[];
+  challengeType: string;
 }
 
 function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null;
 }
 
-function readString(v: unknown, field: string): string {
-  if (typeof v !== "string" || !v) throw new Error(`Manifest field "${field}" is required`);
-  return v;
-}
-
-function parseInteractiveLesson(
-  challengePath: string,
-  stepDir: string,
-  value: unknown,
-): InteractiveLesson | undefined {
-  if (!isRecord(value)) {
-    return undefined;
+function asRegistry(value: unknown): ChallengeRegistry {
+  if (!isRecord(value) || !Array.isArray(value.steps)) {
+    throw new Error("Challenge version has an invalid step registry");
   }
 
-  if (value.type !== "sequence" || typeof value.content !== "string") {
-    return undefined;
-  }
-
-  const lessonPath = path.resolve(stepDir, value.content);
-
-  if (!fs.existsSync(lessonPath)) {
-    throw new Error(`Interactive lesson file not found: ${lessonPath}`);
-  }
-
-  const parsed = JSON.parse(fs.readFileSync(lessonPath, "utf-8")) as unknown;
-
-  if (!isRecord(parsed) || !Array.isArray(parsed.slides)) {
-    throw new Error(`Invalid interactive lesson content for ${challengePath}`);
-  }
-
-  return {
-    type: "sequence",
-    slides: parsed.slides.map((slide, index) => {
-      if (!isRecord(slide)) {
-        throw new Error(`Invalid interactive lesson slide at index ${index}`);
-      }
-
-      return {
-        id: readString(slide.id, `interactiveLesson.slides[${index}].id`),
-        heading: readString(
-          slide.heading,
-          `interactiveLesson.slides[${index}].heading`,
-        ),
-        body: readString(slide.body, `interactiveLesson.slides[${index}].body`),
-        bullets: Array.isArray(slide.bullets)
-          ? slide.bullets
-              .filter((bullet): bullet is string => typeof bullet === "string")
-          : undefined,
-      };
-    }),
-  };
+  return value as unknown as ChallengeRegistry;
 }
 
 export function getChallengePath(challengeId: string): string {
@@ -127,133 +88,134 @@ export function getChallengePath(challengeId: string): string {
   return p;
 }
 
-export function getChallengeInfo(challengeId: string): ChallengeInfo {
-  const challengePath = getChallengePath(challengeId);
-  const manifest = JSON.parse(
-    fs.readFileSync(path.resolve(challengePath, "challenge.json"), "utf-8"),
-  ) as unknown;
+async function getCurrentVersion(challengeId: string) {
+  const challenge = await prisma.challenge.findUnique({
+    where: { id: challengeId },
+    include: {
+      versions: {
+        orderBy: { updatedAt: "desc" },
+      },
+    },
+  });
 
-  if (!isRecord(manifest) || !Array.isArray(manifest.steps)) {
-    throw new Error(`Invalid challenge manifest for "${challengeId}"`);
+  if (!challenge) {
+    throw new Error(`Challenge "${challengeId}" not found. Run db:seed to sync challenge manifests.`);
   }
 
-  const steps: StepInfo[] = manifest.steps.map((s: unknown, i: number) => {
-    if (!isRecord(s)) throw new Error(`Invalid step at index ${i}`);
+  const version =
+    challenge.versions.find((candidate) => candidate.id === challenge.latestVersionId) ??
+    challenge.versions.find((candidate) => candidate.version === challenge.version) ??
+    challenge.versions[0];
 
-    const stepId = readString(s.id, `steps[${i}].id`);
-    const stepDir = path.resolve(challengePath, "steps", stepId);
-    const workspaceConfig = isRecord(s.workspace) ? s.workspace : undefined;
-    const workspaceRoot =
-      typeof workspaceConfig?.root === "string"
-        ? workspaceConfig.root
-        : `steps/${stepId}/workspace`;
-    const starterRoot =
-      typeof workspaceConfig?.starter === "string"
-        ? workspaceConfig.starter
-        : `steps/${stepId}/starter`;
-    const entrypoint =
-      typeof workspaceConfig?.entrypoint === "string"
-        ? workspaceConfig.entrypoint
-        : typeof s.entrypoint === "string"
-          ? s.entrypoint
-          : "index.js";
-    const starterDir = path.resolve(challengePath, starterRoot);
+  if (!version) {
+    throw new Error(`Challenge "${challengeId}" has no version snapshot. Run db:seed to create one.`);
+  }
 
-    let prompt: string | undefined;
-    if (typeof s.prompt === "string") {
-      const promptPath = path.resolve(stepDir, s.prompt);
-      if (fs.existsSync(promptPath)) {
-        prompt = fs.readFileSync(promptPath, "utf-8");
-      }
-    }
+  return version;
+}
 
-    let explanation: string | undefined;
-    if (typeof s.explanation === "string") {
-      const explanationPath = path.resolve(stepDir, s.explanation);
-      if (fs.existsSync(explanationPath)) {
-        explanation = fs.readFileSync(explanationPath, "utf-8");
-      }
-    }
+function buildStepInfo(
+  manager: StepContentManager,
+  step: ChallengeStepRegistryEntry,
+): StepInfo {
+  const content = manager.loadStep(step);
 
-    let solution: string | undefined;
-    if (typeof s.solution === "string") {
-      const solutionPath = path.resolve(stepDir, s.solution);
-      if (fs.existsSync(solutionPath)) {
-        solution = fs.readFileSync(solutionPath, "utf-8");
-      }
-    }
+  return {
+    id: content.id,
+    title: content.title,
+    difficulty: step.difficulty,
+    estimatedMinutes: step.estimatedMinutes,
+    prerequisites: step.prerequisites,
+    prompt: content.prompt,
+    explanation: content.explanation,
+    solution: content.solution,
+    visibleTestPath: step.visibleTestPath,
+    hiddenTestPath: step.hiddenTestPath,
+    hasStarter: content.hasStarter,
+    starterRoot: content.starterRoot,
+    workspaceRoot: content.workspaceRoot,
+    entrypoint: content.entrypoint,
+    interactiveLesson: content.interactiveLesson,
+    position: content.position,
+    codeFiles: content.codeFiles,
+    requiresTerminal: content.requiresTerminal,
+    timeoutMs: step.timeoutMs,
+    server: step.server,
+    interactiveLessonId: step.interactiveLessonId,
+  };
+}
 
-    let codeFiles: CodeFile[] | undefined;
-    const codeJsonPath = path.resolve(stepDir, "code.json");
-    if (fs.existsSync(codeJsonPath)) {
-      try {
-        const parsedCode = JSON.parse(fs.readFileSync(codeJsonPath, "utf-8"));
-        if (Array.isArray(parsedCode)) {
-          codeFiles = parsedCode as CodeFile[];
-        }
-      } catch (err) {
-        console.warn(`Failed to parse code.json for step ${stepId}:`, err);
-      }
-    }
-
-    const interactiveLesson = parseInteractiveLesson(
-      challengePath,
-      stepDir,
-      s.interactiveLesson,
-    );
-
-    return {
-      id: stepId,
-      title: readString(s.title, `steps[${i}].title`),
-      prompt,
-      explanation,
-      solution,
-      hasStarter: fs.existsSync(starterDir),
-      starterRoot,
-      workspaceRoot,
-      entrypoint,
-      interactiveLesson,
-      position: i + 1,
-      codeFiles,
-      requiresTerminal: typeof s.requiresTerminal === "boolean" ? s.requiresTerminal : true,
-    };
-  });
+export async function getChallengeInfo(challengeId: string): Promise<ChallengeInfo> {
+  const version = await getCurrentVersion(challengeId);
+  const registry = asRegistry(version.stepRegistry);
+  const challengePath = getChallengePath(registry.id);
+  const manager = new StepContentManager(challengePath);
+  const steps = registry.steps.map((step) => buildStepInfo(manager, step));
 
   if (steps.length === 0) throw new Error(`Challenge "${challengeId}" has no steps`);
 
   return {
-    id: readString(manifest.id, "id"),
-    version: readString(manifest.version, "version"),
-    title: readString(manifest.title, "title"),
-    language: readString(manifest.language, "language"),
-    runtime: readString(manifest.runtime, "runtime"),
-    description: typeof manifest.description === "string" ? manifest.description : undefined,
-    systemRequirements: isRecord(manifest.systemRequirements) ? manifest.systemRequirements : undefined,
+    challengeVersionId: version.id,
+    id: version.challengeId,
+    version: version.version,
+    title: version.title,
+    language: version.language,
+    runtime: version.runtime,
+    challengeType: version.challengeType,
+    description: version.description ?? undefined,
+    defaultTimeoutMs: registry.defaultTimeoutMs,
+    entrypoint: registry.entrypoint,
+    server: registry.server,
+    systemRequirements: isRecord(version.systemRequirements)
+      ? version.systemRequirements
+      : undefined,
     steps,
     challengePath,
   };
 }
 
-export function listChallenges(): ChallengeSummary[] {
-  if (!fs.existsSync(CHALLENGES_ROOT)) return [];
+export async function listChallenges(): Promise<ChallengeSummary[]> {
+  const challenges = await prisma.challenge.findMany({
+    include: {
+      versions: { orderBy: { updatedAt: "desc" } },
+    },
+    orderBy: { title: "asc" },
+  });
 
-  return fs.readdirSync(CHALLENGES_ROOT, { withFileTypes: true })
-    .filter((e) => e.isDirectory())
-    .flatMap((e) => {
-      try {
-        const info = getChallengeInfo(e.name);
-        return [{
-          id: info.id,
-          title: info.title,
-          version: info.version,
-          language: info.language,
-          runtime: info.runtime,
-          stepCount: info.steps.length,
-        }];
-      } catch {
-        return [];
-      }
-    });
+  return challenges.flatMap((challenge) => {
+    const version =
+      challenge.versions.find((candidate) => candidate.id === challenge.latestVersionId) ??
+      challenge.versions.find((candidate) => candidate.version === challenge.version) ??
+      challenge.versions[0];
+
+    if (!version) return [];
+
+    const registry = asRegistry(version.stepRegistry);
+
+    return [{
+      id: challenge.id,
+      title: version.title,
+      version: version.version,
+      language: version.language,
+      runtime: version.runtime,
+      stepCount: registry.steps.length,
+      description: version.description ?? undefined,
+      difficulty: version.difficulty ?? undefined,
+      tags: safeParseJsonArray(version.tags),
+      challengeType: version.challengeType,
+    }];
+  });
+}
+
+function safeParseJsonArray(value: string): string[] {
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return Array.isArray(parsed)
+      ? parsed.filter((entry): entry is string => typeof entry === "string")
+      : [];
+  } catch {
+    return [];
+  }
 }
 
 export function getNextStepId(challenge: ChallengeInfo, currentStepId: string): string | undefined {

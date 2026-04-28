@@ -12,6 +12,10 @@ export interface ChallengeSummary {
   language: string;
   runtime: string;
   stepCount: number;
+  description?: string;
+  difficulty?: string;
+  tags: string[];
+  challengeType: string;
 }
 
 export interface CodeFile {

@@ -29,16 +29,37 @@ export interface ChallengeStepInfo {
   id: string;
   title: string;
   prompt?: string;
+  explanation?: string;
+  solution?: string;
+  position: number;
   hasStarter: boolean;
   starterRoot?: string;
   workspaceRoot?: string;
   entrypoint?: string;
+  visibleTestPath?: string;
+  hiddenTestPath?: string;
+  timeoutMs?: number;
+  requiresTerminal?: boolean;
+  server?: ServerConfig;
+}
+
+export interface ServerConfig {
+  startScript?: string;
+  portEnvVar?: string;
+  readyEndpoint?: string;
+  startupTimeoutMs?: number;
 }
 
 export interface ChallengeInfoResponse {
   id: string;
   version: string;
   title: string;
+  language: string;
+  runtime: string;
+  challengeType: "function" | "server";
+  defaultTimeoutMs?: number;
+  entrypoint?: string;
+  server?: ServerConfig;
   steps: ChallengeStepInfo[];
   /** Absolute path on the server — used by CLI to locate starter files */
   challengePath: string;
@@ -78,6 +99,24 @@ function readBoolean(value: unknown, field: string): boolean {
   return value;
 }
 
+function readOptionalNumber(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function readOptionalServerConfig(value: unknown): ServerConfig | undefined {
+  if (!isRecord(value)) return undefined;
+
+  return {
+    startScript:
+      typeof value.startScript === "string" ? value.startScript : undefined,
+    portEnvVar:
+      typeof value.portEnvVar === "string" ? value.portEnvVar : undefined,
+    readyEndpoint:
+      typeof value.readyEndpoint === "string" ? value.readyEndpoint : undefined,
+    startupTimeoutMs: readOptionalNumber(value.startupTimeoutMs),
+  };
+}
+
 export function parseChallengeInfoResponse(payload: unknown): ChallengeInfoResponse {
   if (!isRecord(payload)) throw new Error("Invalid challenge info response");
 
@@ -88,6 +127,13 @@ export function parseChallengeInfoResponse(payload: unknown): ChallengeInfoRespo
     id: readString(payload.id, "id"),
     version: readString(payload.version, "version"),
     title: readString(payload.title, "title"),
+    language: readString(payload.language, "language"),
+    runtime: readString(payload.runtime, "runtime"),
+    challengeType: payload.challengeType === "server" ? "server" : "function",
+    defaultTimeoutMs: readOptionalNumber(payload.defaultTimeoutMs),
+    entrypoint:
+      typeof payload.entrypoint === "string" ? payload.entrypoint : undefined,
+    server: readOptionalServerConfig(payload.server),
     challengePath: readString(payload.challengePath, "challengePath"),
     steps: rawSteps.map((step, index) => {
       if (!isRecord(step)) throw new Error(`Invalid step at index ${index}`);
@@ -95,6 +141,11 @@ export function parseChallengeInfoResponse(payload: unknown): ChallengeInfoRespo
         id: readString(step.id, `steps[${index}].id`),
         title: readString(step.title, `steps[${index}].title`),
         prompt: typeof step.prompt === "string" ? step.prompt : undefined,
+        explanation:
+          typeof step.explanation === "string" ? step.explanation : undefined,
+        solution: typeof step.solution === "string" ? step.solution : undefined,
+        position:
+          typeof step.position === "number" ? step.position : index + 1,
         hasStarter: readBoolean(step.hasStarter, `steps[${index}].hasStarter`),
         starterRoot:
           typeof step.starterRoot === "string" ? step.starterRoot : undefined,
@@ -104,6 +155,20 @@ export function parseChallengeInfoResponse(payload: unknown): ChallengeInfoRespo
             : undefined,
         entrypoint:
           typeof step.entrypoint === "string" ? step.entrypoint : undefined,
+        visibleTestPath:
+          typeof step.visibleTestPath === "string"
+            ? step.visibleTestPath
+            : undefined,
+        hiddenTestPath:
+          typeof step.hiddenTestPath === "string"
+            ? step.hiddenTestPath
+            : undefined,
+        timeoutMs: readOptionalNumber(step.timeoutMs),
+        requiresTerminal:
+          typeof step.requiresTerminal === "boolean"
+            ? step.requiresTerminal
+            : undefined,
+        server: readOptionalServerConfig(step.server),
       };
     }),
   };

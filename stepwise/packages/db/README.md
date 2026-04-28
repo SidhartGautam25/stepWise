@@ -34,8 +34,9 @@ pnpm --filter @repo/db db:push
 pnpm --filter @repo/db db:seed
 ```
 
-After seeding, every challenge in `challenges/` will have corresponding rows in  
-`challenges` and `challenge_steps` tables.
+After seeding, every challenge in `challenges/` will have corresponding rows in
+`challenges`, `challenge_steps`, and a full registry snapshot in
+`challenge_versions`.
 
 ### 4. Run migrations (when you're ready for production)
 
@@ -54,8 +55,9 @@ pnpm --filter @repo/db db:migrate:deploy
 | Table | Purpose |
 |---|---|
 | `users` | Student accounts (email/username, no auth yet) |
-| `challenges` | Challenge metadata seeded from `challenge.json` |
-| `challenge_steps` | Individual steps within a challenge |
+| `challenges` | Current challenge catalog/index seeded from `challenge.json` |
+| `challenge_versions` | Versioned registry snapshots with full step metadata and paths |
+| `challenge_steps` | Legacy/current step lookup rows for existing attempt/progress flows |
 | `attempts` | One run of one step — includes result JSON |
 | `user_progress` | Current step + completed steps per (user, challenge) |
 
@@ -71,3 +73,24 @@ pnpm --filter @repo/db db:generate
 # Re-seed after adding new challenges
 pnpm --filter @repo/db db:seed
 ```
+
+## Dev Auto-Sync
+
+When the API runs with `NODE_ENV=development`, it starts a `ContentWatcher`
+that watches every `challenges/*/challenge.json`. Saving a manifest debounces
+and reuses the same sync path as `db:seed`, updating `challenges`,
+`challenge_steps`, and the editable `challenge_versions.step_registry`
+snapshot.
+
+Controls:
+
+```bash
+# Force watcher on
+STEPWISE_CONTENT_WATCHER=1 pnpm --filter api dev
+
+# Force watcher off
+STEPWISE_CONTENT_WATCHER=0 pnpm --filter api dev
+```
+
+Published snapshots are preserved; bump the challenge version before changing
+published content.
