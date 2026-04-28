@@ -2,7 +2,7 @@ import Link from "next/link";
 import { fetchChallenges } from "@/lib/api";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { COURSES } from "@/lib/courses";
+import { deriveCoursesFromChallenges } from "@/lib/courses";
 import { SectionLabel } from "@/components/home/SectionLabel";
 import { FeatureCard } from "@/components/home/FeatureCard";
 import { CourseCard } from "@/components/home/CourseCard";
@@ -135,6 +135,7 @@ export default async function HomePage() {
   } catch {
     /* API offline — render static sections */
   }
+  const courses = deriveCoursesFromChallenges(challenges);
 
   const session = await getServerSession(authOptions);
   const isLoggedIn = !!session;
@@ -309,8 +310,8 @@ export default async function HomePage() {
             }}
           >
             {[
-              { value: "6+", label: "Tracks" },
-              { value: "50+", label: "Guided Quests" },
+              { value: String(courses.length || 0), label: "Tracks" },
+              { value: String(challenges.length || 0), label: "Guided Quests" },
               { value: "100%", label: "Local Environment" },
               { value: "0", label: "Browser Sandboxes" },
             ].map(({ value, label }) => (
@@ -466,7 +467,7 @@ export default async function HomePage() {
             alignItems: "stretch",
           }}
         >
-          {COURSES.map((course) => (
+          {courses.map((course) => (
             <CourseCard key={course.id} course={course} />
           ))}
         </div>

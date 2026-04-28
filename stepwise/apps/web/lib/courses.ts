@@ -1,8 +1,4 @@
-/**
- * lib/courses.ts
- * Static course/track definitions.
- * Add new courses here — they flow through to the home page automatically.
- */
+import type { ChallengeSummary } from "./api";
 
 export type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 export type CourseStatus = "available" | "coming-soon";
@@ -21,89 +17,99 @@ export interface Course {
   accentColor: "indigo" | "emerald" | "amber" | "rose" | "cyan";
 }
 
-export const COURSES: Course[] = [
-  {
-    id: "javascript-fundamentals",
+const TRACK_META: Record<string, Pick<Course, "title" | "tagline" | "icon" | "accentColor">> = {
+  javascript: {
     title: "JavaScript Fundamentals",
-    tagline: "From zero to async/await",
-    description:
-      "Explore JavaScript from the ground up — variables, closures, Promises, async patterns, and DOM interactions. Each step builds on the last in your real local environment.",
+    tagline: "From functions to async workflows",
     icon: "⚡",
-    language: "JavaScript",
-    difficulty: "Beginner",
-    status: "available",
-    questCount: 12,
-    tags: ["Variables", "Functions", "Promises", "Async/Await", "DOM"],
     accentColor: "amber",
   },
-  {
-    id: "typescript-mastery",
+  typescript: {
     title: "TypeScript Mastery",
-    tagline: "Type-safe everything",
-    description:
-      "Discover TypeScript's type system step by step — interfaces, generics, utility types, and advanced patterns. Write code the way professional teams do.",
+    tagline: "Type-safe systems thinking",
     icon: "🔷",
-    language: "TypeScript",
-    difficulty: "Intermediate",
-    status: "available",
-    questCount: 10,
-    tags: ["Types", "Interfaces", "Generics", "Utility Types", "Decorators"],
     accentColor: "indigo",
   },
-  {
-    id: "nodejs-backend",
+  node: {
     title: "Node.js Backend",
-    tagline: "Build APIs that scale",
-    description:
-      "Guided exploration of Node.js server-side patterns — event loop, streams, HTTP modules, and building production-ready REST endpoints from scratch.",
+    tagline: "Build servers that feel real",
     icon: "🟢",
-    language: "Node.js",
-    difficulty: "Intermediate",
-    status: "available",
-    questCount: 8,
-    tags: ["HTTP", "Streams", "Events", "REST", "File System"],
     accentColor: "emerald",
   },
-  {
-    id: "git-workflows",
-    title: "Git & Version Control",
-    tagline: "Collaborate like pros",
-    description:
-      "Navigate Git from commits to complex branching strategies. Understand rebasing, cherry-picking, and team workflows through hands-on terminal exercises.",
-    icon: "🌿",
-    language: "Git",
-    difficulty: "Beginner",
-    status: "available",
-    questCount: 6,
-    tags: ["Commits", "Branching", "Merging", "Rebasing", "Pull Requests"],
-    accentColor: "emerald",
-  },
-  {
-    id: "bash-scripting",
-    title: "Shell & Bash Scripting",
-    tagline: "Automate your workflow",
-    description:
-      "From basic commands to powerful shell scripts — pipe, redirect, variables, loops, and building CLI tools. Navigate any Unix environment with confidence.",
+  "web-terminal": {
+    title: "Terminal Worlds",
+    tagline: "Learn by navigating real shells",
     icon: "🖥️",
-    language: "Bash",
-    difficulty: "Beginner",
-    status: "coming-soon",
-    questCount: 7,
-    tags: ["Shell", "Pipes", "Scripts", "Cron", "CLI Tools"],
     accentColor: "cyan",
   },
-  {
-    id: "react-patterns",
-    title: "React Design Patterns",
-    tagline: "Components done right",
-    description:
-      "Explore React through real component challenges — hooks, context, performance patterns, and advanced compositions. Build instincts, not habits.",
-    icon: "⚛️",
-    language: "React",
-    difficulty: "Advanced",
-    status: "coming-soon",
-    questCount: 9,
-    tags: ["Hooks", "Context", "Memo", "Patterns", "Performance"],
+  bash: {
+    title: "Shell & Bash",
+    tagline: "Automate your workflow",
+    icon: "🖥️",
     accentColor: "cyan",
   },
-];
+  git: {
+    title: "Git & Version Control",
+    tagline: "Understand history and collaboration",
+    icon: "🌿",
+    accentColor: "emerald",
+  },
+  rust: {
+    title: "Rust Systems",
+    tagline: "Safety, speed, and ownership",
+    icon: "🦀",
+    accentColor: "rose",
+  },
+};
+
+function toDifficulty(value?: string): Difficulty {
+  if (value === "advanced") return "Advanced";
+  if (value === "intermediate") return "Intermediate";
+  return "Beginner";
+}
+
+function pickGroupKey(challenge: ChallengeSummary) {
+  return challenge.runtime === "node" ? "node" : challenge.language.toLowerCase();
+}
+
+export function deriveCoursesFromChallenges(challenges: ChallengeSummary[]): Course[] {
+  const groups = new Map<string, ChallengeSummary[]>();
+
+  for (const challenge of challenges) {
+    const key = pickGroupKey(challenge);
+    const existing = groups.get(key);
+    if (existing) existing.push(challenge);
+    else groups.set(key, [challenge]);
+  }
+
+  const courses: Course[] = [];
+
+  for (const [key, items] of groups.entries()) {
+    const meta = TRACK_META[key];
+    const sample = items[0];
+    if (!sample) continue;
+
+    const allTags = Array.from(
+      new Set(items.flatMap((item) => item.tags).filter(Boolean)),
+    ).slice(0, 5);
+
+    courses.push({
+      id: key,
+      title: meta?.title ?? sample.language,
+      tagline: meta?.tagline ?? `${sample.language} guided exploration`,
+      description:
+        sample.description ??
+        `Explore ${sample.language} through guided quests that build practical instincts one step at a time.`,
+      icon: meta?.icon ?? "🧩",
+      language: sample.language,
+      difficulty: toDifficulty(sample.difficulty),
+      status: "available",
+      questCount: items.length,
+      tags: allTags.length > 0 ? allTags : [sample.runtime, sample.challengeType],
+      accentColor: meta?.accentColor ?? "indigo",
+    });
+  }
+
+  return courses
+    .sort((a, b) => a.title.localeCompare(b.title));
+}

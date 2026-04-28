@@ -8,6 +8,9 @@ export interface ChallengeStepRegistryEntry {
   id: string;
   title: string;
   position: number;
+  difficulty?: string;
+  estimatedMinutes?: number;
+  prerequisites: string[];
   promptPath?: string;
   explanationPath?: string;
   solutionPath?: string;
@@ -20,6 +23,7 @@ export interface ChallengeStepRegistryEntry {
   requiresTerminal: boolean;
   timeoutMs?: number;
   server?: Record<string, unknown>;
+  interactiveLessonId?: string;
   interactiveLesson?: {
     type: string;
     contentPath: string;
@@ -72,7 +76,16 @@ function readStringArray(value: unknown): string[] {
     : [];
 }
 
-function relativeStepPath(stepId: string, filename: unknown): string | undefined {
+function readOptionalNumber(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value)
+    ? value
+    : undefined;
+}
+
+function relativeStepPath(
+  stepId: string,
+  filename: unknown,
+): string | undefined {
   const name = readOptionalString(filename);
   return name ? `steps/${stepId}/${name}` : undefined;
 }
@@ -87,7 +100,8 @@ function inferCapabilities(manifest: Record<string, unknown>): string[] {
   if (mode) capabilities.add(`${mode}-mode`);
   if (type === "server") capabilities.add("server-runner");
   if (runtime === "node") capabilities.add("cli-runner");
-  if (runtime === "web-terminal" || mode === "web") capabilities.add("web-terminal");
+  if (runtime === "web-terminal" || mode === "web")
+    capabilities.add("web-terminal");
 
   return Array.from(capabilities);
 }
@@ -109,6 +123,9 @@ function parseStep(step: unknown, index: number): ChallengeStepRegistryEntry {
     id,
     title: readRequiredString(step.title, `steps[${index}].title`),
     position: index + 1,
+    difficulty: readOptionalString(step.difficulty),
+    estimatedMinutes: readOptionalNumber(step.estimatedMinutes),
+    prerequisites: readStringArray(step.prerequisites),
     promptPath: relativeStepPath(id, step.prompt),
     explanationPath: relativeStepPath(id, step.explanation),
     solutionPath: relativeStepPath(id, step.solution),
@@ -117,15 +134,14 @@ function parseStep(step: unknown, index: number): ChallengeStepRegistryEntry {
     workspaceRoot: readOptionalString(workspace?.root),
     starterRoot: readOptionalString(workspace?.starter),
     entrypoint:
-      readOptionalString(workspace?.entrypoint) ?? readOptionalString(step.entrypoint),
+      readOptionalString(workspace?.entrypoint) ??
+      readOptionalString(step.entrypoint),
     free: typeof step.free === "boolean" ? step.free : true,
     requiresTerminal:
       typeof step.requiresTerminal === "boolean" ? step.requiresTerminal : true,
-    timeoutMs:
-      typeof step.timeoutMs === "number" && Number.isFinite(step.timeoutMs)
-        ? step.timeoutMs
-        : undefined,
+    timeoutMs: readOptionalNumber(step.timeoutMs),
     server: isRecord(step.server) ? step.server : undefined,
+    interactiveLessonId: readOptionalString(step.interactiveLessonId),
     interactiveLesson:
       interactiveLesson && interactiveContent
         ? {
@@ -137,7 +153,9 @@ function parseStep(step: unknown, index: number): ChallengeStepRegistryEntry {
   };
 }
 
-export function buildChallengeRegistry(challengeDir: string): ChallengeRegistry {
+export function buildChallengeRegistry(
+  challengeDir: string,
+): ChallengeRegistry {
   const sourcePath = path.resolve(challengeDir);
   const manifestPath = path.resolve(sourcePath, "challenge.json");
 
@@ -177,7 +195,10 @@ export function buildChallengeRegistry(challengeDir: string): ChallengeRegistry 
     server: isRecord(parsed.server) ? parsed.server : undefined,
     sourcePath,
     manifestPath,
-    manifestHash: crypto.createHash("sha256").update(manifestText).digest("hex"),
+    manifestHash: crypto
+      .createHash("sha256")
+      .update(manifestText)
+      .digest("hex"),
     steps: parsed.steps.map(parseStep),
   };
 }

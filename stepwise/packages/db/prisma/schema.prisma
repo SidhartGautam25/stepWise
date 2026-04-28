@@ -35,6 +35,7 @@ model User {
 
 model Challenge {
   id              String   @id              // matches challenge.json "id", e.g. "promise-basic"
+  latestVersionId String?  @map("latest_version_id")
   version         String                    // semver, e.g. "0.2.0"
   title           String
   language        String                    // e.g. "javascript"
@@ -49,7 +50,8 @@ model Challenge {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   steps       ChallengeStep[]
-  versions    ChallengeVersion[]
+  versions    ChallengeVersion[] @relation("ChallengeVersions")
+  latestVersion ChallengeVersion? @relation("LatestChallengeVersion", fields: [latestVersionId], references: [id])
   attempts    Attempt[]
   progress    UserProgress[]
 
@@ -82,7 +84,8 @@ model ChallengeVersion {
   updatedAt          DateTime  @updatedAt @map("updated_at")
   publishedAt        DateTime? @map("published_at")
 
-  challenge          Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  challenge          Challenge @relation("ChallengeVersions", fields: [challengeId], references: [id], onDelete: Cascade)
+  latestForChallenges Challenge[] @relation("LatestChallengeVersion")
   attempts           Attempt[]
 
   @@unique([challengeId, version])
