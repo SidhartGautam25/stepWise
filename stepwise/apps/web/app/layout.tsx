@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import "@/components/challenge/challenge-viewer.css";
+import "@/components/challenge/step-content.css";
 import NavBar from "@/components/NavBar";
 import { Providers } from "@/components/Providers";
 

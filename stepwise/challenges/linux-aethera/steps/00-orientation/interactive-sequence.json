@@ -1,0 +1,26 @@
+{
+  "slides": [
+    {
+      "id": "orientation-overview",
+      "heading": "How to read the Visualizer",
+      "body": "This lesson uses a small visual filesystem so you can **see** what each terminal command does.\n\n- The label at the top right of the pane is your **current directory**.\n- The tree on the side shows anchors like `/bin`, `/home`, `/tmp`.\n- The tiles list what's inside your current folder: type, owner, permissions, and file contents when relevant.\n- Green output means the command succeeded.\n- Red output means Linux rejected it.\n\nYou start in **`/home/student`** — home for the student user.",
+      "bullets": [
+        "Visualizer = filesystem state after each command",
+        "Green ✓ succeeded · red ✗ failed",
+        "Home is /home/student"
+      ]
+    },
+    {
+      "id": "orientation-continue",
+      "heading": "Try the terminal beside the slides",
+      "body": "The terminal drives the same simulated machine as this visual pane. Let's confirm everything is wired: type **`continue`** (exactly that word — no extra symbols) after reading this slide.",
+      "bullets": [
+        "Type: continue — then we'll move deeper into filesystem practice"
+      ],
+      "advanceOnCommand": {
+        "mode": "exact",
+        "value": "continue"
+      }
+    }
+  ]
+}

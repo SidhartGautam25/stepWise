@@ -101,7 +101,6 @@ model ChallengeStep {
   stepKey     String    @map("step_key")     // matches step "id" in manifest, e.g. "return-42"
   title       String
   position    Int                            // 1-based ordering within the challenge
-  promptPath  String?   @map("prompt_path")  // relative path to prompt.md from challenge root
   interactiveLesson Json? @map("interactive_lesson")
   renderConfig Json? @map("render_config")
   createdAt   DateTime  @default(now()) @map("created_at")

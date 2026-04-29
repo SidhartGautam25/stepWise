@@ -42,6 +42,7 @@ export { LessonSequenceShell }  from "./components/LessonSequenceShell";
 export { GitCommitGraph }       from "./components/GitCommitGraph";
 export { GitStagingArea }       from "./components/GitStagingArea";
 export { renderIllustration }   from "./renderIllustration";
+export type { RenderIllustrationRuntime } from "./renderIllustration";
 
 export { T }                    from "./tokens";
 export { useEngineStyles }      from "./useEngineStyles";
@@ -79,5 +80,6 @@ export type {
   GitStagingAreaConfig,
   SimulatedTerminalConfig,
   LessonSequenceConfig,
+  LessonTerminalVisualWorkspaceConfig,
   VisualWorldConfig,
 } from "./IllustrationConfig";

@@ -226,6 +226,8 @@ export interface UserDashboardData {
     totalSteps: number;
     challengeCompleted: boolean;
     completedStepKeys: string[];
+    /** Resolved from the challenge catalog for display (same order as completedStepKeys). */
+    completedStepTitles: string[];
   }>;
 }
 
@@ -235,11 +237,17 @@ export async function getUserDashboard(userId: string): Promise<UserDashboardDat
   const progress = await Promise.all(allProgress.map(async (p: UserProgress & { challenge?: unknown }) => {
     let totalSteps = 0;
     let challengeTitle = p.challengeId;
+    const titleByKey = new Map<string, string>();
     try {
       const info = await getChallengeInfo(p.challengeId);
       totalSteps = info.steps.length;
       challengeTitle = info.title;
+      for (const s of info.steps) {
+        titleByKey.set(s.id, s.title);
+      }
     } catch { /* challenge might have been removed */ }
+
+    const completedStepTitles = p.completedStepKeys.map((key) => titleByKey.get(key) ?? key);
 
     return {
       challengeId: p.challengeId,
@@ -249,6 +257,7 @@ export async function getUserDashboard(userId: string): Promise<UserDashboardDat
       totalSteps,
       challengeCompleted: p.challengeCompleted,
       completedStepKeys: p.completedStepKeys,
+      completedStepTitles,
     };
   }));
 
