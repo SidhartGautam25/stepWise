@@ -156,8 +156,8 @@ export interface LessonSequenceConfig {
 /** Live terminal/file-system visual world used by web-mode challenges */
 export interface VisualWorldConfig {
   type: "VisualWorld";
-  vfs: unknown;
-  cwd: string[];
+  vfs?: unknown;
+  cwd?: string[];
   isGit?: boolean;
   gitInited?: boolean;
 }

@@ -19,7 +19,12 @@
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {}
+      "tests": {},
+      "renderConfig": {
+        "type": "LessonSequence",
+        "title": "Interactive Lesson",
+        "subtitle": "Explore the idea first, then move into the hands-on step."
+      }
     },
     {
       "id": "00-why-os",
@@ -32,7 +37,12 @@
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {}
+      "tests": {},
+      "renderConfig": {
+        "type": "LessonSequence",
+        "title": "Interactive Lesson",
+        "subtitle": "Explore the idea first, then move into the hands-on step."
+      }
     },
     {
       "id": "00-orientation",
@@ -41,7 +51,10 @@
       "explanation": "explanation.md",
       "requiresTerminal": true,
       "workspace": {},
-      "tests": {}
+      "tests": {},
+      "renderConfig": {
+        "type": "VisualWorld"
+      }
     },
     {
       "id": "01-directories",
@@ -50,7 +63,10 @@
       "explanation": "explanation.md",
       "requiresTerminal": true,
       "workspace": {},
-      "tests": {}
+      "tests": {},
+      "renderConfig": {
+        "type": "VisualWorld"
+      }
     },
     {
       "id": "02-navigation",
@@ -59,7 +75,10 @@
       "explanation": "explanation.md",
       "requiresTerminal": true,
       "workspace": {},
-      "tests": {}
+      "tests": {},
+      "renderConfig": {
+        "type": "VisualWorld"
+      }
     },
     {
       "id": "03-files-and-listing",
@@ -68,7 +87,10 @@
       "explanation": "explanation.md",
       "requiresTerminal": true,
       "workspace": {},
-      "tests": {}
+      "tests": {},
+      "renderConfig": {
+        "type": "VisualWorld"
+      }
     }
   ]
 }

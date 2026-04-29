@@ -16,31 +16,11 @@ export function StepVisualizerPanel({
   isGit,
   onCompleted,
 }: StepVisualizerPanelProps) {
-  if (step?.interactiveLesson?.type === "sequence") {
-    const slideIllustrations = Object.fromEntries(
-      step.interactiveLesson.slides.flatMap((slide) =>
-        slide.illustration
-          ? [[slide.id, slide.illustration as IllustrationConfig]]
-          : [],
-      ),
-    );
+  if (!step?.renderConfig) return null;
 
-    return renderIllustration({
-      type: "LessonSequence",
-      stepId: step.id,
-      slides: step.interactiveLesson.slides,
-      slideIllustrations,
-      title: "Interactive Lesson",
-      subtitle: "Explore the idea first, then move into the hands-on step.",
-      onCompleted,
-    });
-  }
-
-  return renderIllustration({
-    type: "VisualWorld",
-    vfs: terminalState.vfs,
-    cwd: terminalState.cwd,
+  return renderIllustration(step.renderConfig as IllustrationConfig, {
+    terminalState,
     isGit,
-    gitInited: terminalState.git?.initialized,
+    onCompleted,
   });
 }

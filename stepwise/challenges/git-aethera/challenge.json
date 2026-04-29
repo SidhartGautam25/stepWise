@@ -19,7 +19,12 @@
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {}
+      "tests": {},
+      "renderConfig": {
+        "type": "LessonSequence",
+        "title": "Interactive Lesson",
+        "subtitle": "Explore the idea first, then move into the hands-on step."
+      }
     },
     {
       "id": "00-world-before",
@@ -32,7 +37,12 @@
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {}
+      "tests": {},
+      "renderConfig": {
+        "type": "LessonSequence",
+        "title": "Interactive Lesson",
+        "subtitle": "Explore the idea first, then move into the hands-on step."
+      }
     },
     {
       "id": "00-snapshot-idea",
@@ -45,9 +55,13 @@
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {}
+      "tests": {},
+      "renderConfig": {
+        "type": "LessonSequence",
+        "title": "Interactive Lesson",
+        "subtitle": "Explore the idea first, then move into the hands-on step."
+      }
     },
-
     {
       "id": "01-init",
       "title": "Starting a Repository",
@@ -55,7 +69,10 @@
       "explanation": "explanation.md",
       "requiresTerminal": true,
       "workspace": {},
-      "tests": {}
+      "tests": {},
+      "renderConfig": {
+        "type": "VisualWorld"
+      }
     },
     {
       "id": "02-first-commit",
@@ -64,7 +81,10 @@
       "explanation": "explanation.md",
       "requiresTerminal": true,
       "workspace": {},
-      "tests": {}
+      "tests": {},
+      "renderConfig": {
+        "type": "VisualWorld"
+      }
     },
     {
       "id": "03-history",
@@ -73,7 +93,10 @@
       "explanation": "explanation.md",
       "requiresTerminal": true,
       "workspace": {},
-      "tests": {}
+      "tests": {},
+      "renderConfig": {
+        "type": "VisualWorld"
+      }
     },
     {
       "id": "04-branch",
@@ -86,7 +109,12 @@
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {}
+      "tests": {},
+      "renderConfig": {
+        "type": "LessonSequence",
+        "title": "Interactive Lesson",
+        "subtitle": "Explore the idea first, then move into the hands-on step."
+      }
     }
   ]
 }

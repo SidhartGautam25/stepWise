@@ -32,7 +32,22 @@ import { LessonSequenceShell } from "./components/LessonSequenceShell";
 import { VisualWorld }         from "./components/VisualWorld";
 import { SimulatedTerminal }   from "@repo/terminal-engine";
 
-export function renderIllustration(config: IllustrationConfig): ReactNode {
+export interface RenderIllustrationRuntime {
+  terminalState?: {
+    vfs?: unknown;
+    cwd?: string[];
+    git?: {
+      initialized?: boolean;
+    };
+  };
+  isGit?: boolean;
+  onCompleted?: (stepId: string) => void;
+}
+
+export function renderIllustration(
+  config: IllustrationConfig,
+  runtime: RenderIllustrationRuntime = {},
+): ReactNode {
   switch (config.type) {
     case "ExpandableCardList":
       return (
@@ -182,23 +197,29 @@ export function renderIllustration(config: IllustrationConfig): ReactNode {
           stepId={config.stepId}
           title={config.title}
           subtitle={config.subtitle}
-          onCompleted={config.onCompleted}
+          onCompleted={config.onCompleted ?? runtime.onCompleted}
           renderIllustration={(slideId) => {
+            const slide = config.slides.find((candidate) => candidate.id === slideId);
             const illustration =
-              config.slideIllustrations?.[slideId] ?? config.fallbackIllustration;
+              config.slideIllustrations?.[slideId] ??
+              (slide?.illustration as IllustrationConfig | undefined) ??
+              config.fallbackIllustration;
 
-            return illustration ? renderIllustration(illustration) : null;
+            return illustration ? renderIllustration(illustration, runtime) : null;
           }}
         />
       );
 
     case "VisualWorld":
+      if (!config.vfs && !runtime.terminalState?.vfs) return null;
+      if (!config.cwd && !runtime.terminalState?.cwd) return null;
+
       return (
         <VisualWorld
-          vfs={config.vfs as never}
-          cwd={config.cwd}
-          isGit={config.isGit}
-          gitInited={config.gitInited}
+          vfs={(config.vfs ?? runtime.terminalState?.vfs) as never}
+          cwd={(config.cwd ?? runtime.terminalState?.cwd) as string[]}
+          isGit={config.isGit ?? runtime.isGit}
+          gitInited={config.gitInited ?? runtime.terminalState?.git?.initialized}
         />
       );
 

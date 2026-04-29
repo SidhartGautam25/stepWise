@@ -36,6 +36,7 @@ export interface LessonSlide {
   heading: string;
   body: string;
   bullets?: string[];
+  illustration?: unknown;
 }
 
 export interface LessonSequenceShellProps {

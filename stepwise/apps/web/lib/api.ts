@@ -48,6 +48,7 @@ export interface StepInfo {
   position: number;
   codeFiles?: CodeFile[];
   interactiveLesson?: InteractiveLesson;
+  renderConfig?: unknown;
   requiresTerminal?: boolean;
 }
 
