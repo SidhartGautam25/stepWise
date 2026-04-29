@@ -114,6 +114,23 @@ async function getCurrentVersion(challengeId: string) {
   return version;
 }
 
+async function getDbStepRenderData(challengeId: string) {
+  const rows = await prisma.challengeStep.findMany({
+    where: { challengeId },
+    select: {
+      stepKey: true,
+      interactiveLesson: true,
+      renderConfig: true,
+    },
+  });
+
+  return new Map(rows.map((row) => [row.stepKey, row]));
+}
+
+function jsonOrUndefined(value: unknown): unknown | undefined {
+  return value === null ? undefined : value;
+}
+
 function buildStepInfo(
   manager: StepContentManager,
   step: ChallengeStepRegistryEntry,
@@ -148,9 +165,20 @@ function buildStepInfo(
 export async function getChallengeInfo(challengeId: string): Promise<ChallengeInfo> {
   const version = await getCurrentVersion(challengeId);
   const registry = asRegistry(version.stepRegistry);
+  const stepRenderData = await getDbStepRenderData(registry.id);
   const challengePath = getChallengePath(registry.id);
   const manager = new StepContentManager(challengePath);
-  const steps = registry.steps.map((step) => buildStepInfo(manager, step));
+  const steps = registry.steps.map((step) => {
+    const dbStep = stepRenderData.get(step.id);
+
+    return buildStepInfo(manager, {
+      ...step,
+      interactiveLessonContent:
+        jsonOrUndefined(dbStep?.interactiveLesson) ?? step.interactiveLessonContent,
+      renderConfig:
+        jsonOrUndefined(dbStep?.renderConfig) ?? step.renderConfig,
+    });
+  });
 
   if (steps.length === 0) throw new Error(`Challenge "${challengeId}" has no steps`);
 

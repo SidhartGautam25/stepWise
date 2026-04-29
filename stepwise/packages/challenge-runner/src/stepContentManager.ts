@@ -20,6 +20,8 @@ export interface StepContentRegistryEntry {
     type: string;
     contentPath: string;
   };
+  interactiveLessonContent?: unknown;
+  renderConfig?: unknown;
 }
 
 export interface InteractiveLessonSlide {
@@ -27,6 +29,7 @@ export interface InteractiveLessonSlide {
   heading: string;
   body: string;
   bullets?: string[];
+  illustration?: unknown;
 }
 
 export interface InteractiveLesson {
@@ -104,7 +107,7 @@ export class StepContentManager {
       workspaceRoot,
       entrypoint,
       interactiveLesson: step.interactiveLesson
-        ? this.loadInteractiveLesson(stepDir, step.interactiveLesson)
+        ? this.loadInteractiveLesson(stepDir, step.interactiveLesson, step.interactiveLessonContent)
         : undefined,
       codeFiles: this.loadCodeFiles(stepDir, step.id),
       requiresTerminal: step.requiresTerminal ?? true,
@@ -137,15 +140,16 @@ export class StepContentManager {
   private loadInteractiveLesson(
     stepDir: string,
     lesson: { type: string; contentPath: string },
+    content?: unknown,
   ): InteractiveLesson | undefined {
     if (lesson.type !== "sequence") return undefined;
 
     const lessonPath = path.resolve(stepDir, path.basename(lesson.contentPath));
-    if (!fs.existsSync(lessonPath)) {
+    if (!content && !fs.existsSync(lessonPath)) {
       throw new Error(`Interactive lesson file not found: ${lessonPath}`);
     }
 
-    const parsed = JSON.parse(fs.readFileSync(lessonPath, "utf-8")) as unknown;
+    const parsed = content ?? JSON.parse(fs.readFileSync(lessonPath, "utf-8")) as unknown;
     if (!isRecord(parsed) || !Array.isArray(parsed.slides)) {
       throw new Error(`Invalid interactive lesson content: ${lessonPath}`);
     }
@@ -164,6 +168,7 @@ export class StepContentManager {
           bullets: Array.isArray(slide.bullets)
             ? slide.bullets.filter((bullet): bullet is string => typeof bullet === "string")
             : undefined,
+          illustration: isRecord(slide.illustration) ? slide.illustration : undefined,
         };
       }),
     };

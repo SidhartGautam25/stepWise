@@ -78,4 +78,6 @@ export type {
   GitCommitGraphConfig,
   GitStagingAreaConfig,
   SimulatedTerminalConfig,
+  LessonSequenceConfig,
+  VisualWorldConfig,
 } from "./IllustrationConfig";

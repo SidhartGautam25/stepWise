@@ -128,6 +128,8 @@ export async function syncChallengeDirectory(
   for (let i = 0; i < registry.steps.length; i++) {
     const step = registry.steps[i];
     if (!step) continue;
+    const interactiveLessonJson = toNullableJson(step.interactiveLessonContent);
+    const renderConfigJson = toNullableJson(step.renderConfig);
 
     await prisma.challengeStep.upsert({
       where: {
@@ -142,11 +144,15 @@ export async function syncChallengeDirectory(
         title: step.title,
         position: i + 1,
         promptPath: step.promptPath ?? null,
+        interactiveLesson: interactiveLessonJson,
+        renderConfig: renderConfigJson,
       },
       update: {
         title: step.title,
         position: i + 1,
         promptPath: step.promptPath ?? null,
+        interactiveLesson: interactiveLessonJson,
+        renderConfig: renderConfigJson,
       },
     });
   }
@@ -157,6 +163,12 @@ export async function syncChallengeDirectory(
     stepCount: registry.steps.length,
     skippedPublishedSnapshot,
   };
+}
+
+function toNullableJson(value: unknown): Prisma.InputJsonValue | typeof Prisma.JsonNull {
+  return value === undefined
+    ? Prisma.JsonNull
+    : (value as Prisma.InputJsonValue);
 }
 
 export async function syncAllChallenges(

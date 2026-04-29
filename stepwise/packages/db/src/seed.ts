@@ -22,6 +22,7 @@ async function seed() {
     .filter((entry) => entry.isDirectory());
 
   let synced = 0;
+  let failed = 0;
 
   for (const entry of entries) {
     const challengeDir = path.resolve(CHALLENGES_ROOT, entry.name);
@@ -37,6 +38,7 @@ async function seed() {
       );
       synced++;
     } catch (err) {
+      failed++;
       console.warn(
         `  ⚠ Skipping ${entry.name}: ${
           err instanceof Error ? err.message : "invalid challenge.json"
@@ -46,6 +48,10 @@ async function seed() {
   }
 
   console.log(`\nSeeded ${synced} challenge(s).`);
+
+  if (failed > 0) {
+    throw new Error(`Failed to seed ${failed} challenge(s).`);
+  }
 }
 
 seed()
