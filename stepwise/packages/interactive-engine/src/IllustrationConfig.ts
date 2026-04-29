@@ -10,7 +10,7 @@
  * To add a new component type:
  *  1. Add a new variant here
  *  2. Add a case in renderIllustration.tsx
- *  3. Add entries in lesson-content/src/<quest>/slide-configs.ts
+ *  3. Add config data to the challenge slide JSON seeded into the database
  */
 
 import type { ExpandableCardItem }  from "./components/ExpandableCardList";
@@ -25,6 +25,7 @@ import type { InfoCalloutVariant }   from "./components/InfoCallout";
 import type { CommitNode, GitBranchLine }      from "./components/GitCommitGraph";
 import type { StagingFile }          from "./components/GitStagingArea";
 import type { VfsNode as TermVfsNode } from "@repo/terminal-engine";
+import type { LessonSlide } from "./components/LessonSequenceShell";
 
 // Each variant is `{ type: "<ComponentName>" } & relevant props`
 
@@ -140,6 +141,27 @@ export interface SimulatedTerminalConfig {
   height?: number;
 }
 
+/** Full slide lesson rendered by the engine, with per-slide illustration data */
+export interface LessonSequenceConfig {
+  type: "LessonSequence";
+  slides: LessonSlide[];
+  stepId: string;
+  title?: string;
+  subtitle?: string;
+  slideIllustrations?: Record<string, IllustrationConfig>;
+  fallbackIllustration?: IllustrationConfig;
+  onCompleted?: (stepId: string) => void;
+}
+
+/** Live terminal/file-system visual world used by web-mode challenges */
+export interface VisualWorldConfig {
+  type: "VisualWorld";
+  vfs: unknown;
+  cwd: string[];
+  isGit?: boolean;
+  gitInited?: boolean;
+}
+
 export type IllustrationConfig =
   | ExpandableCardListConfig
   | ClickRevealGridConfig
@@ -153,4 +175,6 @@ export type IllustrationConfig =
   | MultiConfig
   | GitCommitGraphConfig
   | GitStagingAreaConfig
-  | SimulatedTerminalConfig;
+  | SimulatedTerminalConfig
+  | LessonSequenceConfig
+  | VisualWorldConfig;

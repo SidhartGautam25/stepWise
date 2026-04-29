@@ -28,6 +28,8 @@ export interface ChallengeStepRegistryEntry {
     type: string;
     contentPath: string;
   };
+  interactiveLessonContent?: unknown;
+  renderConfig?: unknown;
   raw: Record<string, unknown>;
 }
 
@@ -118,6 +120,7 @@ function parseStep(step: unknown, index: number): ChallengeStepRegistryEntry {
     ? step.interactiveLesson
     : undefined;
   const interactiveContent = readOptionalString(interactiveLesson?.content);
+  const renderConfig = isRecord(step.renderConfig) ? step.renderConfig : undefined;
 
   return {
     id,
@@ -149,8 +152,14 @@ function parseStep(step: unknown, index: number): ChallengeStepRegistryEntry {
             contentPath: `steps/${id}/${interactiveContent}`,
           }
         : undefined,
+    renderConfig,
     raw: step,
   };
+}
+
+function readJsonFile(filePath: string): unknown | undefined {
+  if (!fs.existsSync(filePath)) return undefined;
+  return JSON.parse(fs.readFileSync(filePath, "utf-8")) as unknown;
 }
 
 export function buildChallengeRegistry(
@@ -199,6 +208,18 @@ export function buildChallengeRegistry(
       .createHash("sha256")
       .update(manifestText)
       .digest("hex"),
-    steps: parsed.steps.map(parseStep),
+    steps: parsed.steps.map((step, index) => {
+      const parsedStep = parseStep(step, index);
+      const lessonPath = parsedStep.interactiveLesson?.contentPath
+        ? path.resolve(sourcePath, parsedStep.interactiveLesson.contentPath)
+        : undefined;
+
+      return {
+        ...parsedStep,
+        interactiveLessonContent: lessonPath
+          ? readJsonFile(lessonPath)
+          : undefined,
+      };
+    }),
   };
 }

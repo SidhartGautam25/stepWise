@@ -28,6 +28,8 @@ import { FileNavigator }       from "./components/FileNavigator";
 import { InfoCallout }         from "./components/InfoCallout";
 import { GitCommitGraph }      from "./components/GitCommitGraph";
 import { GitStagingArea }      from "./components/GitStagingArea";
+import { LessonSequenceShell } from "./components/LessonSequenceShell";
+import { VisualWorld }         from "./components/VisualWorld";
 import { SimulatedTerminal }   from "@repo/terminal-engine";
 
 export function renderIllustration(config: IllustrationConfig): ReactNode {
@@ -170,6 +172,33 @@ export function renderIllustration(config: IllustrationConfig): ReactNode {
           initialVfs={config.initialVfs}
           preHistory={config.preHistory}
           height={config.height ?? 280}
+        />
+      );
+
+    case "LessonSequence":
+      return (
+        <LessonSequenceShell
+          slides={config.slides}
+          stepId={config.stepId}
+          title={config.title}
+          subtitle={config.subtitle}
+          onCompleted={config.onCompleted}
+          renderIllustration={(slideId) => {
+            const illustration =
+              config.slideIllustrations?.[slideId] ?? config.fallbackIllustration;
+
+            return illustration ? renderIllustration(illustration) : null;
+          }}
+        />
+      );
+
+    case "VisualWorld":
+      return (
+        <VisualWorld
+          vfs={config.vfs as never}
+          cwd={config.cwd}
+          isGit={config.isGit}
+          gitInited={config.gitInited}
         />
       );
 

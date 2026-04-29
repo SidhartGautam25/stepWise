@@ -2,14 +2,12 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import type { ChallengeDetail } from "@/lib/api";
-import { MarkdownViewer } from "./MarkdownViewer";
-import { CodeSection } from "./CodeSection";
 import { useSession } from "next-auth/react";
 import { useTerminal, SimulatedTerminal } from "@repo/terminal-engine";
-import { VisualWorld } from "@repo/interactive-engine";
 import { QuestEvaluator } from "./evaluator/QuestEvaluator";
-import { InteractiveLessonSequence } from "./interactive/InteractiveLessonSequence";
 import { useQuestEvaluator } from "../hooks/useQuestEvaluator";
+import { StepContentPanel } from "./challenge/StepContentPanel";
+import { StepVisualizerPanel } from "./challenge/StepVisualizerPanel";
 
 interface ChallengeViewerProps {
   challenge: ChallengeDetail;
@@ -105,158 +103,16 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
     }
   }, [activeStep, passedStepIds, activeStepIndex, challenge.steps]);
 
-  /* ── Step Content (prompt + explanation + solution) ── */
   const stepContent = (
-    <div style={{ padding: "24px 28px", paddingBottom: 64 }}>
-      {/* Active Step Header */}
-      <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 24, borderBottom: "1px solid var(--color-border)", paddingBottom: 16 }}>
-        <span style={{ fontSize: 22, fontWeight: 900, color: "var(--color-indigo)" }}>{activeStepIndex + 1}.</span>
-        <h2 style={{ fontSize: 20, fontWeight: 800, color: "var(--color-text)", letterSpacing: "-0.02em" }}>{activeStep?.title}</h2>
-      </div>
-
-
-
-      {activeStep?.prompt && (
-        <div style={{ marginBottom: 32, fontSize: 14, color: "var(--color-text)", lineHeight: 1.75 }}>
-          <MarkdownViewer content={activeStep.prompt} />
-        </div>
-      )}
-
-      {activeStep?.explanation && (
-        <div style={{
-          marginBottom: 32,
-          background: "var(--color-indigo-muted)",
-          borderLeft: "3px solid var(--color-indigo)",
-          borderRadius: "0 10px 10px 0",
-          padding: "20px 24px"
-        }}>
-          <h4 style={{ color: "var(--color-badge)", fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700, marginBottom: 12 }}>
-            💡 Why this matters
-          </h4>
-          <div style={{ color: "var(--color-muted)", fontSize: 13, lineHeight: 1.65 }}>
-            <MarkdownViewer content={activeStep.explanation} />
-          </div>
-        </div>
-      )}
-
-      {((activeStep?.codeFiles && activeStep.codeFiles.length > 0) || activeStep?.solution) && (
-        <details style={{
-          marginBottom: 32,
-          background: "var(--color-emerald-muted)",
-          border: "1px solid var(--color-emerald-muted)",
-          borderRadius: 10,
-          overflow: "hidden"
-        }}>
-          <summary style={{
-            padding: "14px 20px",
-            cursor: "pointer",
-            fontWeight: 600,
-            color: "var(--color-emerald)",
-            fontSize: 14,
-            userSelect: "none",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            outline: "none",
-          }}>
-            <span style={{ fontSize: 16 }}>👁️</span> Click to Reveal Solution
-          </summary>
-          <div style={{ padding: "0 20px 20px", borderTop: "1px solid var(--color-emerald-muted)", paddingTop: 20 }}>
-            {activeStep?.codeFiles && activeStep.codeFiles.length > 0 && (
-              <CodeSection files={activeStep.codeFiles} />
-            )}
-            {activeStep?.solution && (
-              <div style={{
-                background: "var(--color-terminal-bg)",
-                border: "1px solid var(--color-border)",
-                borderRadius: 8,
-                padding: "14px",
-                color: "var(--color-text)",
-                marginTop: (activeStep?.codeFiles && activeStep.codeFiles.length > 0) ? 20 : 0
-              }}>
-                <MarkdownViewer content={`\`\`\`javascript\n${activeStep.solution}\n\`\`\``} />
-              </div>
-            )}
-          </div>
-        </details>
-      )}
-
-      {/* Visualizer prompt callout — moved to bottom aligned with narrative flow */}
-      {(activeStep?.requiresTerminal !== false || activeStep?.interactiveLesson) && (
-        <div style={{
-          marginTop: 40,
-          padding: "20px 22px",
-          borderRadius: 16,
-          background: "linear-gradient(135deg, rgba(99,102,241,0.08), rgba(34,197,94,0.06))",
-          border: "1px solid rgba(99,102,241,0.25)",
-          display: "flex",
-          flexDirection: "column",
-          gap: 16,
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <span style={{ fontSize: 32, flexShrink: 0 }}>{activeStep?.interactiveLesson ? "🗺" : "💻"}</span>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: "var(--color-text)", marginBottom: 4 }}>
-                {activeStep?.interactiveLesson ? "Ready to see the visual lesson?" : "Ready to enter the Visualizer?"}
-              </div>
-              <div style={{ fontSize: 13, color: "var(--color-muted)", lineHeight: 1.5 }}>
-                {activeStep?.interactiveLesson
-                  ? "Open the interactive slides to learn visually."
-                  : "Open your workspace to see files and run commands."}
-              </div>
-            </div>
-          </div>
-          
-          <div style={{ display: "flex", gap: 12, marginTop: 4 }}>
-            <button
-              onClick={() => setViewMode("visualizer")}
-              style={{
-                background: "var(--color-indigo)",
-                color: "#fff",
-                border: "none",
-                borderRadius: 8,
-                padding: "10px 20px",
-                fontSize: 13,
-                fontWeight: 700,
-                cursor: "pointer",
-                boxShadow: "0 4px 12px rgba(99,102,241,0.3)",
-                transition: "all 0.2s",
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
-              <span>{activeStep?.interactiveLesson ? "🗺" : "🗂"}</span>
-              Open Visualizer Only
-            </button>
-
-            <button
-              onClick={() => {
-                 setViewMode("split-h");
-                 setTerminalMode("bottom");
-              }}
-              style={{
-                background: "var(--color-surface-2)",
-                color: "var(--color-text)",
-                border: "1px solid var(--color-border)",
-                borderRadius: 8,
-                padding: "10px 20px",
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: "pointer",
-                transition: "all 0.2s",
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
-              <span>🗂|📖</span>
-              Split Panel + Terminal Bottom
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+    <StepContentPanel
+      step={activeStep}
+      stepIndex={activeStepIndex}
+      onOpenVisualizer={() => setViewMode("visualizer")}
+      onOpenSplitTerminal={() => {
+        setViewMode("split-h");
+        setTerminalMode("bottom");
+      }}
+    />
   );
 
   /* ── Non-web / CLI challenge layout ── */
@@ -595,12 +451,11 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
           }}>
             {viewMode === "visualizer" ? (
               <div style={{ flex: 1, overflow: "auto", padding: 16 }}>
-                <WebVisualizerPanel
-                  stepId={activeStep?.id || ""}
-                  interactiveLesson={activeStep?.interactiveLesson}
+                <StepVisualizerPanel
+                  step={activeStep}
                   terminalState={terminal.state}
                   isGit={isGit}
-                  onCompleted={() => handleStepPassed()}
+                  onCompleted={handleStepPassed}
                 />
               </div>
             ) : viewMode === "content" ? (
@@ -613,12 +468,11 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                   {stepContent}
                 </div>
                 <div style={{ flex: "1 1 50%", overflow: "auto", minHeight: 0, minWidth: 0, padding: 16, background: "var(--color-surface-main)" }}>
-                  <WebVisualizerPanel
-                    stepId={activeStep?.id || ""}
-                    interactiveLesson={activeStep?.interactiveLesson}
+                  <StepVisualizerPanel
+                    step={activeStep}
                     terminalState={terminal.state}
                     isGit={isGit}
-                    onCompleted={() => handleStepPassed()}
+                    onCompleted={handleStepPassed}
                   />
                 </div>
               </div>
@@ -660,37 +514,4 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   }
 
   return nonWebContent;
-}
-
-function WebVisualizerPanel({
-  stepId,
-  interactiveLesson,
-  terminalState,
-  isGit,
-  onCompleted,
-}: {
-  stepId: string;
-  interactiveLesson?: ChallengeDetail["steps"][number]["interactiveLesson"];
-  terminalState: any;
-  isGit: boolean;
-  onCompleted: (stepId: string) => void;
-}) {
-  if (interactiveLesson?.type === "sequence") {
-    return (
-      <InteractiveLessonSequence
-        lesson={interactiveLesson}
-        stepId={stepId}
-        onCompleted={onCompleted}
-      />
-    );
-  }
-
-  return (
-    <VisualWorld 
-      vfs={terminalState.vfs} 
-      cwd={terminalState.cwd} 
-      isGit={isGit} 
-      gitInited={terminalState.git?.initialized} 
-    />
-  );
 }
