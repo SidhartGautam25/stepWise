@@ -178,6 +178,31 @@
   overflow: auto;
 }
 
+/* Lesson + composite visualizer fills the panel (not a short strip with empty space beside it). */
+.challenge-scroll-panel.challenge-visualizer-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.challenge-scroll-panel.challenge-visualizer-root > * {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.challenge-split-pane.challenge-visualizer-split {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.challenge-split-pane.challenge-visualizer-split > * {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
 .challenge-scroll-panel[data-padded="true"] {
   padding: 16px;
 }

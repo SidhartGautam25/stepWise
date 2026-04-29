@@ -101,6 +101,10 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
 
   const showStandaloneTerminalDock = terminalMode !== "hidden" && !showEmbeddedLessonTerminal;
 
+  /** When the real terminal lives inside the lesson composite, expand the panel to full workspace width (`right` mode would otherwise keep ~55% and waste the rest). */
+  const workspaceTerminalLayout =
+    showStandaloneTerminalDock ? terminalMode : ("hidden" as const);
+
   const embeddedLessonTerminalSlot = useMemo(
     () =>
       showEmbeddedLessonTerminal ? (
@@ -133,11 +137,34 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStepId]);
 
+  const refreshProgressFromServer = useCallback(async () => {
+    const token = (session as any)?.fastifyToken;
+    if (!token) return;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4000";
+    try {
+      const r = await fetch(`${apiUrl}/dashboard`, {
+        headers: { authorization: `Bearer ${token}` },
+      });
+      if (!r.ok) return;
+      const data = (await r.json()) as {
+        progress?: Array<{ challengeId: string; completedStepKeys?: string[] }>;
+      };
+      const prog = data.progress?.find((p) => p.challengeId === challenge.id);
+      if (prog?.completedStepKeys) {
+        setPassedStepIds(prog.completedStepKeys);
+      }
+    } catch {
+      /* ignore sync errors — local optimistic state remains */
+    }
+  }, [(session as any)?.fastifyToken, challenge.id]);
+
   const handleStepPassed = useCallback(() => {
     const completedTitle = activeStep?.title ?? "Step";
     if (activeStep?.id && !passedStepIds.includes(activeStep.id)) {
       setPassedStepIds((prev) => (prev.includes(activeStep.id) ? prev : [...prev, activeStep.id]));
     }
+
+    void refreshProgressFromServer();
 
     // Show success toast (doesn't change panel — user stays in current view)
     setSuccessMessage(`✓ ${completedTitle} complete — next step unlocked!`);
@@ -150,7 +177,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
       // Re-focus terminal input after state update
       window.setTimeout(() => terminalFocusRef.current?.(), 80);
     }
-  }, [activeStep, passedStepIds, activeStepIndex, challenge.steps]);
+  }, [activeStep, passedStepIds, activeStepIndex, challenge.steps, refreshProgressFromServer]);
 
   const stepContent = (
     <StepContentPanel
@@ -223,10 +250,10 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
             />
           </aside>
 
-          <div className="challenge-workspace" data-terminal={terminalMode}>
-            <div className="challenge-panel-area" data-terminal={terminalMode}>
+          <div className="challenge-workspace" data-terminal={workspaceTerminalLayout}>
+            <div className="challenge-panel-area" data-terminal={workspaceTerminalLayout}>
             {viewMode === "visualizer" ? (
-              <div className="challenge-scroll-panel" data-padded>
+              <div className="challenge-scroll-panel challenge-visualizer-root" data-padded>
                 <StepVisualizerPanel
                   step={activeStep}
                   terminalState={terminal.state}
@@ -245,7 +272,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                 <div className="challenge-split-pane" data-divider={viewMode === "split-v" ? "bottom" : "right"}>
                   {stepContent}
                 </div>
-                <div className="challenge-split-pane" data-visualizer>
+                <div className="challenge-split-pane challenge-visualizer-split" data-visualizer>
                   <StepVisualizerPanel
                     step={activeStep}
                     terminalState={terminal.state}

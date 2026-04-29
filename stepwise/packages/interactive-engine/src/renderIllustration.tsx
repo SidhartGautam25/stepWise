@@ -217,28 +217,29 @@ export function renderIllustration(
 
     case "LessonTerminalVisualWorkspace": {
       const vwPct = Math.min(90, Math.max(20, config.visualPanelWidthPct ?? 50));
+      const leftColFr = 100 - vwPct;
       const lessonTop = Math.min(85, Math.max(15, config.lessonStackTopPct ?? 50));
       const termLower = 100 - lessonTop;
       return (
         <div
           style={{
-            display: "flex",
-            flexDirection: "row",
+            display: "grid",
+            gridTemplateColumns: `${leftColFr}fr minmax(0, ${vwPct}fr)`,
+            columnGap: 12,
             height: "100%",
             width: "100%",
             minHeight: 0,
-            gap: 12,
             overflow: "hidden",
           }}
         >
           <div
             style={{
-              flex: `1 1 ${100 - vwPct}%`,
               minWidth: 0,
               minHeight: 0,
               display: "grid",
               gridTemplateRows: `${lessonTop}fr ${termLower}fr`,
               overflow: "hidden",
+              rowGap: 0,
             }}
           >
               <div style={{ minHeight: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
@@ -274,20 +275,22 @@ export function renderIllustration(
           </div>
           <div
             style={{
-              flex: `1 1 ${vwPct}%`,
               minWidth: 0,
               minHeight: 0,
+              height: "100%",
               overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
             }}
           >
-        {renderIllustration(
-          {
-            type: "VisualWorld",
-            vfs: undefined,
-            cwd: undefined,
-          },
-          runtime,
-        )}
+            {renderIllustration(
+              {
+                type: "VisualWorld",
+                vfs: undefined,
+                cwd: undefined,
+              },
+              runtime,
+            )}
           </div>
         </div>
       );

@@ -83,6 +83,8 @@ export interface DashboardProgress {
   totalSteps: number;
   challengeCompleted: boolean;
   completedStepKeys: string[];
+  /** Human-readable step names (parallel to completedStepKeys) */
+  completedStepTitles?: string[];
 }
 
 export interface DashboardData {
