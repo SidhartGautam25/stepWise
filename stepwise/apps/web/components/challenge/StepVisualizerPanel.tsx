@@ -1,13 +1,21 @@
 "use client";
 
+import type { ReactNode } from "react";
 import type { ChallengeDetail } from "@/lib/api";
-import { renderIllustration, type IllustrationConfig } from "@repo/interactive-engine";
+import {
+  renderIllustration,
+  type IllustrationConfig,
+  type RenderIllustrationRuntime,
+} from "@repo/interactive-engine";
 
 interface StepVisualizerPanelProps {
   step: ChallengeDetail["steps"][number] | undefined;
-  terminalState: any;
+  terminalState: unknown;
   isGit: boolean;
   onCompleted: (stepId: string) => void;
+  /** Latest successful-terminal snapshot for slide command-advance (`count:trimmed`). */
+  terminalAdvanceSignature?: string;
+  embeddedTerminalSlot?: ReactNode;
 }
 
 export function StepVisualizerPanel({
@@ -15,32 +23,16 @@ export function StepVisualizerPanel({
   terminalState,
   isGit,
   onCompleted,
+  terminalAdvanceSignature,
+  embeddedTerminalSlot,
 }: StepVisualizerPanelProps) {
-  if (step?.interactiveLesson?.type === "sequence") {
-    const slideIllustrations = Object.fromEntries(
-      step.interactiveLesson.slides.flatMap((slide) =>
-        slide.illustration
-          ? [[slide.id, slide.illustration as IllustrationConfig]]
-          : [],
-      ),
-    );
+  if (!step?.renderConfig) return null;
 
-    return renderIllustration({
-      type: "LessonSequence",
-      stepId: step.id,
-      slides: step.interactiveLesson.slides,
-      slideIllustrations,
-      title: "Interactive Lesson",
-      subtitle: "Explore the idea first, then move into the hands-on step.",
-      onCompleted,
-    });
-  }
-
-  return renderIllustration({
-    type: "VisualWorld",
-    vfs: terminalState.vfs,
-    cwd: terminalState.cwd,
+  return renderIllustration(step.renderConfig as IllustrationConfig, {
+    terminalState: terminalState as RenderIllustrationRuntime["terminalState"],
     isGit,
-    gitInited: terminalState.git?.initialized,
+    onCompleted,
+    terminalAdvanceSignature,
+    terminalSlot: embeddedTerminalSlot,
   });
 }

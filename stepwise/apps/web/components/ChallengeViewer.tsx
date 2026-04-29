@@ -1,13 +1,20 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import type { ChallengeDetail } from "@/lib/api";
 import { useSession } from "next-auth/react";
-import { useTerminal, SimulatedTerminal } from "@repo/terminal-engine";
+import { useTerminal, SimulatedTerminal, type TerminalLog } from "@repo/terminal-engine";
 import { QuestEvaluator } from "./evaluator/QuestEvaluator";
 import { useQuestEvaluator } from "../hooks/useQuestEvaluator";
 import { StepContentPanel } from "./challenge/StepContentPanel";
 import { StepVisualizerPanel } from "./challenge/StepVisualizerPanel";
+import {
+  SegmentedControl,
+  StepRail,
+  SuccessToast,
+  type TerminalMode,
+  type ViewMode,
+} from "./challenge/challenge-ui";
 
 interface ChallengeViewerProps {
   challenge: ChallengeDetail;
@@ -19,14 +26,20 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   const [activeStepId, setActiveStepId] = useState(challenge.steps[0]?.id || "");
   const [passedStepIds, setPassedStepIds] = useState<string[]>([]);
   const [successMessage, setSuccessMessage] = useState("");
-  const [viewMode, setViewMode] = useState<"visualizer" | "content" | "split-v" | "split-h">("content");
-  const [terminalMode, setTerminalMode] = useState<"right" | "bottom" | "hidden">("right");
+  const [viewMode, setViewMode] = useState<ViewMode>("content");
+  const [terminalMode, setTerminalMode] = useState<TerminalMode>("right");
 
   const terminalFocusRef = useRef<() => void>(null);
 
   // Engine Integration
   const isGit = challenge.id === "git-aethera";
   const terminal = useTerminal({ language: isGit ? "git" : "linux" });
+  /** `${successfulCommandCount}:${trimmedLatest}` — LessonSequence slide `advanceOnCommand` */
+  const terminalAdvanceSignature = useMemo(
+    () => buildTerminalAdvanceSignature(terminal.history),
+    [terminal.history],
+  );
+
   const { checkStepCompletion } = useQuestEvaluator(terminal.state, terminal.history);
   // Stable callback — only changes when passedStepIds or the evaluator itself changes.
   // IMPORTANT: Returns false for already-passed steps to prevent re-submission cascades
@@ -73,6 +86,46 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
 
   const activeStep = challenge.steps.find((s) => s.id === activeStepId) || challenge.steps[0];
   const activeStepIndex = challenge.steps.findIndex((s) => s.id === activeStepId);
+
+  const usesLessonTerminalComposite =
+    activeStep?.renderConfig &&
+    typeof activeStep.renderConfig === "object" &&
+    !Array.isArray(activeStep.renderConfig) &&
+    (activeStep.renderConfig as { type?: string }).type === "LessonTerminalVisualWorkspace";
+
+  const viewingVisualizerWorkspace =
+    viewMode === "visualizer" || viewMode === "split-v" || viewMode === "split-h";
+
+  const showEmbeddedLessonTerminal =
+    Boolean(usesLessonTerminalComposite && viewingVisualizerWorkspace);
+
+  const showStandaloneTerminalDock = terminalMode !== "hidden" && !showEmbeddedLessonTerminal;
+
+  /** When the real terminal lives inside the lesson composite, expand the panel to full workspace width (`right` mode would otherwise keep ~55% and waste the rest). */
+  const workspaceTerminalLayout =
+    showStandaloneTerminalDock ? terminalMode : ("hidden" as const);
+
+  const embeddedLessonTerminalSlot = useMemo(
+    () =>
+      showEmbeddedLessonTerminal ? (
+        <SimulatedTerminal
+          state={terminal.state}
+          history={terminal.history}
+          execute={terminal.execute}
+          language={isGit ? "git" : "linux"}
+          hint={activeStep?.title || ""}
+          height="100%"
+        />
+      ) : undefined,
+    [
+      showEmbeddedLessonTerminal,
+      terminal.state,
+      terminal.history,
+      terminal.execute,
+      isGit,
+      activeStep?.title,
+    ],
+  );
   // A step is unlocked if it is already passed OR it is the very next step after the last passed one
   const highestUnlockedIndex = Math.min(passedStepIds.length, challenge.steps.length - 1);
 
@@ -84,11 +137,34 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStepId]);
 
+  const refreshProgressFromServer = useCallback(async () => {
+    const token = (session as any)?.fastifyToken;
+    if (!token) return;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:4000";
+    try {
+      const r = await fetch(`${apiUrl}/dashboard`, {
+        headers: { authorization: `Bearer ${token}` },
+      });
+      if (!r.ok) return;
+      const data = (await r.json()) as {
+        progress?: Array<{ challengeId: string; completedStepKeys?: string[] }>;
+      };
+      const prog = data.progress?.find((p) => p.challengeId === challenge.id);
+      if (prog?.completedStepKeys) {
+        setPassedStepIds(prog.completedStepKeys);
+      }
+    } catch {
+      /* ignore sync errors — local optimistic state remains */
+    }
+  }, [(session as any)?.fastifyToken, challenge.id]);
+
   const handleStepPassed = useCallback(() => {
     const completedTitle = activeStep?.title ?? "Step";
     if (activeStep?.id && !passedStepIds.includes(activeStep.id)) {
       setPassedStepIds((prev) => (prev.includes(activeStep.id) ? prev : [...prev, activeStep.id]));
     }
+
+    void refreshProgressFromServer();
 
     // Show success toast (doesn't change panel — user stays in current view)
     setSuccessMessage(`✓ ${completedTitle} complete — next step unlocked!`);
@@ -101,7 +177,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
       // Re-focus terminal input after state update
       window.setTimeout(() => terminalFocusRef.current?.(), 80);
     }
-  }, [activeStep, passedStepIds, activeStepIndex, challenge.steps]);
+  }, [activeStep, passedStepIds, activeStepIndex, challenge.steps, refreshProgressFromServer]);
 
   const stepContent = (
     <StepContentPanel
@@ -115,386 +191,115 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
     />
   );
 
-  /* ── Non-web / CLI challenge layout ── */
   const nonWebContent = (
-    <div style={{ padding: "80px 24px 40px" }}>
-      <div style={{ display: "flex", maxWidth: 1200, width: "100%", margin: "0 auto", gap: 32 }}>
-        {/* Collapsible Sidebar */}
-        <div style={{
-          width: isSidebarOpen ? 260 : 0,
-          flexShrink: 0,
-          opacity: isSidebarOpen ? 1 : 0,
-          overflow: "hidden",
-          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-          display: "flex",
-          flexDirection: "column",
-          marginTop: 64,
-          borderRight: isSidebarOpen ? "1px solid var(--color-border)" : "none",
-          paddingRight: isSidebarOpen ? 24 : 0,
-        }}>
-          <h2 style={{ fontSize: 12, fontWeight: 700, color: "var(--color-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 20 }}>
-            Curriculum Steps
-          </h2>
-          {challenge.steps.map((step, idx) => {
-            const isActive = step.id === activeStepId;
-            const isLast = idx === challenge.steps.length - 1;
-            const isPassed = passedStepIds.includes(step.id);
-            return (
-              <div key={step.id} style={{ display: "flex", gap: 14 }}>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 24 }}>
-                  <div className={`step-dot ${isPassed ? "step-dot-done" : isActive ? "step-dot-current" : "step-dot-locked"}`} style={{ width: 22, height: 22, fontSize: 10 }}>
-                    {isPassed ? "✓" : idx + 1}
-                  </div>
-                  {!isLast && <div style={{ width: 1, flexGrow: 1, background: "var(--color-border)", margin: "4px 0" }} />}
-                </div>
-                <button
-                  onClick={() => setActiveStepId(step.id)}
-                  style={{
-                    background: "none", border: "none", outline: "none", cursor: "pointer",
-                    textAlign: "left", flex: 1, paddingBottom: isLast ? 0 : 22, paddingLeft: 0, paddingTop: 2,
-                  }}
-                >
-                  <h3 style={{
-                    fontSize: 13, fontWeight: isActive ? 700 : 500,
-                    color: isActive ? "var(--color-text)" : isPassed ? "var(--color-emerald)" : "var(--color-muted)",
-                    transition: "color 0.2s"
-                  }}>
-                    {step.title}
-                  </h3>
-                </button>
-              </div>
-            );
-          })}
-        </div>
+    <div className="challenge-page-shell">
+      <div className="challenge-page-inner">
+        {isSidebarOpen && (
+          <StepRail
+            variant="page"
+            steps={challenge.steps}
+            activeStepId={activeStepId}
+            passedStepIds={passedStepIds}
+            onSelectStep={setActiveStepId}
+          />
+        )}
 
-        {/* Main Content */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 32 }}>
-            <button className="btn btn-ghost" onClick={() => setIsSidebarOpen(!isSidebarOpen)} style={{ padding: "7px 12px", fontSize: 13 }}>
-              {isSidebarOpen ? "◧ Hide Steps" : "◨ Show Steps"}
+        <main className="challenge-page-main">
+          <div className="challenge-page-actions">
+            <button className="btn btn-ghost" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+              {isSidebarOpen ? "Hide Steps" : "Show Steps"}
             </button>
             <span className="badge badge-indigo">{challenge.language}</span>
             <span className="badge badge-ghost">{challenge.runtime}</span>
           </div>
 
-          <div style={{ marginBottom: 40 }}>
-            <h1 style={{ fontSize: 36, fontWeight: 900, letterSpacing: "-0.03em", color: "var(--color-text)", marginBottom: 10 }}>
-              {challenge.title}
-            </h1>
-            {challenge.description && (
-              <p style={{ fontSize: 15, color: "var(--color-muted)", lineHeight: 1.7 }}>{challenge.description}</p>
-            )}
-          </div>
-
+          <ChallengeTitle challenge={challenge} />
           {challenge.systemRequirements && activeStepIndex === 0 && (
-            <div className="glass" style={{ padding: 24, marginBottom: 40, background: "var(--color-emerald-muted)", border: "1px solid rgba(16, 185, 129, 0.15)" }}>
-              <h2 style={{ fontSize: 11, fontWeight: 700, color: "var(--color-emerald)", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                💻 System Requirements
-              </h2>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 20 }}>
-                {Object.entries(challenge.systemRequirements).map(([key, value]) => (
-                  <div key={key}>
-                    <div style={{ fontSize: 11, color: "var(--color-muted)", textTransform: "uppercase", marginBottom: 5, fontWeight: 600, letterSpacing: "0.05em" }}>{key}</div>
-                    <div style={{ fontSize: 13, color: "var(--color-text)", fontWeight: 500 }}>{String(value)}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <SystemRequirements requirements={challenge.systemRequirements} />
           )}
-
-          {activeStepIndex === 0 && (
-            <div className="glass" style={{ padding: 24, marginBottom: 40 }}>
-              <h2 style={{ fontSize: 11, fontWeight: 700, color: "var(--color-badge)", marginBottom: 14, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                ⚡ Quick Start
-              </h2>
-              <div className="terminal">
-                <div><span className="comment"># Install CLI (one-time)</span></div>
-                <div style={{ marginBottom: 8 }}><span className="prompt">$ </span><span className="cmd">npx stepwise@latest --help</span></div>
-                <div><span className="comment"># Initialize this quest</span></div>
-                <div style={{ marginBottom: 8 }}><span className="prompt">$ </span><span className="cmd">stepwise init {challenge.id}</span></div>
-                <div><span className="comment"># Run tests</span></div>
-                <div><span className="prompt">$ </span><span className="cmd">stepwise test</span></div>
-              </div>
-            </div>
-          )}
-
+          {activeStepIndex === 0 && <QuickStart challengeId={challenge.id} />}
           {stepContent}
-        </div>
+        </main>
       </div>
     </div>
   );
 
-  /* ── Web / Aethera layout ── */
   const webContent = (
     <div className="challenge-fullscreen-wrapper">
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      height: "100vh",
-      overflow: "hidden",
-      paddingTop: 60, // NavBar height
-    }}>
+      <div className="challenge-fullscreen">
+        <SuccessToast message={successMessage} />
+        <ChallengeTopBar
+          challenge={challenge}
+          isSidebarOpen={isSidebarOpen}
+          viewMode={viewMode}
+          terminalMode={terminalMode}
+          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+          onViewModeChange={setViewMode}
+          onTerminalModeChange={setTerminalMode}
+        />
 
-      {/* ── Success Toast ── */}
-      {successMessage && (
-        <>
-          <style>{`
-            @keyframes flyUp {
-              0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
-              100% { transform: translateY(-20vh) scale(1.5); opacity: 0; }
-            }
-            @keyframes toastIn {
-              from { opacity: 0; transform: translateY(-12px); }
-              to   { opacity: 1; transform: translateY(0); }
-            }
-            .cracker {
-              position: fixed;
-              font-size: 2.5rem;
-              animation: flyUp 2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-              z-index: 9999;
-              pointer-events: none;
-            }
-          `}</style>
-          <div style={{
-            position: "fixed",
-            top: 72,
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 1000,
-            background: "rgba(16, 185, 129, 0.15)",
-            border: "1px solid rgba(16, 185, 129, 0.4)",
-            color: "var(--color-emerald)",
-            borderRadius: "var(--radius-md)",
-            padding: "12px 24px",
-            fontWeight: 700,
-            fontSize: 14,
-            backdropFilter: "blur(12px)",
-            whiteSpace: "nowrap",
-            animation: "toastIn 0.3s ease both",
-            boxShadow: "0 8px 32px rgba(16,185,129,0.15)",
-          }}>
-            {successMessage}
-          </div>
-          <div className="cracker" style={{ left: "10%", animationDelay: "0.1s" }}>🎉</div>
-          <div className="cracker" style={{ left: "30%", animationDelay: "0.3s" }}>🎊</div>
-          <div className="cracker" style={{ left: "50%", animationDelay: "0s" }}>🚀</div>
-          <div className="cracker" style={{ left: "70%", animationDelay: "0.2s" }}>✨</div>
-          <div className="cracker" style={{ left: "90%", animationDelay: "0.4s" }}>🎉</div>
-        </>
-      )}
+        <div className="challenge-web-body">
+          <aside className="challenge-sidebar" data-open={isSidebarOpen}>
+            <StepRail
+              steps={challenge.steps}
+              activeStepId={activeStepId}
+              passedStepIds={passedStepIds}
+              highestUnlockedIndex={highestUnlockedIndex}
+              lockFutureSteps={isWebMode}
+              onSelectStep={setActiveStepId}
+            />
+          </aside>
 
-      {/* ── Top Bar ── */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        padding: "10px 20px",
-        borderBottom: "1px solid var(--color-border)",
-        background: "var(--color-surface-glass)",
-        backdropFilter: "blur(16px)",
-        flexShrink: 0,
-      }}>
-        {/* Sidebar toggle */}
-        <button
-          className="btn btn-ghost"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          style={{ padding: "6px 12px", fontSize: 12 }}
-        >
-          {isSidebarOpen ? "◧" : "◨"} Steps
-        </button>
-
-        {/* Challenge meta */}
-        <span style={{ fontSize: 14, fontWeight: 700, color: "var(--color-text)", letterSpacing: "-0.01em" }}>
-          {challenge.title}
-        </span>
-        <span className="badge badge-indigo" style={{ fontSize: 11 }}>{challenge.language}</span>
-
-        <div style={{ flex: 1 }} />
-
-        {/* Panel View switcher */}
-        <div style={{ display: "flex", gap: 4, background: "var(--color-surface-2)", borderRadius: "var(--radius-sm)", padding: 3 }}>
-          {[
-            { id: "visualizer", label: "🗂 Vis" },
-            { id: "content", label: "📖 Guide" },
-            { id: "split-v", label: "🗂/📖 Top/Bot" },
-            { id: "split-h", label: "🗂|📖 Side" }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setViewMode(tab.id as any)}
-              style={{
-                padding: "5px 10px",
-                borderRadius: 6,
-                border: "none",
-                cursor: "pointer",
-                fontWeight: 600,
-                fontSize: 12,
-                background: viewMode === tab.id ? "var(--color-indigo)" : "transparent",
-                color: viewMode === tab.id ? "#fff" : "var(--color-muted)",
-                transition: "all 0.18s ease",
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Terminal toggle */}
-        <div style={{ display: "flex", gap: 4, background: "var(--color-surface-2)", borderRadius: "var(--radius-sm)", padding: 3 }}>
-          {[
-            { id: "right", label: "💻 Right" },
-            { id: "bottom", label: "💻 Bottom" },
-            { id: "hidden", label: "🚫 Hide" }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setTerminalMode(tab.id as any)}
-              style={{
-                padding: "5px 10px",
-                borderRadius: 6,
-                border: "none",
-                cursor: "pointer",
-                fontWeight: 600,
-                fontSize: 12,
-                background: terminalMode === tab.id ? "rgba(34,197,94,0.15)" : "transparent",
-                color: terminalMode === tab.id ? "var(--color-emerald)" : "var(--color-muted)",
-                transition: "all 0.18s ease",
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Body: Sidebar + Left Panel + Terminal ── */}
-      <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
-
-        {/* Step Sidebar */}
-        <div style={{
-          width: isSidebarOpen ? 220 : 0,
-          flexShrink: 0,
-          overflow: "hidden",
-          borderRight: isSidebarOpen ? "1px solid var(--color-border)" : "none",
-          transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-          background: "var(--color-surface)",
-          display: "flex",
-          flexDirection: "column",
-        }}>
-          <div style={{ padding: "16px 16px 8px", flexShrink: 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "var(--color-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-              Curriculum
-            </div>
-          </div>
-          <div style={{ flex: 1, overflowY: "auto", padding: "4px 12px 16px" }}>
-            {challenge.steps.map((step, idx) => {
-              const isActive = step.id === activeStepId;
-              const isPassed = passedStepIds.includes(step.id);
-              // Completed steps are always accessible; only lock future unseen steps
-              const isLocked = isWebMode && !isPassed && idx > highestUnlockedIndex;
-              const isLast = idx === challenge.steps.length - 1;
-
-              return (
-                <div key={step.id} style={{ display: "flex", gap: 10, opacity: isLocked ? 0.4 : 1 }}>
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 20, flexShrink: 0 }}>
-                    <div
-                      className={`step-dot ${isPassed ? "step-dot-done" : isActive ? "step-dot-current" : "step-dot-locked"}`}
-                      style={{ width: 20, height: 20, fontSize: 9, flexShrink: 0 }}
-                    >
-                      {isPassed ? "✓" : idx + 1}
-                    </div>
-                    {!isLast && <div style={{ width: 1, flexGrow: 1, background: "var(--color-border)", margin: "3px 0" }} />}
-                  </div>
-                  <button
-                    onClick={() => { if (!isLocked) setActiveStepId(step.id); }}
-                    disabled={isLocked}
-                    style={{
-                      background: "none", border: "none", outline: "none",
-                      cursor: isLocked ? "not-allowed" : "pointer",
-                      textAlign: "left", flex: 1, paddingBottom: isLast ? 0 : 18,
-                      paddingLeft: 0, paddingTop: 2,
-                    }}
-                  >
-                    <div style={{
-                      fontSize: 12,
-                      fontWeight: isActive ? 700 : 500,
-                      color: isPassed ? "var(--color-emerald)" : isActive ? "var(--color-text)" : "var(--color-muted)",
-                      lineHeight: 1.4,
-                    }}>
-                      {step.title}
-                    </div>
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Content Wrapper (Holds Panels + Terminal) */}
-        <div style={{ 
-          flex: 1, 
-          display: "flex", 
-          flexDirection: terminalMode === "bottom" ? "column" : "row",
-          overflow: "hidden" 
-        }}>
-          
-          {/* Panels Area */}
-          <div style={{ 
-            flex: terminalMode === "bottom" ? "0 0 60%" : (terminalMode === "right" ? "0 0 55%" : 1), 
-            display: "flex", 
-            flexDirection: "column",
-            overflow: "hidden", 
-            borderRight: terminalMode === "right" ? "1px solid var(--color-border)" : "none", 
-            borderBottom: terminalMode === "bottom" ? "1px solid var(--color-border)" : "none",
-            transition: "all 0.3s ease", 
-            background: "var(--color-surface)" 
-          }}>
+          <div className="challenge-workspace" data-terminal={workspaceTerminalLayout}>
+            <div className="challenge-panel-area" data-terminal={workspaceTerminalLayout}>
             {viewMode === "visualizer" ? (
-              <div style={{ flex: 1, overflow: "auto", padding: 16 }}>
+              <div className="challenge-scroll-panel challenge-visualizer-root" data-padded>
                 <StepVisualizerPanel
                   step={activeStep}
                   terminalState={terminal.state}
                   isGit={isGit}
                   onCompleted={handleStepPassed}
+                  terminalAdvanceSignature={terminalAdvanceSignature}
+                  embeddedTerminalSlot={embeddedLessonTerminalSlot}
                 />
               </div>
             ) : viewMode === "content" ? (
-              <div style={{ flex: 1, overflowY: "auto" }}>
+              <div className="challenge-scroll-panel">
                 {stepContent}
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: viewMode === "split-h" ? "row" : "column", height: "100%", width: "100%", overflow: "hidden" }}>
-                <div style={{ flex: "1 1 50%", overflowY: "auto", minHeight: 0, minWidth: 0, borderBottom: viewMode === "split-v" ? "1px solid var(--color-border)" : "none", borderRight: viewMode === "split-h" ? "1px solid var(--color-border)" : "none" }}>
+              <div className="challenge-split-panel" data-mode={viewMode}>
+                <div className="challenge-split-pane" data-divider={viewMode === "split-v" ? "bottom" : "right"}>
                   {stepContent}
                 </div>
-                <div style={{ flex: "1 1 50%", overflow: "auto", minHeight: 0, minWidth: 0, padding: 16, background: "var(--color-surface-main)" }}>
+                <div className="challenge-split-pane challenge-visualizer-split" data-visualizer>
                   <StepVisualizerPanel
                     step={activeStep}
                     terminalState={terminal.state}
                     isGit={isGit}
                     onCompleted={handleStepPassed}
+                    terminalAdvanceSignature={terminalAdvanceSignature}
+                    embeddedTerminalSlot={embeddedLessonTerminalSlot}
                   />
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Terminal Area — conditionally visible */}
-          {terminalMode !== "hidden" && (
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: 200, minHeight: 200 }}>
-              <SimulatedTerminal
-                state={terminal.state}
-                history={terminal.history}
-                execute={terminal.execute}
-                language={isGit ? "git" : "linux"}
-                hint={activeStep?.title || ""}
-                height="100%"
-              />
             </div>
-          )}
 
+            {showStandaloneTerminalDock && (
+              <div className="challenge-terminal-area">
+                <SimulatedTerminal
+                  state={terminal.state}
+                  history={terminal.history}
+                  execute={terminal.execute}
+                  language={isGit ? "git" : "linux"}
+                  hint={activeStep?.title || ""}
+                  height="100%"
+                />
+              </div>
+            )}
+          </div>
         </div>
-      </div>
 
       <QuestEvaluator
         challengeId={challenge.id}
@@ -505,7 +310,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
         checkStepCompletion={evalStep}
         onPassed={handleStepPassed}
       />
-    </div>
+      </div>
     </div>
   );
 
@@ -514,4 +319,106 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   }
 
   return nonWebContent;
+}
+
+function buildTerminalAdvanceSignature(history: TerminalLog[]): string | undefined {
+  const ok = history.filter((h) => !h.error && typeof h.command === "string");
+  const last = ok[ok.length - 1];
+  const cmd = last?.command?.trim();
+  if (!cmd) return undefined;
+  return `${ok.length}:${cmd}`;
+}
+
+function ChallengeTitle({ challenge }: { challenge: ChallengeDetail }) {
+  return (
+    <div className="challenge-title-block">
+      <h1>{challenge.title}</h1>
+      {challenge.description && <p>{challenge.description}</p>}
+    </div>
+  );
+}
+
+function SystemRequirements({
+  requirements,
+}: {
+  requirements: NonNullable<ChallengeDetail["systemRequirements"]>;
+}) {
+  return (
+    <section className="glass challenge-info-card" data-tone="system">
+      <h2 className="challenge-info-title">System Requirements</h2>
+      <div className="challenge-requirements-grid">
+        {Object.entries(requirements).map(([key, value]) => (
+          <div key={key}>
+            <div className="challenge-requirement-key">{key}</div>
+            <div className="challenge-requirement-value">{String(value)}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function QuickStart({ challengeId }: { challengeId: string }) {
+  return (
+    <section className="glass challenge-info-card">
+      <h2 className="challenge-info-title">Quick Start</h2>
+      <div className="terminal">
+        <div><span className="comment"># Install CLI (one-time)</span></div>
+        <div><span className="prompt">$ </span><span className="cmd">npx stepwise@latest --help</span></div>
+        <div><span className="comment"># Initialize this quest</span></div>
+        <div><span className="prompt">$ </span><span className="cmd">stepwise init {challengeId}</span></div>
+        <div><span className="comment"># Run tests</span></div>
+        <div><span className="prompt">$ </span><span className="cmd">stepwise test</span></div>
+      </div>
+    </section>
+  );
+}
+
+function ChallengeTopBar({
+  challenge,
+  isSidebarOpen,
+  viewMode,
+  terminalMode,
+  onToggleSidebar,
+  onViewModeChange,
+  onTerminalModeChange,
+}: {
+  challenge: ChallengeDetail;
+  isSidebarOpen: boolean;
+  viewMode: ViewMode;
+  terminalMode: TerminalMode;
+  onToggleSidebar: () => void;
+  onViewModeChange: (mode: ViewMode) => void;
+  onTerminalModeChange: (mode: TerminalMode) => void;
+}) {
+  return (
+    <header className="challenge-topbar">
+      <button className="btn btn-ghost" onClick={onToggleSidebar}>
+        {isSidebarOpen ? "Hide" : "Show"} Steps
+      </button>
+      <span className="challenge-topbar-title">{challenge.title}</span>
+      <span className="badge badge-indigo">{challenge.language}</span>
+      <div className="challenge-topbar-spacer" />
+      <SegmentedControl
+        value={viewMode}
+        onChange={onViewModeChange}
+        options={[
+          { id: "visualizer", label: "Vis" },
+          { id: "content", label: "Guide" },
+          { id: "split-v", label: "Top/Bot" },
+          { id: "split-h", label: "Side" },
+        ]}
+      />
+      <SegmentedControl
+        value={terminalMode}
+        tone="emerald"
+        onChange={onTerminalModeChange}
+        options={[
+          { id: "right", label: "Right" },
+          { id: "bottom", label: "Bottom" },
+          { id: "hidden", label: "Hide" },
+        ]}
+      />
+    </header>
+  );
 }

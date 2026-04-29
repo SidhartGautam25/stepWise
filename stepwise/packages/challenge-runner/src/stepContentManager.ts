@@ -24,12 +24,18 @@ export interface StepContentRegistryEntry {
   renderConfig?: unknown;
 }
 
+export interface InteractiveLessonSlideAdvance {
+  mode: "exact" | "prefix";
+  value: string;
+}
+
 export interface InteractiveLessonSlide {
   id: string;
   heading: string;
   body: string;
   bullets?: string[];
   illustration?: unknown;
+  advanceOnCommand?: InteractiveLessonSlideAdvance;
 }
 
 export interface InteractiveLesson {
@@ -95,20 +101,35 @@ export class StepContentManager {
     const entrypoint = step.entrypoint ?? "index.js";
     const starterDir = path.resolve(this.challengeRoot, starterRoot);
 
+    const lesson = step.interactiveLesson
+      ? this.loadInteractiveLesson(stepDir, step.interactiveLesson, step.interactiveLessonContent)
+      : undefined;
+
+    let promptPlain = readOptionalFile(this.challengeRoot, step.promptPath);
+    let explanationPlain = readOptionalFile(this.challengeRoot, step.explanationPath);
+
+    /** Single interactive-sequence file can replace standalone prompt/explanation markdown. */
+    if (!promptPlain && lesson?.slides?.[0]) {
+      const s = lesson.slides[0];
+      promptPlain = `# ${s.heading}\n\n${s.body}`;
+    }
+    if (!explanationPlain && lesson?.slides?.[1]) {
+      const s = lesson.slides[1];
+      explanationPlain = `# ${s.heading}\n\n${s.body}`;
+    }
+
     const content: LoadedStepContent = {
       id: step.id,
       title: step.title,
       position: step.position,
-      prompt: readOptionalFile(this.challengeRoot, step.promptPath),
-      explanation: readOptionalFile(this.challengeRoot, step.explanationPath),
+      prompt: promptPlain,
+      explanation: explanationPlain,
       solution: readOptionalFile(this.challengeRoot, step.solutionPath),
       hasStarter: fs.existsSync(starterDir),
       starterRoot,
       workspaceRoot,
       entrypoint,
-      interactiveLesson: step.interactiveLesson
-        ? this.loadInteractiveLesson(stepDir, step.interactiveLesson, step.interactiveLessonContent)
-        : undefined,
+      interactiveLesson: lesson,
       codeFiles: this.loadCodeFiles(stepDir, step.id),
       requiresTerminal: step.requiresTerminal ?? true,
     };
@@ -161,6 +182,17 @@ export class StepContentManager {
           throw new Error(`Invalid interactive lesson slide at index ${index}`);
         }
 
+        const advance = isRecord(slide.advanceOnCommand)
+          ? {
+              mode:
+                slide.advanceOnCommand.mode === "exact" ? ("exact" as const) : ("prefix" as const),
+              value: readString(
+                slide.advanceOnCommand.value,
+                `slides[${index}].advanceOnCommand.value`,
+              ),
+            }
+          : undefined;
+
         return {
           id: readString(slide.id, `slides[${index}].id`),
           heading: readString(slide.heading, `slides[${index}].heading`),
@@ -169,6 +201,7 @@ export class StepContentManager {
             ? slide.bullets.filter((bullet): bullet is string => typeof bullet === "string")
             : undefined,
           illustration: isRecord(slide.illustration) ? slide.illustration : undefined,
+          advanceOnCommand: advance,
         };
       }),
     };

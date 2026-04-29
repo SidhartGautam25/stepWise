@@ -1,0 +1,34 @@
+{
+  "slides": [
+    {
+      "id": "dirs-where-you-are",
+      "heading": "Where you land",
+      "body": "When you open the terminal you start in **`/home/student`** — your personal workspace. Every path begins at `/`, the filesystem root.",
+      "bullets": [
+        "`pwd` asks: where am I right now?",
+        "`ls` lists what's inside the current folder",
+        "`mkdir projects` creates a folder named **projects** here"
+      ]
+    },
+    {
+      "id": "dirs-commands-overview",
+      "heading": "The three moves you'll try",
+      "body": "| Command | Meaning |\n| --- | --- |\n| pwd | Print the full path you are standing in |\n| ls | List files and folders in the current directory |\n| mkdir projects | Create a new directory called `projects` |",
+      "bullets": [
+        "Run them in order and watch the Visualizer update after each line"
+      ]
+    },
+    {
+      "id": "dirs-do-it",
+      "heading": "Your turn",
+      "body": "In the terminal (stacked under this lesson), run:\n\n```bash\npwd\nls\nmkdir projects\nls\n```\n\nAfter `mkdir projects`, the new folder should appear in the Visualizer. Use your **Next** button or match the command hints on each slide.",
+      "bullets": [
+        "Visualizer + terminal mirror the same simulated machine"
+      ],
+      "advanceOnCommand": {
+        "mode": "prefix",
+        "value": "mkdir projects"
+      }
+    }
+  ]
+}

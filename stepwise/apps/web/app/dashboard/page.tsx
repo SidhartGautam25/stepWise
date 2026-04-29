@@ -142,14 +142,17 @@ export default function DashboardPage() {
                     </span>
                   </div>
 
-                  {/* Completed step keys */}
+                  {/* Completed steps */}
                   {p.completedStepKeys.length > 0 && (
                     <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 14 }}>
-                      {p.completedStepKeys.map((key) => (
-                        <span key={key} className="badge badge-emerald" style={{ fontSize: 11 }}>
-                          ✓ {key}
-                        </span>
-                      ))}
+                      {p.completedStepKeys.map((key, i) => {
+                        const label = p.completedStepTitles?.[i] ?? key;
+                        return (
+                          <span key={key} className="badge badge-emerald" style={{ fontSize: 11 }}>
+                            ✓ {label}
+                          </span>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

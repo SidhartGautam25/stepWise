@@ -31,6 +31,10 @@ export interface InteractiveLessonSlide {
   body: string;
   bullets?: string[];
   illustration?: unknown;
+  advanceOnCommand?: {
+    mode: "exact" | "prefix";
+    value: string;
+  };
 }
 
 export interface InteractiveLesson {
@@ -48,6 +52,7 @@ export interface StepInfo {
   position: number;
   codeFiles?: CodeFile[];
   interactiveLesson?: InteractiveLesson;
+  renderConfig?: unknown;
   requiresTerminal?: boolean;
 }
 
@@ -78,6 +83,8 @@ export interface DashboardProgress {
   totalSteps: number;
   challengeCompleted: boolean;
   completedStepKeys: string[];
+  /** Human-readable step names (parallel to completedStepKeys) */
+  completedStepTitles?: string[];
 }
 
 export interface DashboardData {

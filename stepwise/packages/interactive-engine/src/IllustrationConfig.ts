@@ -25,7 +25,9 @@ import type { InfoCalloutVariant }   from "./components/InfoCallout";
 import type { CommitNode, GitBranchLine }      from "./components/GitCommitGraph";
 import type { StagingFile }          from "./components/GitStagingArea";
 import type { VfsNode as TermVfsNode } from "@repo/terminal-engine";
-import type { LessonSlide } from "./components/LessonSequenceShell";
+import type { LessonSlide, SlideAdvanceOnCommand } from "./components/LessonSequenceShell";
+
+export type { SlideAdvanceOnCommand };
 
 // Each variant is `{ type: "<ComponentName>" } & relevant props`
 
@@ -156,10 +158,29 @@ export interface LessonSequenceConfig {
 /** Live terminal/file-system visual world used by web-mode challenges */
 export interface VisualWorldConfig {
   type: "VisualWorld";
-  vfs: unknown;
-  cwd: string[];
+  vfs?: unknown;
+  cwd?: string[];
   isGit?: boolean;
   gitInited?: boolean;
+}
+
+/**
+ * Web quest layout: narrative lesson (slides) stacks with the learner terminal below,
+ * and a live filesystem visual pane beside — default 50 / 50 width split (user-adjustable in UI later).
+ */
+export interface LessonTerminalVisualWorkspaceConfig {
+  type: "LessonTerminalVisualWorkspace";
+  slides: LessonSlide[];
+  stepId: string;
+  lessonTitle?: string;
+  lessonSubtitle?: string;
+  /** Default 50 — width % for the VisualWorld column (remainder is lesson + terminal). */
+  visualPanelWidthPct?: number;
+  /** Default 50 — top % of the left column for the lesson; bottom is the terminal slot. */
+  lessonStackTopPct?: number;
+  slideIllustrations?: Record<string, IllustrationConfig>;
+  fallbackIllustration?: IllustrationConfig;
+  onCompleted?: (stepId: string) => void;
 }
 
 export type IllustrationConfig =
@@ -177,4 +198,5 @@ export type IllustrationConfig =
   | GitStagingAreaConfig
   | SimulatedTerminalConfig
   | LessonSequenceConfig
+  | LessonTerminalVisualWorkspaceConfig
   | VisualWorldConfig;

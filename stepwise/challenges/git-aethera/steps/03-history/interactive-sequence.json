@@ -1,0 +1,20 @@
+{
+  "slides": [
+    {
+      "id": "history-why",
+      "heading": "Why history matters",
+      "body": "Every commit stacks on the timeline. **`git log`** scrolls snapshots newest-first.",
+      "bullets": []
+    },
+    {
+      "id": "history-make-two",
+      "heading": "Build two commits then read history",
+      "body": "Create a **second snapshot** however you prefer (tiny file edit + stage + commit).\nThen run **`git log`**.",
+      "bullets": [],
+      "advanceOnCommand": {
+        "mode": "prefix",
+        "value": "git log"
+      }
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "slides": [
+    {
+      "id": "repo-why",
+      "heading": "The hidden vault `.git`",
+      "body": "Git snapshots your work in a **repository** — a vault stored in a hidden `.git` folder.\n\n| Command | Meaning |\n| --- | --- |\n| `git init` | Tell Git to watch this folder and build `.git` here |",
+      "bullets": [
+        ".git keeps history — delete it only if you mean to discard the project ledger"
+      ]
+    },
+    {
+      "id": "repo-command",
+      "heading": "Run it locally",
+      "body": "In the simulated terminal beside this lesson:\n\n```bash\ngit init\nls\n```\n\nYou should see the repository initialise and `.git/` appear logically in Git state (Visualizer tracks the simulated repo).",
+      "bullets": [
+        "Green output means Git accepted your command",
+        "`ls` should list `.git/` once init succeeds"
+      ],
+      "advanceOnCommand": {
+        "mode": "prefix",
+        "value": "git init"
+      }
+    }
+  ]
+}
