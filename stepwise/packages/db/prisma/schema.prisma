@@ -102,6 +102,8 @@ model ChallengeStep {
   title       String
   position    Int                            // 1-based ordering within the challenge
   promptPath  String?   @map("prompt_path")  // relative path to prompt.md from challenge root
+  interactiveLesson Json? @map("interactive_lesson")
+  renderConfig Json? @map("render_config")
   createdAt   DateTime  @default(now()) @map("created_at")
 
   challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)

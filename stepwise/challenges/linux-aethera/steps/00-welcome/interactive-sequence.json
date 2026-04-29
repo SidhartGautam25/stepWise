@@ -8,7 +8,31 @@
         "🚫 No experience needed",
         "🐢 Go at your own pace",
         "✨ Curiosity is your superpower"
-      ]
+      ],
+      "illustration": {
+        "type": "ExpandableCardList",
+        "hint": "Tap a card to learn more",
+        "items": [
+          {
+            "id": "doing",
+            "icon": "🧠",
+            "label": "Learn by doing",
+            "reveal": "Every concept you see here, you'll try yourself in a real terminal. Understanding comes from doing, not just reading."
+          },
+          {
+            "id": "pace",
+            "icon": "🐢",
+            "label": "Your own pace",
+            "reveal": "There's no timer. No score. No pressure. Just you learning at whatever speed feels right."
+          },
+          {
+            "id": "curio",
+            "icon": "✨",
+            "label": "Curiosity first",
+            "reveal": "You don't need to know anything yet. Just wonder \"how does this work?\" — that single question is enough to start."
+          }
+        ]
+      }
     },
     {
       "id": "welcome-everyday",
@@ -19,7 +43,39 @@
         "🎵 Music keeps playing while you switch apps",
         "📂 Files stay safe even when you close them",
         "🤔 Something is doing all this — but what?"
-      ]
+      ],
+      "illustration": {
+        "type": "ClickRevealGrid",
+        "hint": "Tap something you do every day — see what the OS does for it",
+        "columns": 2,
+        "detailLabel": "What the OS did →",
+        "items": [
+          {
+            "id": "music",
+            "icon": "🎵",
+            "label": "You pressed play on a song",
+            "detail": "The OS found the music app in storage, loaded it into the workspace, gave it CPU time, and sent audio to your speakers — all in a split second."
+          },
+          {
+            "id": "photo",
+            "icon": "📸",
+            "label": "You took a photo",
+            "detail": "The OS grabbed the image from the camera sensor, handed it to the camera app, and wrote the finished file permanently to your storage."
+          },
+          {
+            "id": "app",
+            "icon": "📱",
+            "label": "You opened an app",
+            "detail": "The OS located the app in storage, loaded it into the active workspace, gave it screen space, and started sharing CPU time with it."
+          },
+          {
+            "id": "save",
+            "icon": "💾",
+            "label": "You saved a document",
+            "detail": "The OS took everything you typed from the temporary workspace and wrote it permanently to storage so it survives a reboot."
+          }
+        ]
+      }
     },
     {
       "id": "welcome-manager",
@@ -30,7 +86,55 @@
         "🏨 The OS is the manager who coordinates everything",
         "⚖️ It keeps things fair and prevents crashes",
         "💻 On your computer, this OS is probably Windows, Mac, or Linux"
-      ]
+      ],
+      "illustration": {
+        "type": "StepSimulator",
+        "hint": "Simulate a restaurant — click Send Order",
+        "actors": [
+          {
+            "icon": "👨‍🍳",
+            "label": "Music App",
+            "sublabel": "wants CPU",
+            "color": "rgba(99,102,241,0.12)",
+            "border": "rgba(99,102,241,0.3)"
+          },
+          {
+            "icon": "👩‍💼",
+            "label": "OS Manager",
+            "sublabel": "decides who",
+            "color": "rgba(34,197,94,0.12)",
+            "border": "rgba(34,197,94,0.3)",
+            "isManager": true
+          },
+          {
+            "icon": "🍳",
+            "label": "CPU",
+            "sublabel": "the resource",
+            "color": "rgba(245,158,11,0.08)",
+            "border": "rgba(245,158,11,0.25)"
+          }
+        ],
+        "steps": [
+          {
+            "from": "👨‍🍳 Music App",
+            "to": "👩‍💼 Manager",
+            "action": "\"I need the CPU!\""
+          },
+          {
+            "from": "👩‍💼 Manager",
+            "to": "🍳 CPU",
+            "action": "\"Music App gets it for 2ms\""
+          },
+          {
+            "from": "🍳 CPU",
+            "to": "👨‍🍳 Music App",
+            "action": "\"Done! CPU is free again.\""
+          }
+        ],
+        "startLabel": "▶ Send Order",
+        "nextLabel": "→ Next step",
+        "doneMessage": "✅ Order complete! The OS kept everything smooth."
+      }
     },
     {
       "id": "welcome-linux",
@@ -41,7 +145,34 @@
         "🪟 Linux: open — you can see and change everything",
         "📚 Great for learning how computers really work",
         "🚀 Used by phones, websites, satellites, and more"
-      ]
+      ],
+      "illustration": {
+        "type": "ComparePanel",
+        "hint": "Click each box to explore",
+        "left": {
+          "icon": "🔒",
+          "title": "Windows / Mac",
+          "color": "rgba(239,68,68,0.06)",
+          "border": "rgba(239,68,68,0.25)",
+          "locked": true,
+          "lockedMessage": "🚫 Access denied. This is a closed box — no peeking allowed.",
+          "closedHint": "Click to look inside →"
+        },
+        "right": {
+          "icon": "📦",
+          "title": "Linux",
+          "color": "rgba(34,197,94,0.06)",
+          "border": "rgba(34,197,94,0.3)",
+          "closedHint": "Click to open →",
+          "revealContent": [
+            "🔍 See how it works",
+            "✏️ Change anything",
+            "📚 Learn deeply",
+            "🚀 Used everywhere"
+          ]
+        },
+        "successMessage": "🎉 That's why we're using Linux — everything is visible and learnable!"
+      }
     }
   ]
 }

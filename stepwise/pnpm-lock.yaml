@@ -102,9 +102,6 @@ importers:
       '@repo/interactive-engine':
         specifier: workspace:*
         version: link:../../packages/interactive-engine
-      '@repo/lesson-content':
-        specifier: workspace:*
-        version: link:../../packages/lesson-content
       '@repo/terminal-engine':
         specifier: workspace:*
         version: link:../../packages/terminal-engine
@@ -268,21 +265,6 @@ importers:
       '@types/react':
         specifier: 19.2.2
         version: 19.2.2
-      typescript:
-        specifier: 5.9.2
-        version: 5.9.2
-
-  packages/lesson-content:
-    devDependencies:
-      '@repo/interactive-engine':
-        specifier: workspace:*
-        version: link:../interactive-engine
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@types/node':
-        specifier: ^22.15.3
-        version: 22.19.17
       typescript:
         specifier: 5.9.2
         version: 5.9.2

@@ -30,6 +30,7 @@ export interface InteractiveLessonSlide {
   heading: string;
   body: string;
   bullets?: string[];
+  illustration?: unknown;
 }
 
 export interface InteractiveLesson {
