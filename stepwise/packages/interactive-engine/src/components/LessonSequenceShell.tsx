@@ -25,11 +25,18 @@
  */
 
 import type { CSSProperties, ReactNode } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useEngineStyles } from "../useEngineStyles";
 import { T } from "../tokens";
 
 // ── Public types ──────────────────────────────────────────────────────────────
+
+/** When set, issuing this terminal command auto-advances to the next slide (hands-on quests). */
+export interface SlideAdvanceOnCommand {
+  mode: "exact" | "prefix";
+  /** Command without leading prompt (`pwd`, `mkdir projects`, …) */
+  value: string;
+}
 
 export interface LessonSlide {
   id: string;
@@ -37,11 +44,15 @@ export interface LessonSlide {
   body: string;
   bullets?: string[];
   illustration?: unknown;
+  /** Match against the learner's latest successful simulated-terminal command */
+  advanceOnCommand?: SlideAdvanceOnCommand;
 }
 
 export interface LessonSequenceShellProps {
   slides: LessonSlide[];
   stepId: string;
+  /** `${successfulCount}:${trimmedLatestCommand}` — changes whenever a successful command completes */
+  terminalAdvanceSignature?: string;
   onCompleted?: (stepId: string) => void;
   /** Render prop — given a slideId, return the interactive illustration element */
   renderIllustration: (slideId: string) => ReactNode;
@@ -56,6 +67,7 @@ export interface LessonSequenceShellProps {
 export function LessonSequenceShell({
   slides,
   stepId,
+  terminalAdvanceSignature,
   onCompleted,
   renderIllustration,
   title = "Interactive Lesson",
@@ -67,8 +79,38 @@ export function LessonSequenceShell({
   const isLast = slideIndex === slides.length - 1;
   const active = slides[slideIndex];
 
+  const consumedAdvanceSig = useRef<string>("");
+
   // Reset to first slide whenever the step changes
-  useEffect(() => { setSlideIndex(0); }, [stepId]);
+  useEffect(() => {
+    setSlideIndex(0);
+    consumedAdvanceSig.current = "";
+  }, [stepId]);
+
+  // Successful terminal commands can advance slides when the current slide defines `advanceOnCommand`.
+  useEffect(() => {
+    if (!terminalAdvanceSignature) return;
+
+    const rule = slides[slideIndex]?.advanceOnCommand;
+    if (!rule) return;
+
+    if (terminalAdvanceSignature === consumedAdvanceSig.current) return;
+
+    const [, cmdRaw] = terminalAdvanceSignature.split(":");
+    const cmd = (cmdRaw ?? "").trim();
+    const matches =
+      rule.mode === "exact" ? cmd === rule.value.trim() : cmd.startsWith(rule.value.trim());
+    if (!matches) return;
+
+    consumedAdvanceSig.current = terminalAdvanceSignature;
+
+    const atLast = slideIndex === slides.length - 1;
+    if (atLast) {
+      onCompleted?.(stepId);
+      return;
+    }
+    setSlideIndex((i) => Math.min(slides.length - 1, i + 1));
+  }, [terminalAdvanceSignature, slideIndex, slides, stepId, onCompleted]);
 
   const progressLabel = useMemo(
     () => `${slideIndex + 1} / ${slides.length}`,

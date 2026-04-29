@@ -1,18 +1,16 @@
 {
   "schemaVersion": 1,
   "id": "git-aethera",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "title": "Git — Version Control for Humans",
   "language": "bash",
   "runtime": "web-terminal",
   "mode": "web",
-  "description": "Learn Git through stories and real problems. No experience needed. You'll go from zero to confidently saving, exploring, and branching your code history.",
+  "description": "Learn Git through stories and real problems — then wire it to the terminal and visualizer.",
   "steps": [
     {
       "id": "00-welcome",
       "title": "Welcome — You're in the Right Place",
-      "prompt": "prompt.md",
-      "explanation": "explanation.md",
       "requiresTerminal": false,
       "interactiveLesson": {
         "type": "sequence",
@@ -23,14 +21,12 @@
       "renderConfig": {
         "type": "LessonSequence",
         "title": "Interactive Lesson",
-        "subtitle": "Explore the idea first, then move into the hands-on step."
+        "subtitle": "Story first, simulation next."
       }
     },
     {
       "id": "00-world-before",
       "title": "The World Before Version Control",
-      "prompt": "prompt.md",
-      "explanation": "explanation.md",
       "requiresTerminal": false,
       "interactiveLesson": {
         "type": "sequence",
@@ -41,14 +37,12 @@
       "renderConfig": {
         "type": "LessonSequence",
         "title": "Interactive Lesson",
-        "subtitle": "Explore the idea first, then move into the hands-on step."
+        "subtitle": "Understand the pain Git solves."
       }
     },
     {
       "id": "00-snapshot-idea",
       "title": "The Big Idea — Snapshots",
-      "prompt": "prompt.md",
-      "explanation": "explanation.md",
       "requiresTerminal": false,
       "interactiveLesson": {
         "type": "sequence",
@@ -59,50 +53,66 @@
       "renderConfig": {
         "type": "LessonSequence",
         "title": "Interactive Lesson",
-        "subtitle": "Explore the idea first, then move into the hands-on step."
+        "subtitle": "From idea to Git concepts."
       }
     },
     {
       "id": "01-init",
       "title": "Starting a Repository",
-      "prompt": "prompt.md",
-      "explanation": "explanation.md",
       "requiresTerminal": true,
+      "interactiveLesson": {
+        "type": "sequence",
+        "content": "interactive-sequence.json"
+      },
       "workspace": {},
       "tests": {},
       "renderConfig": {
-        "type": "VisualWorld"
+        "type": "LessonTerminalVisualWorkspace",
+        "lessonTitle": "git init — start the vault",
+        "lessonSubtitle": "Lesson · terminal · simulated tree",
+        "visualPanelWidthPct": 50,
+        "lessonStackTopPct": 50
       }
     },
     {
       "id": "02-first-commit",
       "title": "Your First Snapshot",
-      "prompt": "prompt.md",
-      "explanation": "explanation.md",
       "requiresTerminal": true,
+      "interactiveLesson": {
+        "type": "sequence",
+        "content": "interactive-sequence.json"
+      },
       "workspace": {},
       "tests": {},
       "renderConfig": {
-        "type": "VisualWorld"
+        "type": "LessonTerminalVisualWorkspace",
+        "lessonTitle": "Stage + commit",
+        "lessonSubtitle": "status → add → commit — watch the DAG grow",
+        "visualPanelWidthPct": 50,
+        "lessonStackTopPct": 50
       }
     },
     {
       "id": "03-history",
       "title": "Reading Your History",
-      "prompt": "prompt.md",
-      "explanation": "explanation.md",
       "requiresTerminal": true,
+      "interactiveLesson": {
+        "type": "sequence",
+        "content": "interactive-sequence.json"
+      },
       "workspace": {},
       "tests": {},
       "renderConfig": {
-        "type": "VisualWorld"
+        "type": "LessonTerminalVisualWorkspace",
+        "lessonTitle": "git log",
+        "lessonSubtitle": "Two commits · then read history",
+        "visualPanelWidthPct": 50,
+        "lessonStackTopPct": 50
       }
     },
     {
       "id": "04-branch",
       "title": "Parallel Worlds — Branching",
-      "prompt": "prompt.md",
-      "explanation": "explanation.md",
       "requiresTerminal": true,
       "interactiveLesson": {
         "type": "sequence",
@@ -113,7 +123,7 @@
       "renderConfig": {
         "type": "LessonSequence",
         "title": "Interactive Lesson",
-        "subtitle": "Explore the idea first, then move into the hands-on step."
+        "subtitle": "Stories + slide deck before the branching lab."
       }
     }
   ]

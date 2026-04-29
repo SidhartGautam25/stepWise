@@ -1,0 +1,22 @@
+{
+  "slides": [
+    {
+      "id": "commit-staging",
+      "heading": "Staging + commit = snapshot",
+      "body": "1. **`git status`** sees what changed.\n2. **`git add`** selects files for the next snapshot.\n3. **`git commit -m \"message\"`** saves the snapshot with a readable label.",
+      "bullets": [
+        "You need ≥1 tracked change before committing"
+      ]
+    },
+    {
+      "id": "commit-run",
+      "heading": "Run the trilogy",
+      "body": "```bash\ngit status\ngit add .\ngit commit -m \\\"snapshot one\\\"\n```",
+      "bullets": [],
+      "advanceOnCommand": {
+        "mode": "prefix",
+        "value": "git commit"
+      }
+    }
+  ]
+}

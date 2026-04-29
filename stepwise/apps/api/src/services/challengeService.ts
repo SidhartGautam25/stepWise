@@ -184,6 +184,14 @@ function hydrateRenderConfig(
     };
   }
 
+  if (renderConfig.type === "LessonTerminalVisualWorkspace") {
+    return {
+      ...renderConfig,
+      stepId,
+      slides: interactiveLesson?.slides ?? [],
+    };
+  }
+
   return renderConfig;
 }
 

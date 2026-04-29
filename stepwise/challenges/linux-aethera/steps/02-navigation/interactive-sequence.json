@@ -1,0 +1,22 @@
+{
+  "slides": [
+    {
+      "id": "nav-intro",
+      "heading": "Moving between folders",
+      "body": "**`cd`** changes your working directory.\n\n**`pwd`** confirms where you are.\n\n**`cd ..`** climbs one level toward `/`.",
+      "bullets": [
+        "You built `projects` last step — it's still under `/home/student/projects`"
+      ]
+    },
+    {
+      "id": "nav-task",
+      "heading": "Practice path",
+      "body": "```bash\ncd projects\npwd\ncd ..\ncd projects\n```\n\nFinish with your current directory **`/home/student/projects`** (check with `pwd`).",
+      "bullets": [],
+      "advanceOnCommand": {
+        "mode": "prefix",
+        "value": "cd projects"
+      }
+    }
+  ]
+}

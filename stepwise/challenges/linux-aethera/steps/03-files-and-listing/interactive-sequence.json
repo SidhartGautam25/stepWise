@@ -1,0 +1,24 @@
+{
+  "slides": [
+    {
+      "id": "files-intro",
+      "heading": "Create, fill, and read a file",
+      "body": "**`touch`** creates an empty file.\n\n**`>`** redirects text into a file (overwriting).\n\n**`cat`** prints a file to the terminal.",
+      "bullets": [
+        "Stay in `/home/student/projects` — same folder as the navigation step"
+      ]
+    },
+    {
+      "id": "files-task",
+      "heading": "Activity",
+      "body": "```bash\ntouch notes.txt\necho hello linux > notes.txt\nls\ncat notes.txt\n```",
+      "bullets": [
+        "Visualizer should show `notes.txt`; `cat` should print `hello linux`"
+      ],
+      "advanceOnCommand": {
+        "mode": "prefix",
+        "value": "cat notes.txt"
+      }
+    }
+  ]
+}

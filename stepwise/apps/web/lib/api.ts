@@ -31,6 +31,10 @@ export interface InteractiveLessonSlide {
   body: string;
   bullets?: string[];
   illustration?: unknown;
+  advanceOnCommand?: {
+    mode: "exact" | "prefix";
+    value: string;
+  };
 }
 
 export interface InteractiveLesson {

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import type { ChallengeDetail } from "@/lib/api";
 import { useSession } from "next-auth/react";
-import { useTerminal, SimulatedTerminal } from "@repo/terminal-engine";
+import { useTerminal, SimulatedTerminal, type TerminalLog } from "@repo/terminal-engine";
 import { QuestEvaluator } from "./evaluator/QuestEvaluator";
 import { useQuestEvaluator } from "../hooks/useQuestEvaluator";
 import { StepContentPanel } from "./challenge/StepContentPanel";
@@ -34,6 +34,12 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   // Engine Integration
   const isGit = challenge.id === "git-aethera";
   const terminal = useTerminal({ language: isGit ? "git" : "linux" });
+  /** `${successfulCommandCount}:${trimmedLatest}` — LessonSequence slide `advanceOnCommand` */
+  const terminalAdvanceSignature = useMemo(
+    () => buildTerminalAdvanceSignature(terminal.history),
+    [terminal.history],
+  );
+
   const { checkStepCompletion } = useQuestEvaluator(terminal.state, terminal.history);
   // Stable callback — only changes when passedStepIds or the evaluator itself changes.
   // IMPORTANT: Returns false for already-passed steps to prevent re-submission cascades
@@ -80,6 +86,42 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
 
   const activeStep = challenge.steps.find((s) => s.id === activeStepId) || challenge.steps[0];
   const activeStepIndex = challenge.steps.findIndex((s) => s.id === activeStepId);
+
+  const usesLessonTerminalComposite =
+    activeStep?.renderConfig &&
+    typeof activeStep.renderConfig === "object" &&
+    !Array.isArray(activeStep.renderConfig) &&
+    (activeStep.renderConfig as { type?: string }).type === "LessonTerminalVisualWorkspace";
+
+  const viewingVisualizerWorkspace =
+    viewMode === "visualizer" || viewMode === "split-v" || viewMode === "split-h";
+
+  const showEmbeddedLessonTerminal =
+    Boolean(usesLessonTerminalComposite && viewingVisualizerWorkspace);
+
+  const showStandaloneTerminalDock = terminalMode !== "hidden" && !showEmbeddedLessonTerminal;
+
+  const embeddedLessonTerminalSlot = useMemo(
+    () =>
+      showEmbeddedLessonTerminal ? (
+        <SimulatedTerminal
+          state={terminal.state}
+          history={terminal.history}
+          execute={terminal.execute}
+          language={isGit ? "git" : "linux"}
+          hint={activeStep?.title || ""}
+          height="100%"
+        />
+      ) : undefined,
+    [
+      showEmbeddedLessonTerminal,
+      terminal.state,
+      terminal.history,
+      terminal.execute,
+      isGit,
+      activeStep?.title,
+    ],
+  );
   // A step is unlocked if it is already passed OR it is the very next step after the last passed one
   const highestUnlockedIndex = Math.min(passedStepIds.length, challenge.steps.length - 1);
 
@@ -190,6 +232,8 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                   terminalState={terminal.state}
                   isGit={isGit}
                   onCompleted={handleStepPassed}
+                  terminalAdvanceSignature={terminalAdvanceSignature}
+                  embeddedTerminalSlot={embeddedLessonTerminalSlot}
                 />
               </div>
             ) : viewMode === "content" ? (
@@ -207,13 +251,15 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                     terminalState={terminal.state}
                     isGit={isGit}
                     onCompleted={handleStepPassed}
+                    terminalAdvanceSignature={terminalAdvanceSignature}
+                    embeddedTerminalSlot={embeddedLessonTerminalSlot}
                   />
                 </div>
               </div>
             )}
             </div>
 
-            {terminalMode !== "hidden" && (
+            {showStandaloneTerminalDock && (
               <div className="challenge-terminal-area">
                 <SimulatedTerminal
                   state={terminal.state}
@@ -246,6 +292,14 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   }
 
   return nonWebContent;
+}
+
+function buildTerminalAdvanceSignature(history: TerminalLog[]): string | undefined {
+  const ok = history.filter((h) => !h.error && typeof h.command === "string");
+  const last = ok[ok.length - 1];
+  const cmd = last?.command?.trim();
+  if (!cmd) return undefined;
+  return `${ok.length}:${cmd}`;
 }
 
 function ChallengeTitle({ challenge }: { challenge: ChallengeDetail }) {

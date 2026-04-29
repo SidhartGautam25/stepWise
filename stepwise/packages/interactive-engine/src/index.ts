@@ -80,5 +80,6 @@ export type {
   GitStagingAreaConfig,
   SimulatedTerminalConfig,
   LessonSequenceConfig,
+  LessonTerminalVisualWorkspaceConfig,
   VisualWorldConfig,
 } from "./IllustrationConfig";

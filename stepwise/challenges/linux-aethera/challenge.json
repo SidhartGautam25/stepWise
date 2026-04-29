@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "linux-aethera",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "title": "Intro to Linux",
   "language": "bash",
   "runtime": "web-terminal",
@@ -11,8 +11,6 @@
     {
       "id": "00-welcome",
       "title": "Why Learn Linux This Way",
-      "prompt": "prompt.md",
-      "explanation": "explanation.md",
       "requiresTerminal": false,
       "interactiveLesson": {
         "type": "sequence",
@@ -23,14 +21,12 @@
       "renderConfig": {
         "type": "LessonSequence",
         "title": "Interactive Lesson",
-        "subtitle": "Explore the idea first, then move into the hands-on step."
+        "subtitle": "Read the narrative, then move to the hands-on step."
       }
     },
     {
       "id": "00-why-os",
       "title": "Storage — Where Your Stuff Lives",
-      "prompt": "prompt.md",
-      "explanation": "explanation.md",
       "requiresTerminal": false,
       "interactiveLesson": {
         "type": "sequence",
@@ -41,55 +37,79 @@
       "renderConfig": {
         "type": "LessonSequence",
         "title": "Interactive Lesson",
-        "subtitle": "Explore the idea first, then move into the hands-on step."
+        "subtitle": "Understand storage before you touch commands."
       }
     },
     {
       "id": "00-orientation",
       "title": "How to Read the Visualizer",
-      "prompt": "prompt.md",
-      "explanation": "explanation.md",
       "requiresTerminal": true,
+      "interactiveLesson": {
+        "type": "sequence",
+        "content": "interactive-sequence.json"
+      },
       "workspace": {},
       "tests": {},
       "renderConfig": {
-        "type": "VisualWorld"
+        "type": "LessonTerminalVisualWorkspace",
+        "lessonTitle": "How to read the Visualizer",
+        "lessonSubtitle": "Lesson + terminal (50/50) · live tree →",
+        "visualPanelWidthPct": 50,
+        "lessonStackTopPct": 50
       }
     },
     {
       "id": "01-directories",
       "title": "Directories and Listing",
-      "prompt": "prompt.md",
-      "explanation": "explanation.md",
       "requiresTerminal": true,
+      "interactiveLesson": {
+        "type": "sequence",
+        "content": "interactive-sequence.json"
+      },
       "workspace": {},
       "tests": {},
       "renderConfig": {
-        "type": "VisualWorld"
+        "type": "LessonTerminalVisualWorkspace",
+        "lessonTitle": "Directories & listing",
+        "lessonSubtitle": "Follow the lesson · type commands below",
+        "visualPanelWidthPct": 50,
+        "lessonStackTopPct": 50
       }
     },
     {
       "id": "02-navigation",
       "title": "Moving Between Directories",
-      "prompt": "prompt.md",
-      "explanation": "explanation.md",
       "requiresTerminal": true,
+      "interactiveLesson": {
+        "type": "sequence",
+        "content": "interactive-sequence.json"
+      },
       "workspace": {},
       "tests": {},
       "renderConfig": {
-        "type": "VisualWorld"
+        "type": "LessonTerminalVisualWorkspace",
+        "lessonTitle": "Navigation (`cd`, `pwd`)",
+        "lessonSubtitle": "Slides + terminal under · tree on the right",
+        "visualPanelWidthPct": 50,
+        "lessonStackTopPct": 50
       }
     },
     {
       "id": "03-files-and-listing",
       "title": "Files, Content, and Listing",
-      "prompt": "prompt.md",
-      "explanation": "explanation.md",
       "requiresTerminal": true,
+      "interactiveLesson": {
+        "type": "sequence",
+        "content": "interactive-sequence.json"
+      },
       "workspace": {},
       "tests": {},
       "renderConfig": {
-        "type": "VisualWorld"
+        "type": "LessonTerminalVisualWorkspace",
+        "lessonTitle": "Files & content",
+        "lessonSubtitle": "Create, fill, read — watch the filesystem respond",
+        "visualPanelWidthPct": 50,
+        "lessonStackTopPct": 50
       }
     }
   ]

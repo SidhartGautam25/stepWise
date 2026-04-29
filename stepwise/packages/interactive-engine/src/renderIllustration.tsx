@@ -42,6 +42,10 @@ export interface RenderIllustrationRuntime {
   };
   isGit?: boolean;
   onCompleted?: (stepId: string) => void;
+  /** Passed to lesson slides for command-driven progression */
+  terminalAdvanceSignature?: string;
+  /** Embed the real SimulatedTerminal inside composite layouts */
+  terminalSlot?: ReactNode;
 }
 
 export function renderIllustration(
@@ -197,6 +201,7 @@ export function renderIllustration(
           stepId={config.stepId}
           title={config.title}
           subtitle={config.subtitle}
+          terminalAdvanceSignature={runtime.terminalAdvanceSignature}
           onCompleted={config.onCompleted ?? runtime.onCompleted}
           renderIllustration={(slideId) => {
             const slide = config.slides.find((candidate) => candidate.id === slideId);
@@ -209,6 +214,84 @@ export function renderIllustration(
           }}
         />
       );
+
+    case "LessonTerminalVisualWorkspace": {
+      const vwPct = Math.min(90, Math.max(20, config.visualPanelWidthPct ?? 50));
+      const lessonTop = Math.min(85, Math.max(15, config.lessonStackTopPct ?? 50));
+      const termLower = 100 - lessonTop;
+      return (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            height: "100%",
+            width: "100%",
+            minHeight: 0,
+            gap: 12,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              flex: `1 1 ${100 - vwPct}%`,
+              minWidth: 0,
+              minHeight: 0,
+              display: "grid",
+              gridTemplateRows: `${lessonTop}fr ${termLower}fr`,
+              overflow: "hidden",
+            }}
+          >
+              <div style={{ minHeight: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+              <LessonSequenceShell
+                slides={config.slides}
+                stepId={config.stepId}
+                title={config.lessonTitle ?? "Interactive Lesson"}
+                subtitle={config.lessonSubtitle ?? "Explore the idea, then try it."}
+                terminalAdvanceSignature={runtime.terminalAdvanceSignature}
+                onCompleted={config.onCompleted ?? runtime.onCompleted}
+                renderIllustration={(slideId) => {
+                  const slide = config.slides.find((candidate) => candidate.id === slideId);
+                  const illustration =
+                    config.slideIllustrations?.[slideId] ??
+                    (slide?.illustration as IllustrationConfig | undefined) ??
+                    config.fallbackIllustration;
+
+                  return illustration ? renderIllustration(illustration, runtime) : null;
+                }}
+              />
+              </div>
+            <div
+              style={{
+                minHeight: 0,
+                borderTop: "1px solid var(--interactive-divider)",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              {runtime.terminalSlot ?? null}
+            </div>
+          </div>
+          <div
+            style={{
+              flex: `1 1 ${vwPct}%`,
+              minWidth: 0,
+              minHeight: 0,
+              overflow: "hidden",
+            }}
+          >
+        {renderIllustration(
+          {
+            type: "VisualWorld",
+            vfs: undefined,
+            cwd: undefined,
+          },
+          runtime,
+        )}
+          </div>
+        </div>
+      );
+    }
 
     case "VisualWorld":
       if (!config.vfs && !runtime.terminalState?.vfs) return null;
