@@ -328,6 +328,32 @@
       }
     },
     {
+      "id": "command-table",
+      "heading": "CommandTable",
+      "body": "CommandTable renders command reference rows without relying on markdown table parsing. The input is rows with command, meaning, and optional note, plus optional column labels.\n\nExample input: { type: \"CommandTable\", rows: [{ command: \"git init\", meaning: \"Create the repository vault\", note: \"Run once\" }] }",
+      "bullets": [
+        "Best for CLI command references.",
+        "Keeps commands in monospace and descriptions in readable cells.",
+        "Use note when a command needs a warning or context."
+      ],
+      "renderConfig": {
+        "type": "CommandTable",
+        "hint": "Command reference",
+        "rows": [
+          {
+            "command": "git init",
+            "meaning": "Create a hidden .git repository in the current folder.",
+            "note": "Usually run once per project."
+          },
+          {
+            "command": "git status",
+            "meaning": "Show changed, staged, and untracked files.",
+            "note": "Safe to run anytime."
+          }
+        ]
+      }
+    },
+    {
       "id": "git-commit-graph",
       "heading": "GitCommitGraph",
       "body": "GitCommitGraph renders commits grouped by branch lane. The input is commits with id, message, branch, optional HEAD flag, and optional detail; branches can provide line metadata.\n\nExample input: { type: \"GitCommitGraph\", commits: [{ id: \"a1b2\", message: \"init\", branch: \"main\", isHead: true }] }",

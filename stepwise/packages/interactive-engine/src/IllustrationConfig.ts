@@ -22,6 +22,7 @@ import type { BucketConfig }         from "./components/InteractiveBuckets";
 import type { TreeNode }             from "./components/CollapsibleTree";
 import type { FileSystemTree }       from "./components/FileNavigator";
 import type { InfoCalloutVariant }   from "./components/InfoCallout";
+import type { CommandTableRow }      from "./components/CommandTable";
 import type { CommitNode, GitBranchLine }      from "./components/GitCommitGraph";
 import type { StagingFile }          from "./components/GitStagingArea";
 import type { VfsNode as TermVfsNode } from "@repo/terminal-engine";
@@ -106,6 +107,16 @@ export interface InfoCalloutConfig {
   text: string;
   icon?: string;
   variant?: InfoCalloutVariant;
+}
+
+/** Compact command-to-meaning reference table */
+export interface CommandTableConfig {
+  type: "CommandTable";
+  rows: CommandTableRow[];
+  hint?: string;
+  commandLabel?: string;
+  meaningLabel?: string;
+  noteLabel?: string;
 }
 
 /** Stack multiple illustrations vertically for complex slides */
@@ -193,6 +204,7 @@ export type IllustrationConfig =
   | CollapsibleTreeConfig
   | FileNavigatorConfig
   | InfoCalloutConfig
+  | CommandTableConfig
   | MultiConfig
   | GitCommitGraphConfig
   | GitStagingAreaConfig

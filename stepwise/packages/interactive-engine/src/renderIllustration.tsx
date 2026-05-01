@@ -27,6 +27,7 @@ import { InteractiveBuckets }  from "./components/InteractiveBuckets";
 import { CollapsibleTree }     from "./components/CollapsibleTree";
 import { FileNavigator }       from "./components/FileNavigator";
 import { InfoCallout }         from "./components/InfoCallout";
+import { CommandTable }        from "./components/CommandTable";
 import { GitCommitGraph }      from "./components/GitCommitGraph";
 import { GitStagingArea }      from "./components/GitStagingArea";
 import { LessonSequenceShell } from "./components/LessonSequenceShell";
@@ -148,6 +149,17 @@ export function renderIllustration(
           text={config.text}
           icon={config.icon}
           variant={config.variant}
+        />
+      );
+
+    case "CommandTable":
+      return (
+        <CommandTable
+          hint={config.hint}
+          rows={config.rows}
+          commandLabel={config.commandLabel}
+          meaningLabel={config.meaningLabel}
+          noteLabel={config.noteLabel}
         />
       );
 

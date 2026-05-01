@@ -22,6 +22,7 @@
  *  CollapsibleTree      — recursive folder/file tree with expand/collapse
  *  FileNavigator        — breadcrumb file-system navigator
  *  InfoCallout          — themed info/success/warning/error banner
+ *  CommandTable         — compact command-to-meaning reference table
  *
  * ── Internal utilities (re-exported for advanced use) ───────────────────────
  *  T                    — CSS variable token map
@@ -38,6 +39,7 @@ export { InteractiveBuckets }   from "./components/InteractiveBuckets";
 export { CollapsibleTree }      from "./components/CollapsibleTree";
 export { FileNavigator }        from "./components/FileNavigator";
 export { InfoCallout }          from "./components/InfoCallout";
+export { CommandTable }         from "./components/CommandTable";
 export { LessonSequenceShell }  from "./components/LessonSequenceShell";
 export { GitCommitGraph }       from "./components/GitCommitGraph";
 export { GitStagingArea }       from "./components/GitStagingArea";
@@ -58,6 +60,7 @@ export type { BucketConfig, InteractiveBucketsProps }         from "./components
 export type { TreeNode, CollapsibleTreeProps }                 from "./components/CollapsibleTree";
 export type { FileSystemTree, FileNavigatorProps }            from "./components/FileNavigator";
 export type { InfoCalloutVariant, InfoCalloutProps }          from "./components/InfoCallout";
+export type { CommandTableRow, CommandTableProps }            from "./components/CommandTable";
 export { VisualWorld }        from "./components/VisualWorld";
 export type { LessonSlide, LessonSequenceShellProps }         from "./components/LessonSequenceShell";
 export type { CommitNode, GitBranchLine, GitCommitGraphProps } from "./components/GitCommitGraph";
@@ -75,6 +78,7 @@ export type {
   CollapsibleTreeConfig,
   FileNavigatorConfig,
   InfoCalloutConfig,
+  CommandTableConfig,
   MultiConfig,
   GitCommitGraphConfig,
   GitStagingAreaConfig,

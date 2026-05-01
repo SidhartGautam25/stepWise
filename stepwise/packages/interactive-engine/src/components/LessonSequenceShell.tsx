@@ -213,7 +213,7 @@ export function LessonSequenceShell({
             fontWeight: 700, fontSize: 13,
           }}
         >
-          ← Back
+          Prev
         </button>
         <button
           onClick={advance}
@@ -225,7 +225,7 @@ export function LessonSequenceShell({
             transition: "background 0.2s",
           }}
         >
-          {isLast ? "✓ Got it →" : "Next →"}
+          {isLast ? "Done" : "Next"}
         </button>
       </div>
     </div>

@@ -3,19 +3,46 @@
     {
       "id": "repo-why",
       "heading": "The hidden vault `.git`",
-      "body": "Git snapshots your work in a **repository** — a vault stored in a hidden `.git` folder.\n\n| Command | Meaning |\n| --- | --- |\n| `git init` | Tell Git to watch this folder and build `.git` here |",
+      "body": "Git snapshots your work in a repository — a vault stored in a hidden .git folder.",
       "bullets": [
         ".git keeps history — delete it only if you mean to discard the project ledger"
-      ]
+      ],
+      "renderConfig": {
+        "type": "CommandTable",
+        "hint": "Git setup command",
+        "rows": [
+          {
+            "command": "git init",
+            "meaning": "Tell Git to watch this folder and create the hidden .git repository vault here.",
+            "note": "Run it once at the root of a project."
+          }
+        ]
+      }
     },
     {
       "id": "repo-command",
       "heading": "Run it locally",
-      "body": "In the simulated terminal beside this lesson:\n\n```bash\ngit init\nls\n```\n\nYou should see the repository initialise and `.git/` appear logically in Git state (Visualizer tracks the simulated repo).",
+      "body": "In the simulated terminal beside this lesson, run git init first, then use ls to inspect the workspace. You should see the repository initialize and .git appear logically in Git state.",
       "bullets": [
         "Green output means Git accepted your command",
-        "`ls` should list `.git/` once init succeeds"
+        "ls should list .git once init succeeds"
       ],
+      "renderConfig": {
+        "type": "CommandTable",
+        "hint": "Try these commands",
+        "rows": [
+          {
+            "command": "git init",
+            "meaning": "Create the repository vault for this folder.",
+            "note": "This slide advances after this command succeeds."
+          },
+          {
+            "command": "ls",
+            "meaning": "List the files and folders in the current directory.",
+            "note": "Use it to confirm .git exists."
+          }
+        ]
+      },
       "advanceOnCommand": {
         "mode": "prefix",
         "value": "git init"
