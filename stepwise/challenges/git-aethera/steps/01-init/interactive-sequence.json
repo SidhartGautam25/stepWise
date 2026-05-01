@@ -7,17 +7,20 @@
       "bullets": [
         ".git keeps history — delete it only if you mean to discard the project ledger"
       ],
-      "renderConfig": {
-        "type": "CommandTable",
-        "hint": "Git setup command",
-        "rows": [
-          {
-            "command": "git init",
-            "meaning": "Tell Git to watch this folder and create the hidden .git repository vault here.",
-            "note": "Run it once at the root of a project."
-          }
-        ]
-      }
+      "requiresTerminal": true,
+      "components": [
+        {
+          "type": "CommandTable",
+          "hint": "Git setup command",
+          "rows": [
+            {
+              "command": "git init",
+              "meaning": "Tell Git to watch this folder and create the hidden .git repository vault here.",
+              "note": "Run it once at the root of a project."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "repo-command",
@@ -27,26 +30,29 @@
         "Green output means Git accepted your command",
         "ls should list .git once init succeeds"
       ],
-      "renderConfig": {
-        "type": "CommandTable",
-        "hint": "Try these commands",
-        "rows": [
-          {
-            "command": "git init",
-            "meaning": "Create the repository vault for this folder.",
-            "note": "This slide advances after this command succeeds."
-          },
-          {
-            "command": "ls",
-            "meaning": "List the files and folders in the current directory.",
-            "note": "Use it to confirm .git exists."
-          }
-        ]
-      },
       "advanceOnCommand": {
         "mode": "prefix",
         "value": "git init"
-      }
+      },
+      "requiresTerminal": true,
+      "components": [
+        {
+          "type": "CommandTable",
+          "hint": "Try these commands",
+          "rows": [
+            {
+              "command": "git init",
+              "meaning": "Create the repository vault for this folder.",
+              "note": "This slide advances after this command succeeds."
+            },
+            {
+              "command": "ls",
+              "meaning": "List the files and folders in the current directory.",
+              "note": "Use it to confirm .git exists."
+            }
+          ]
+        }
+      ]
     }
   ]
 }

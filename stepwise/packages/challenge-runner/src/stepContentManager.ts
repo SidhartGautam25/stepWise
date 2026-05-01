@@ -14,14 +14,12 @@ export interface StepContentRegistryEntry {
   starterRoot?: string;
   entrypoint?: string;
   free?: boolean;
-  requiresTerminal?: boolean;
   timeoutMs?: number;
   interactiveLesson?: {
     type: string;
     contentPath: string;
   };
   interactiveLessonContent?: unknown;
-  renderConfig?: unknown;
 }
 
 export interface InteractiveLessonSlideAdvance {
@@ -34,8 +32,7 @@ export interface InteractiveLessonSlide {
   heading: string;
   body: string;
   bullets?: string[];
-  illustration?: unknown;
-  renderConfig?: unknown;
+  components?: unknown[];
   requiresTerminal?: boolean;
   advanceOnCommand?: InteractiveLessonSlideAdvance;
 }
@@ -65,7 +62,6 @@ export interface LoadedStepContent {
   entrypoint?: string;
   interactiveLesson?: InteractiveLesson;
   codeFiles?: CodeFileContent[];
-  requiresTerminal: boolean;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -133,7 +129,6 @@ export class StepContentManager {
       entrypoint,
       interactiveLesson: lesson,
       codeFiles: this.loadCodeFiles(stepDir, step.id),
-      requiresTerminal: step.requiresTerminal ?? true,
     };
 
     this.cache.set(cacheKey, content);
@@ -202,8 +197,9 @@ export class StepContentManager {
           bullets: Array.isArray(slide.bullets)
             ? slide.bullets.filter((bullet): bullet is string => typeof bullet === "string")
             : undefined,
-          illustration: isRecord(slide.illustration) ? slide.illustration : undefined,
-          renderConfig: isRecord(slide.renderConfig) ? slide.renderConfig : undefined,
+          components: Array.isArray(slide.components)
+            ? slide.components.filter(isRecord)
+            : undefined,
           requiresTerminal:
             typeof slide.requiresTerminal === "boolean"
               ? slide.requiresTerminal

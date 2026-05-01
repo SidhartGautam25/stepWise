@@ -39,7 +39,6 @@ export interface ChallengeStepInfo {
   visibleTestPath?: string;
   hiddenTestPath?: string;
   timeoutMs?: number;
-  requiresTerminal?: boolean;
   server?: ServerConfig;
 }
 
@@ -164,10 +163,6 @@ export function parseChallengeInfoResponse(payload: unknown): ChallengeInfoRespo
             ? step.hiddenTestPath
             : undefined,
         timeoutMs: readOptionalNumber(step.timeoutMs),
-        requiresTerminal:
-          typeof step.requiresTerminal === "boolean"
-            ? step.requiresTerminal
-            : undefined,
         server: readOptionalServerConfig(step.server),
       };
     }),

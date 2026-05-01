@@ -102,7 +102,6 @@ model ChallengeStep {
   title       String
   position    Int                            // 1-based ordering within the challenge
   interactiveLesson Json? @map("interactive_lesson")
-  renderConfig Json? @map("render_config")
   createdAt   DateTime  @default(now()) @map("created_at")
 
   challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)

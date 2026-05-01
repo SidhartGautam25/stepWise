@@ -10,36 +10,39 @@
         "✅ Working app — add, check, delete tasks",
         "😊 She's proud of it. And she wants to make it even better."
       ],
-      "illustration": {
-        "type": "ExpandableCardList",
-        "hint": "Tap each card — this is Kavya's situation when our story begins",
-        "items": [
-          {
-            "id": "k1",
-            "icon": "👩‍💻",
-            "label": "Kavya — 2 months into learning to code",
-            "reveal": "She's not a beginner beginner — she knows enough to build things. But she's new enough that she doesn't know what she doesn't know. Like version control."
-          },
-          {
-            "id": "k2",
-            "icon": "📄",
-            "label": "Her project — a todo app in one file",
-            "reveal": "Everything is in todo.js. Add tasks, check them off, delete them. No backend, no database — pure JavaScript. It took 3 weeks to get working."
-          },
-          {
-            "id": "k3",
-            "icon": "✅",
-            "label": "The app is working",
-            "reveal": "Checkboxes work. Deleting works. The design is clean. She stayed up late fixing bugs. She's genuinely proud of what she built."
-          },
-          {
-            "id": "k4",
-            "icon": "💝",
-            "label": "It's hers",
-            "reveal": "Every line of that code is something she wrestled with. She knows exactly which part was hardest to figure out. That investment makes what happens next even more painful."
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ExpandableCardList",
+          "hint": "Tap each card — this is Kavya's situation when our story begins",
+          "items": [
+            {
+              "id": "k1",
+              "icon": "👩‍💻",
+              "label": "Kavya — 2 months into learning to code",
+              "reveal": "She's not a beginner beginner — she knows enough to build things. But she's new enough that she doesn't know what she doesn't know. Like version control."
+            },
+            {
+              "id": "k2",
+              "icon": "📄",
+              "label": "Her project — a todo app in one file",
+              "reveal": "Everything is in todo.js. Add tasks, check them off, delete them. No backend, no database — pure JavaScript. It took 3 weeks to get working."
+            },
+            {
+              "id": "k3",
+              "icon": "✅",
+              "label": "The app is working",
+              "reveal": "Checkboxes work. Deleting works. The design is clean. She stayed up late fixing bugs. She's genuinely proud of what she built."
+            },
+            {
+              "id": "k4",
+              "icon": "💝",
+              "label": "It's hers",
+              "reveal": "Every line of that code is something she wrestled with. She knows exactly which part was hardest to figure out. That investment makes what happens next even more painful."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "world-kavya-decides",
@@ -51,44 +54,47 @@
         "✏️ Two hours of editing — changing colours, styles, layout",
         "🤔 She's been modifying code she hasn't touched in weeks..."
       ],
-      "illustration": {
-        "type": "JourneyFlow",
-        "hint": "Follow Kavya's decision — one step at a time",
-        "steps": [
-          {
-            "icon": "🌙",
-            "action": "Late night — the screen is too bright",
-            "result": "She uses the app at night, squinting at the white background. Some users mentioned dark mode too.",
-            "color": "rgba(99,102,241,0.08)",
-            "border": "rgba(99,102,241,0.25)"
-          },
-          {
-            "icon": "💡",
-            "action": "The idea: add a dark mode toggle",
-            "result": "\"Just a button. Switch the colours. Maybe an hour of work.\" Famous last words.",
-            "color": "rgba(245,158,11,0.08)",
-            "border": "rgba(245,158,11,0.25)"
-          },
-          {
-            "icon": "✏️",
-            "action": "She opens todo.js and starts editing",
-            "result": "Changing background colours. Text colours. Button styles. Digging into code she hasn't touched in weeks.",
-            "color": "rgba(99,102,241,0.08)",
-            "border": "rgba(99,102,241,0.25)"
-          },
-          {
-            "icon": "⏰",
-            "action": "Two hours pass",
-            "result": "She's deep in it. Making progress. Getting excited. She'll check the result soon.",
-            "color": "rgba(34,197,94,0.08)",
-            "border": "rgba(34,197,94,0.25)"
-          }
-        ],
-        "startLabel": "▶ Follow the story",
-        "nextLabel": "→ Next",
-        "storeIcon": "⏰",
-        "storeLabel": "2 hours of editing..."
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "JourneyFlow",
+          "hint": "Follow Kavya's decision — one step at a time",
+          "steps": [
+            {
+              "icon": "🌙",
+              "action": "Late night — the screen is too bright",
+              "result": "She uses the app at night, squinting at the white background. Some users mentioned dark mode too.",
+              "color": "rgba(99,102,241,0.08)",
+              "border": "rgba(99,102,241,0.25)"
+            },
+            {
+              "icon": "💡",
+              "action": "The idea: add a dark mode toggle",
+              "result": "\"Just a button. Switch the colours. Maybe an hour of work.\" Famous last words.",
+              "color": "rgba(245,158,11,0.08)",
+              "border": "rgba(245,158,11,0.25)"
+            },
+            {
+              "icon": "✏️",
+              "action": "She opens todo.js and starts editing",
+              "result": "Changing background colours. Text colours. Button styles. Digging into code she hasn't touched in weeks.",
+              "color": "rgba(99,102,241,0.08)",
+              "border": "rgba(99,102,241,0.25)"
+            },
+            {
+              "icon": "⏰",
+              "action": "Two hours pass",
+              "result": "She's deep in it. Making progress. Getting excited. She'll check the result soon.",
+              "color": "rgba(34,197,94,0.08)",
+              "border": "rgba(34,197,94,0.25)"
+            }
+          ],
+          "startLabel": "▶ Follow the story",
+          "nextLabel": "→ Next",
+          "storeIcon": "⏰",
+          "storeLabel": "2 hours of editing..."
+        }
+      ]
     },
     {
       "id": "world-disaster-1a",
@@ -100,44 +106,47 @@
         "❌ Font broken, buttons misaligned, console errors",
         "🤔 She only changed colours... but everything is connected in code"
       ],
-      "illustration": {
-        "type": "JourneyFlow",
-        "hint": "The moment everything goes wrong — click through",
-        "steps": [
-          {
-            "icon": "🖥️",
-            "action": "She opens the browser",
-            "result": "\"Let me see how this looks!\" She refreshes the page. It loads.",
-            "color": "rgba(34,197,94,0.08)",
-            "border": "rgba(34,197,94,0.25)"
-          },
-          {
-            "icon": "❌",
-            "action": "The checkboxes are gone",
-            "result": "Just... gone. Empty space where they used to be. She stares, confused. She only changed colours.",
-            "color": "rgba(239,68,68,0.1)",
-            "border": "rgba(239,68,68,0.35)"
-          },
-          {
-            "icon": "🔴",
-            "action": "And the font is wrong. And buttons misaligned.",
-            "result": "A strange error flickering in the console. Everything looks broken. She didn't touch any of this code.",
-            "color": "rgba(239,68,68,0.12)",
-            "border": "rgba(239,68,68,0.45)"
-          },
-          {
-            "icon": "🤔",
-            "action": "\"I'll just undo it.\"",
-            "result": "Everything is connected in code. A change in one place ripples into another. But she can undo, right?",
-            "color": "rgba(245,158,11,0.1)",
-            "border": "rgba(245,158,11,0.35)"
-          }
-        ],
-        "startLabel": "▶ Watch the disaster",
-        "nextLabel": "→ What happened?",
-        "storeIcon": "💥",
-        "storeLabel": "Everything broken"
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "JourneyFlow",
+          "hint": "The moment everything goes wrong — click through",
+          "steps": [
+            {
+              "icon": "🖥️",
+              "action": "She opens the browser",
+              "result": "\"Let me see how this looks!\" She refreshes the page. It loads.",
+              "color": "rgba(34,197,94,0.08)",
+              "border": "rgba(34,197,94,0.25)"
+            },
+            {
+              "icon": "❌",
+              "action": "The checkboxes are gone",
+              "result": "Just... gone. Empty space where they used to be. She stares, confused. She only changed colours.",
+              "color": "rgba(239,68,68,0.1)",
+              "border": "rgba(239,68,68,0.35)"
+            },
+            {
+              "icon": "🔴",
+              "action": "And the font is wrong. And buttons misaligned.",
+              "result": "A strange error flickering in the console. Everything looks broken. She didn't touch any of this code.",
+              "color": "rgba(239,68,68,0.12)",
+              "border": "rgba(239,68,68,0.45)"
+            },
+            {
+              "icon": "🤔",
+              "action": "\"I'll just undo it.\"",
+              "result": "Everything is connected in code. A change in one place ripples into another. But she can undo, right?",
+              "color": "rgba(245,158,11,0.1)",
+              "border": "rgba(245,158,11,0.35)"
+            }
+          ],
+          "startLabel": "▶ Watch the disaster",
+          "nextLabel": "→ What happened?",
+          "storeIcon": "💥",
+          "storeLabel": "Everything broken"
+        }
+      ]
     },
     {
       "id": "world-disaster-1b",
@@ -149,44 +158,47 @@
         "💀 Goes too far — undo deletes the original working code too",
         "😭 Blank file. Three weeks of work. Gone."
       ],
-      "illustration": {
-        "type": "JourneyFlow",
-        "hint": "The undo spiral — this gets worse before it gets better",
-        "steps": [
-          {
-            "icon": "⏪",
-            "action": "Ctrl+Z",
-            "result": "One undo. The editor steps back one edit. Looks... the same. Still broken.",
-            "color": "rgba(245,158,11,0.08)",
-            "border": "rgba(245,158,11,0.25)"
-          },
-          {
-            "icon": "⏪⏪",
-            "action": "Ctrl+Z, Ctrl+Z, Ctrl+Z... x40",
-            "result": "She's undoing hundreds of small edits from two hours of work. But she went too far — now the ORIGINAL working code is disappearing too.",
-            "color": "rgba(239,68,68,0.1)",
-            "border": "rgba(239,68,68,0.35)"
-          },
-          {
-            "icon": "💀",
-            "action": "One undo too many",
-            "result": "The file is now empty. The checkboxes, the delete buttons, the entire app — gone. The undo went further back than the app existed.",
-            "color": "rgba(239,68,68,0.15)",
-            "border": "rgba(239,68,68,0.55)"
-          },
-          {
-            "icon": "😭",
-            "action": "She saves. Closes. Opens again.",
-            "result": "Blank file. Three weeks of code. Completely gone. This is the worst thing that has ever happened to her project.",
-            "color": "rgba(239,68,68,0.18)",
-            "border": "rgba(239,68,68,0.6)"
-          }
-        ],
-        "startLabel": "▶ Watch the undo spiral",
-        "nextLabel": "→ Next",
-        "storeIcon": "😭",
-        "storeLabel": "Everything gone"
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "JourneyFlow",
+          "hint": "The undo spiral — this gets worse before it gets better",
+          "steps": [
+            {
+              "icon": "⏪",
+              "action": "Ctrl+Z",
+              "result": "One undo. The editor steps back one edit. Looks... the same. Still broken.",
+              "color": "rgba(245,158,11,0.08)",
+              "border": "rgba(245,158,11,0.25)"
+            },
+            {
+              "icon": "⏪⏪",
+              "action": "Ctrl+Z, Ctrl+Z, Ctrl+Z... x40",
+              "result": "She's undoing hundreds of small edits from two hours of work. But she went too far — now the ORIGINAL working code is disappearing too.",
+              "color": "rgba(239,68,68,0.1)",
+              "border": "rgba(239,68,68,0.35)"
+            },
+            {
+              "icon": "💀",
+              "action": "One undo too many",
+              "result": "The file is now empty. The checkboxes, the delete buttons, the entire app — gone. The undo went further back than the app existed.",
+              "color": "rgba(239,68,68,0.15)",
+              "border": "rgba(239,68,68,0.55)"
+            },
+            {
+              "icon": "😭",
+              "action": "She saves. Closes. Opens again.",
+              "result": "Blank file. Three weeks of code. Completely gone. This is the worst thing that has ever happened to her project.",
+              "color": "rgba(239,68,68,0.18)",
+              "border": "rgba(239,68,68,0.6)"
+            }
+          ],
+          "startLabel": "▶ Watch the undo spiral",
+          "nextLabel": "→ Next",
+          "storeIcon": "😭",
+          "storeLabel": "Everything gone"
+        }
+      ]
     },
     {
       "id": "world-kavya-learns",
@@ -198,40 +210,43 @@
         "📂 Starts naming and saving backup files manually",
         "😌 For a while, it feels like the right solution..."
       ],
-      "illustration": {
-        "type": "ComparePanel",
-        "hint": "See how Kavya's backup system works — and where it fails",
-        "left": {
-          "icon": "💪",
-          "title": "Kavya rebuilds",
-          "color": "rgba(99,102,241,0.06)",
-          "border": "rgba(99,102,241,0.25)",
-          "locked": false,
-          "closedHint": "What she did after the disaster →",
-          "revealContent": [
-            "Rebuilds the app from memory over 4 days",
-            "Makes a new rule: always copy before changing anything",
-            "Starts naming backup files manually before every edit",
-            "😌 Feels safer. Like she has a safety net now."
-          ]
-        },
-        "right": {
-          "icon": "😰",
-          "title": "Two weeks later...",
-          "color": "rgba(239,68,68,0.06)",
-          "border": "rgba(239,68,68,0.25)",
-          "closedHint": "What the backup system became →",
-          "revealContent": [
-            "todo-backup-jan5.zip",
-            "todo-WORKING-VERSION.zip",
-            "todo-before-darkmode.zip",
-            "todo-final-v2.zip",
-            "todo-USE_THIS_ONE.zip",
-            "😱 Seven files. No idea what's in any of them."
-          ]
-        },
-        "successMessage": "The backup idea was right. The execution was a mess."
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ComparePanel",
+          "hint": "See how Kavya's backup system works — and where it fails",
+          "left": {
+            "icon": "💪",
+            "title": "Kavya rebuilds",
+            "color": "rgba(99,102,241,0.06)",
+            "border": "rgba(99,102,241,0.25)",
+            "locked": false,
+            "closedHint": "What she did after the disaster →",
+            "revealContent": [
+              "Rebuilds the app from memory over 4 days",
+              "Makes a new rule: always copy before changing anything",
+              "Starts naming backup files manually before every edit",
+              "😌 Feels safer. Like she has a safety net now."
+            ]
+          },
+          "right": {
+            "icon": "😰",
+            "title": "Two weeks later...",
+            "color": "rgba(239,68,68,0.06)",
+            "border": "rgba(239,68,68,0.25)",
+            "closedHint": "What the backup system became →",
+            "revealContent": [
+              "todo-backup-jan5.zip",
+              "todo-WORKING-VERSION.zip",
+              "todo-before-darkmode.zip",
+              "todo-final-v2.zip",
+              "todo-USE_THIS_ONE.zip",
+              "😱 Seven files. No idea what's in any of them."
+            ]
+          },
+          "successMessage": "The backup idea was right. The execution was a mess."
+        }
+      ]
     },
     {
       "id": "world-disaster-2",
@@ -243,42 +258,45 @@
         "😰 Seven files. No idea which one is the right one.",
         "→ Tap each file below — see if the names help you figure it out"
       ],
-      "illustration": {
-        "type": "ExpandableCardList",
-        "hint": "Tap each file — can you tell what's inside just from the name?",
-        "items": [
-          {
-            "id": "d1",
-            "icon": "📦",
-            "label": "todo-backup-jan5.zip",
-            "reveal": "🤷 Was this before or after she fixed the checkbox bug? Does it have the mobile layout? Jan 5th was... which week? She can't remember."
-          },
-          {
-            "id": "d2",
-            "icon": "📦",
-            "label": "todo-WORKING-VERSION.zip",
-            "reveal": "🤷 Working WITH which features? With dark mode? With filters? With animations? 'Working' is not a useful description."
-          },
-          {
-            "id": "d3",
-            "icon": "📦",
-            "label": "todo-before-darkmode.zip",
-            "reveal": "Oh this one might have the animations! But wait — did she add the animation fix before or after the darkmode attempt? She genuinely can't remember."
-          },
-          {
-            "id": "d4",
-            "icon": "📦",
-            "label": "todo-final-v2.zip",
-            "reveal": "🤷 v2 of what? There's no v1 in this folder. When did this become version 2? What changed between v1 and v2?"
-          },
-          {
-            "id": "d5",
-            "icon": "📦",
-            "label": "todo-USE_THIS_ONE.zip",
-            "reveal": "This feels like the right one. But... was this before or after Rohan sent her his version 3 days ago? Her head hurts."
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ExpandableCardList",
+          "hint": "Tap each file — can you tell what's inside just from the name?",
+          "items": [
+            {
+              "id": "d1",
+              "icon": "📦",
+              "label": "todo-backup-jan5.zip",
+              "reveal": "🤷 Was this before or after she fixed the checkbox bug? Does it have the mobile layout? Jan 5th was... which week? She can't remember."
+            },
+            {
+              "id": "d2",
+              "icon": "📦",
+              "label": "todo-WORKING-VERSION.zip",
+              "reveal": "🤷 Working WITH which features? With dark mode? With filters? With animations? 'Working' is not a useful description."
+            },
+            {
+              "id": "d3",
+              "icon": "📦",
+              "label": "todo-before-darkmode.zip",
+              "reveal": "Oh this one might have the animations! But wait — did she add the animation fix before or after the darkmode attempt? She genuinely can't remember."
+            },
+            {
+              "id": "d4",
+              "icon": "📦",
+              "label": "todo-final-v2.zip",
+              "reveal": "🤷 v2 of what? There's no v1 in this folder. When did this become version 2? What changed between v1 and v2?"
+            },
+            {
+              "id": "d5",
+              "icon": "📦",
+              "label": "todo-USE_THIS_ONE.zip",
+              "reveal": "This feels like the right one. But... was this before or after Rohan sent her his version 3 days ago? Her head hurts."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "world-disaster-3-setup",
@@ -290,12 +308,15 @@
         "📂 Both editing their own copy of the same file",
         "⏱️ Both working for 3 hours separately..."
       ],
-      "illustration": {
-        "type": "InfoCallout",
-        "variant": "info",
-        "icon": "🤝",
-        "text": "Kavya's friend Rohan offers to help. He'll add filter buttons — 'show only incomplete tasks'. It sounds great. They split the work: Kavya takes the search bar, Rohan takes filters. They both download the latest todo.js. They both start coding. Separately. On the same file..."
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "InfoCallout",
+          "variant": "info",
+          "icon": "🤝",
+          "text": "Kavya's friend Rohan offers to help. He'll add filter buttons — 'show only incomplete tasks'. It sounds great. They split the work: Kavya takes the search bar, Rohan takes filters. They both download the latest todo.js. They both start coding. Separately. On the same file..."
+        }
+      ]
     },
     {
       "id": "world-disaster-3",
@@ -307,59 +328,62 @@
         "💥 Her 3 hours of search code: gone. Only Rohan's filters remain.",
         "😶 Nobody made a mistake. The system just doesn't work for two people."
       ],
-      "illustration": {
-        "type": "StepSimulator",
-        "hint": "Watch what happens when two people work on the same file separately",
-        "actors": [
-          {
-            "icon": "👩‍💻",
-            "label": "Kavya",
-            "sublabel": "search bar feature",
-            "color": "rgba(99,102,241,0.1)",
-            "border": "rgba(99,102,241,0.4)"
-          },
-          {
-            "icon": "📂",
-            "label": "todo.js",
-            "sublabel": "the shared file",
-            "color": "rgba(100,116,139,0.08)",
-            "border": "rgba(100,116,139,0.3)",
-            "isManager": true
-          },
-          {
-            "icon": "👦",
-            "label": "Rohan",
-            "sublabel": "filter buttons",
-            "color": "rgba(245,158,11,0.1)",
-            "border": "rgba(245,158,11,0.4)"
-          }
-        ],
-        "steps": [
-          {
-            "from": "👩‍💻 Kavya",
-            "to": "📂 todo.js",
-            "action": "3 hours coding the search bar — input box, filter logic, highlighting matches"
-          },
-          {
-            "from": "👦 Rohan",
-            "to": "👩‍💻 Kavya",
-            "action": "Rohan finishes first — sends his version via email attachment"
-          },
-          {
-            "from": "👩‍💻 Kavya",
-            "to": "📂 todo.js",
-            "action": "Kavya opens the attachment, copies it into the folder. Click. Replace."
-          },
-          {
-            "from": "📂 todo.js",
-            "to": "👩‍💻 Kavya",
-            "action": "💥 Her 3 hours of search code: gone. Rohan's file replaced everything she wrote."
-          }
-        ],
-        "startLabel": "▶ Watch what happens",
-        "nextLabel": "→ Continue",
-        "doneMessage": "😶 Nobody made a mistake. There was just no safe way to work on the same project together."
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "StepSimulator",
+          "hint": "Watch what happens when two people work on the same file separately",
+          "actors": [
+            {
+              "icon": "👩‍💻",
+              "label": "Kavya",
+              "sublabel": "search bar feature",
+              "color": "rgba(99,102,241,0.1)",
+              "border": "rgba(99,102,241,0.4)"
+            },
+            {
+              "icon": "📂",
+              "label": "todo.js",
+              "sublabel": "the shared file",
+              "color": "rgba(100,116,139,0.08)",
+              "border": "rgba(100,116,139,0.3)",
+              "isManager": true
+            },
+            {
+              "icon": "👦",
+              "label": "Rohan",
+              "sublabel": "filter buttons",
+              "color": "rgba(245,158,11,0.1)",
+              "border": "rgba(245,158,11,0.4)"
+            }
+          ],
+          "steps": [
+            {
+              "from": "👩‍💻 Kavya",
+              "to": "📂 todo.js",
+              "action": "3 hours coding the search bar — input box, filter logic, highlighting matches"
+            },
+            {
+              "from": "👦 Rohan",
+              "to": "👩‍💻 Kavya",
+              "action": "Rohan finishes first — sends his version via email attachment"
+            },
+            {
+              "from": "👩‍💻 Kavya",
+              "to": "📂 todo.js",
+              "action": "Kavya opens the attachment, copies it into the folder. Click. Replace."
+            },
+            {
+              "from": "📂 todo.js",
+              "to": "👩‍💻 Kavya",
+              "action": "💥 Her 3 hours of search code: gone. Rohan's file replaced everything she wrote."
+            }
+          ],
+          "startLabel": "▶ Watch what happens",
+          "nextLabel": "→ Continue",
+          "doneMessage": "😶 Nobody made a mistake. There was just no safe way to work on the same project together."
+        }
+      ]
     },
     {
       "id": "world-summary",
@@ -371,32 +395,35 @@
         "Problem 3 → Need: combine two people's photos without destroying either's work",
         "→ Next: discover the solutions — through examples you already understand"
       ],
-      "illustration": {
-        "type": "ClickRevealGrid",
-        "hint": "Tap each problem — see what Kavya actually needed",
-        "columns": 1,
-        "detailLabel": "What was actually needed →",
-        "items": [
-          {
-            "id": "s1",
-            "icon": "💥",
-            "label": "Problem 1 — Broke working code, couldn't go back",
-            "detail": "She needed a way to 'freeze' the code at any moment — like taking a photograph. So she could always say 'restore to this exact state', no matter what she did afterward."
-          },
-          {
-            "id": "s2",
-            "icon": "🗂️",
-            "label": "Problem 2 — Too many copies, couldn't find the right one",
-            "detail": "She needed every saved version to come with a clear, human-readable label explaining what's inside — without having to open the file to find out."
-          },
-          {
-            "id": "s3",
-            "icon": "👥",
-            "label": "Problem 3 — Two people, one file — constant collision",
-            "detail": "She and Rohan needed a system where each person could save their own changes separately, then combine them intelligently — not just overwrite one version with another."
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ClickRevealGrid",
+          "hint": "Tap each problem — see what Kavya actually needed",
+          "columns": 1,
+          "detailLabel": "What was actually needed →",
+          "items": [
+            {
+              "id": "s1",
+              "icon": "💥",
+              "label": "Problem 1 — Broke working code, couldn't go back",
+              "detail": "She needed a way to 'freeze' the code at any moment — like taking a photograph. So she could always say 'restore to this exact state', no matter what she did afterward."
+            },
+            {
+              "id": "s2",
+              "icon": "🗂️",
+              "label": "Problem 2 — Too many copies, couldn't find the right one",
+              "detail": "She needed every saved version to come with a clear, human-readable label explaining what's inside — without having to open the file to find out."
+            },
+            {
+              "id": "s3",
+              "icon": "👥",
+              "label": "Problem 3 — Two people, one file — constant collision",
+              "detail": "She and Rohan needed a system where each person could save their own changes separately, then combine them intelligently — not just overwrite one version with another."
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -9,7 +9,9 @@
         "✋ She changed the code to add a new feature",
         "💥 Everything broke — old AND new",
         "😭 No way back. The working version is gone."
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "dev-problem2",
@@ -20,7 +22,9 @@
         "🗑️ Afraid to delete any in case she needs it",
         "🕐 Wasted time digging through old zips",
         "🧠 She needs to remember every version in her head"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "dev-problem3",
@@ -31,7 +35,9 @@
         "👨‍💻 Raj: working on settings",
         "📂 Both editing the same files",
         "💥 One person's work erases the other's"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "dev-git-solves",
@@ -41,7 +47,9 @@
         "Problem 1: Can't go back → Git saves checkpoints (commits) you can always return to",
         "Problem 2: Folder of doom → Git stores all versions with labels, automatically",
         "Problem 3: Two people overwriting → Git tracks every change by every person and merges them safely"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     }
   ]
 }

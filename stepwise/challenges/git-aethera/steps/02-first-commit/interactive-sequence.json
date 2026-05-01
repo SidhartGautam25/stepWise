@@ -6,7 +6,9 @@
       "body": "1. **`git status`** sees what changed.\n2. **`git add`** selects files for the next snapshot.\n3. **`git commit -m \"message\"`** saves the snapshot with a readable label.",
       "bullets": [
         "You need ≥1 tracked change before committing"
-      ]
+      ],
+      "requiresTerminal": true,
+      "components": []
     },
     {
       "id": "commit-run",
@@ -16,7 +18,9 @@
       "advanceOnCommand": {
         "mode": "prefix",
         "value": "git commit"
-      }
+      },
+      "requiresTerminal": true,
+      "components": []
     }
   ]
 }

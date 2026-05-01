@@ -9,7 +9,9 @@
         "⏪ Undo last hour of work = git checkout",
         "🧪 Try risky changes without fear",
         "✅ Always have a safe version to go back to"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "git-what-mess",
@@ -20,7 +22,9 @@
         "📜 Clean history: who changed what, when, and why",
         "🤝 Multiple people can work on the same project safely",
         "🔍 Find exactly when a bug was introduced"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "git-what-how",
@@ -31,7 +35,9 @@
         "📸 Commit = one snapshot",
         "🗓️ History = all your snapshots in order",
         "🌿 Branch = a parallel timeline for experimenting"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "git-what-terminal",
@@ -41,7 +47,9 @@
         "⌨️ Type git --version to see Git is installed",
         "📖 Type git help to see all commands",
         "🚀 You're about to make your first real commit!"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     }
   ]
 }

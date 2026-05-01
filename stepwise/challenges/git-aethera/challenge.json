@@ -11,120 +11,72 @@
     {
       "id": "00-welcome",
       "title": "Welcome — You're in the Right Place",
-      "requiresTerminal": false,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {},
-      "renderConfig": {
-        "type": "LessonSequence",
-        "title": "Interactive Lesson",
-        "subtitle": "Story first, simulation next."
-      }
+      "tests": {}
     },
     {
       "id": "00-world-before",
       "title": "The World Before Version Control",
-      "requiresTerminal": false,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {},
-      "renderConfig": {
-        "type": "LessonSequence",
-        "title": "Interactive Lesson",
-        "subtitle": "Understand the pain Git solves."
-      }
+      "tests": {}
     },
     {
       "id": "00-snapshot-idea",
       "title": "The Big Idea — Snapshots",
-      "requiresTerminal": false,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {},
-      "renderConfig": {
-        "type": "LessonSequence",
-        "title": "Interactive Lesson",
-        "subtitle": "From idea to Git concepts."
-      }
+      "tests": {}
     },
     {
       "id": "01-init",
       "title": "Starting a Repository",
-      "requiresTerminal": true,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {},
-      "renderConfig": {
-        "type": "LessonTerminalVisualWorkspace",
-        "lessonTitle": "git init — start the vault",
-        "lessonSubtitle": "Lesson · terminal · simulated tree",
-        "visualPanelWidthPct": 50,
-        "lessonStackTopPct": 50
-      }
+      "tests": {}
     },
     {
       "id": "02-first-commit",
       "title": "Your First Snapshot",
-      "requiresTerminal": true,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {},
-      "renderConfig": {
-        "type": "LessonTerminalVisualWorkspace",
-        "lessonTitle": "Stage + commit",
-        "lessonSubtitle": "status → add → commit — watch the DAG grow",
-        "visualPanelWidthPct": 50,
-        "lessonStackTopPct": 50
-      }
+      "tests": {}
     },
     {
       "id": "03-history",
       "title": "Reading Your History",
-      "requiresTerminal": true,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {},
-      "renderConfig": {
-        "type": "LessonTerminalVisualWorkspace",
-        "lessonTitle": "git log",
-        "lessonSubtitle": "Two commits · then read history",
-        "visualPanelWidthPct": 50,
-        "lessonStackTopPct": 50
-      }
+      "tests": {}
     },
     {
       "id": "04-branch",
       "title": "Parallel Worlds — Branching",
-      "requiresTerminal": true,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {},
-      "renderConfig": {
-        "type": "LessonSequence",
-        "title": "Interactive Lesson",
-        "subtitle": "Stories + slide deck before the branching lab."
-      }
+      "tests": {}
     }
   ]
 }

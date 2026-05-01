@@ -6,7 +6,9 @@
       "body": "**`touch`** creates an empty file.\n\n**`>`** redirects text into a file (overwriting).\n\n**`cat`** prints a file to the terminal.",
       "bullets": [
         "Stay in `/home/student/projects` — same folder as the navigation step"
-      ]
+      ],
+      "requiresTerminal": true,
+      "components": []
     },
     {
       "id": "files-task",
@@ -18,7 +20,9 @@
       "advanceOnCommand": {
         "mode": "prefix",
         "value": "cat notes.txt"
-      }
+      },
+      "requiresTerminal": true,
+      "components": []
     }
   ]
 }

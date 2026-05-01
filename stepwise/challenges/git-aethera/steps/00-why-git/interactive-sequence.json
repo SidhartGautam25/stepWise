@@ -9,7 +9,9 @@
         "🗑️ Afraid to delete old files in case you need them",
         "🤝 Emailing files back and forth with teammates",
         "🐛 No way to know when a bug was introduced"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "why-git-timeline",
@@ -20,7 +22,9 @@
         "🔎 Find who introduced a bug and when",
         "↩️ Undo anything, even from a week ago",
         "📖 Understand the whole story of your project"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "why-git-branches",
@@ -31,7 +35,9 @@
         "✅ Merge when it works",
         "🗑️ Delete if it doesn't — no damage done",
         "👥 Teams work in parallel branches simultaneously"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "why-git-staging",
@@ -42,7 +48,9 @@
         "📋 Staging area = what you've packed",
         "🏛️ Repository = the permanent snapshot",
         "git add moves files to staging → git commit saves them permanently"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     }
   ]
 }

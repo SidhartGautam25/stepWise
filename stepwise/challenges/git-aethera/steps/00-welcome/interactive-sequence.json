@@ -10,38 +10,41 @@
         "✅ Real examples, plain language, no jargon",
         "✅ By the end, you'll actually understand Git — not just copy commands"
       ],
-      "illustration": {
-        "type": "ClickRevealGrid",
-        "hint": "Tap each card — see what Git will make possible for you",
-        "columns": 2,
-        "detailLabel": "What this means for you →",
-        "items": [
-          {
-            "id": "w1",
-            "icon": "⏪",
-            "label": "Never lose working code again",
-            "detail": "Every time your code works, you'll take a snapshot. Disasters become a single command to undo."
-          },
-          {
-            "id": "w2",
-            "icon": "🔬",
-            "label": "Experiment without fear",
-            "detail": "Try any idea — risky or not — on a branch. If it fails, delete the branch. Main code is untouched."
-          },
-          {
-            "id": "w3",
-            "icon": "📖",
-            "label": "Read your project's whole story",
-            "detail": "See every change you ever made, labelled and in order. Find when anything was added or broken."
-          },
-          {
-            "id": "w4",
-            "icon": "🤝",
-            "label": "Work with others without chaos",
-            "detail": "Multiple people on the same project — Git merges everyone's work intelligently."
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ClickRevealGrid",
+          "hint": "Tap each card — see what Git will make possible for you",
+          "columns": 2,
+          "detailLabel": "What this means for you →",
+          "items": [
+            {
+              "id": "w1",
+              "icon": "⏪",
+              "label": "Never lose working code again",
+              "detail": "Every time your code works, you'll take a snapshot. Disasters become a single command to undo."
+            },
+            {
+              "id": "w2",
+              "icon": "🔬",
+              "label": "Experiment without fear",
+              "detail": "Try any idea — risky or not — on a branch. If it fails, delete the branch. Main code is untouched."
+            },
+            {
+              "id": "w3",
+              "icon": "📖",
+              "label": "Read your project's whole story",
+              "detail": "See every change you ever made, labelled and in order. Find when anything was added or broken."
+            },
+            {
+              "id": "w4",
+              "icon": "🤝",
+              "label": "Work with others without chaos",
+              "detail": "Multiple people on the same project — Git merges everyone's work intelligently."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "welcome-what-youll-do",
@@ -53,44 +56,47 @@
         "💡 Discover each Git concept naturally",
         "⌨️ Then practice with real commands"
       ],
-      "illustration": {
-        "type": "JourneyFlow",
-        "hint": "This is the path we're taking — click through each stage",
-        "steps": [
-          {
-            "icon": "📖",
-            "action": "Follow Kavya's story",
-            "result": "See the real problems every developer faces without version control",
-            "color": "rgba(239,68,68,0.08)",
-            "border": "rgba(239,68,68,0.3)"
-          },
-          {
-            "icon": "💡",
-            "action": "Discover the solutions",
-            "result": "Work out the ideas behind version control before seeing any commands",
-            "color": "rgba(245,158,11,0.08)",
-            "border": "rgba(245,158,11,0.3)"
-          },
-          {
-            "icon": "🧩",
-            "action": "Meet Git",
-            "result": "See how Git already built every idea you just discovered — nothing arbitrary",
-            "color": "rgba(99,102,241,0.08)",
-            "border": "rgba(99,102,241,0.3)"
-          },
-          {
-            "icon": "⌨️",
-            "action": "Practice in the terminal",
-            "result": "Commands that make complete sense because you understand the why",
-            "color": "rgba(34,197,94,0.10)",
-            "border": "rgba(34,197,94,0.4)"
-          }
-        ],
-        "startLabel": "▶ See the journey",
-        "nextLabel": "→ Next stage",
-        "storeIcon": "🎓",
-        "storeLabel": "Git mastery"
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "JourneyFlow",
+          "hint": "This is the path we're taking — click through each stage",
+          "steps": [
+            {
+              "icon": "📖",
+              "action": "Follow Kavya's story",
+              "result": "See the real problems every developer faces without version control",
+              "color": "rgba(239,68,68,0.08)",
+              "border": "rgba(239,68,68,0.3)"
+            },
+            {
+              "icon": "💡",
+              "action": "Discover the solutions",
+              "result": "Work out the ideas behind version control before seeing any commands",
+              "color": "rgba(245,158,11,0.08)",
+              "border": "rgba(245,158,11,0.3)"
+            },
+            {
+              "icon": "🧩",
+              "action": "Meet Git",
+              "result": "See how Git already built every idea you just discovered — nothing arbitrary",
+              "color": "rgba(99,102,241,0.08)",
+              "border": "rgba(99,102,241,0.3)"
+            },
+            {
+              "icon": "⌨️",
+              "action": "Practice in the terminal",
+              "result": "Commands that make complete sense because you understand the why",
+              "color": "rgba(34,197,94,0.10)",
+              "border": "rgba(34,197,94,0.4)"
+            }
+          ],
+          "startLabel": "▶ See the journey",
+          "nextLabel": "→ Next stage",
+          "storeIcon": "🎓",
+          "storeLabel": "Git mastery"
+        }
+      ]
     },
     {
       "id": "welcome-no-fear",
@@ -102,38 +108,41 @@
         "✅ Deep understanding that lasts forever",
         "✅ Confidence to use Git on any real project"
       ],
-      "illustration": {
-        "type": "ComparePanel",
-        "hint": "This is how most people learn Git — vs. how we're doing it",
-        "left": {
-          "icon": "😤",
-          "title": "The usual way",
-          "color": "rgba(239,68,68,0.06)",
-          "border": "rgba(239,68,68,0.25)",
-          "locked": false,
-          "closedHint": "Click — see the painful way →",
-          "revealContent": [
-            "1. Here are 20 commands — memorize them",
-            "2. Why do they work? Doesn't matter.",
-            "3. You'll figure it out when things break",
-            "😰 Confused. Copying from StackOverflow forever."
-          ]
-        },
-        "right": {
-          "icon": "😌",
-          "title": "Our way",
-          "color": "rgba(34,197,94,0.06)",
-          "border": "rgba(34,197,94,0.3)",
-          "closedHint": "Click — see the better way →",
-          "revealContent": [
-            "1. Here's the problem (real, relatable, painful)",
-            "2. Here's the solution that makes sense",
-            "3. Here's the Git command that does it",
-            "🎯 Deep understanding. Commands feel obvious."
-          ]
-        },
-        "successMessage": "✅ You're learning the right way. Let's go!"
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ComparePanel",
+          "hint": "This is how most people learn Git — vs. how we're doing it",
+          "left": {
+            "icon": "😤",
+            "title": "The usual way",
+            "color": "rgba(239,68,68,0.06)",
+            "border": "rgba(239,68,68,0.25)",
+            "locked": false,
+            "closedHint": "Click — see the painful way →",
+            "revealContent": [
+              "1. Here are 20 commands — memorize them",
+              "2. Why do they work? Doesn't matter.",
+              "3. You'll figure it out when things break",
+              "😰 Confused. Copying from StackOverflow forever."
+            ]
+          },
+          "right": {
+            "icon": "😌",
+            "title": "Our way",
+            "color": "rgba(34,197,94,0.06)",
+            "border": "rgba(34,197,94,0.3)",
+            "closedHint": "Click — see the better way →",
+            "revealContent": [
+              "1. Here's the problem (real, relatable, painful)",
+              "2. Here's the solution that makes sense",
+              "3. Here's the Git command that does it",
+              "🎯 Deep understanding. Commands feel obvious."
+            ]
+          },
+          "successMessage": "✅ You're learning the right way. Let's go!"
+        }
+      ]
     }
   ]
 }

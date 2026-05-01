@@ -221,11 +221,13 @@ export function renderIllustration(
           onActiveSlideChange={runtime.onActiveSlideChange}
           renderIllustration={(slideId) => {
             const slide = config.slides.find((candidate) => candidate.id === slideId);
+            const components = Array.isArray(slide?.components)
+              ? (slide.components as IllustrationConfig[])
+              : undefined;
             const illustration =
-              config.slideIllustrations?.[slideId] ??
-              (slide?.renderConfig as IllustrationConfig | undefined) ??
-              (slide?.illustration as IllustrationConfig | undefined) ??
-              config.fallbackIllustration;
+              components && components.length > 0
+                ? ({ type: "Multi", illustrations: components } as IllustrationConfig)
+                : config.slideIllustrations?.[slideId] ?? config.fallbackIllustration;
 
             return illustration ? renderIllustration(illustration, runtime) : null;
           }}
@@ -270,11 +272,13 @@ export function renderIllustration(
                 onActiveSlideChange={runtime.onActiveSlideChange}
                 renderIllustration={(slideId) => {
                   const slide = config.slides.find((candidate) => candidate.id === slideId);
+                  const components = Array.isArray(slide?.components)
+                    ? (slide.components as IllustrationConfig[])
+                    : undefined;
                   const illustration =
-                    config.slideIllustrations?.[slideId] ??
-                    (slide?.renderConfig as IllustrationConfig | undefined) ??
-                    (slide?.illustration as IllustrationConfig | undefined) ??
-                    config.fallbackIllustration;
+                    components && components.length > 0
+                      ? ({ type: "Multi", illustrations: components } as IllustrationConfig)
+                      : config.slideIllustrations?.[slideId] ?? config.fallbackIllustration;
 
                   return illustration ? renderIllustration(illustration, runtime) : null;
                 }}

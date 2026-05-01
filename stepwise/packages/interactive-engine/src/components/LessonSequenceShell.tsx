@@ -43,8 +43,7 @@ export interface LessonSlide {
   heading: string;
   body: string;
   bullets?: string[];
-  illustration?: unknown;
-  renderConfig?: unknown;
+  components?: unknown[];
   requiresTerminal?: boolean;
   /** Match against the learner's latest successful simulated-terminal command */
   advanceOnCommand?: SlideAdvanceOnCommand;

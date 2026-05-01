@@ -7,23 +7,21 @@
   "runtime": "web-terminal",
   "mode": "web",
   "description": "A visual gallery of StepWise interactive-engine components, with example input and usage notes.",
-  "tags": ["interactive-engine", "components", "guide"],
+  "tags": [
+    "interactive-engine",
+    "components",
+    "guide"
+  ],
   "steps": [
     {
       "id": "component-gallery",
       "title": "Component Gallery",
-      "requiresTerminal": false,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {},
-      "renderConfig": {
-        "type": "LessonSequence",
-        "title": "Interactive Engine Guide",
-        "subtitle": "Browse each renderer, inspect its input shape, and see how it feels."
-      }
+      "tests": {}
     }
   ]
 }

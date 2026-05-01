@@ -129,7 +129,6 @@ export async function syncChallengeDirectory(
     const step = registry.steps[i];
     if (!step) continue;
     const interactiveLessonJson = toNullableJson(step.interactiveLessonContent);
-    const renderConfigJson = toNullableJson(step.renderConfig);
 
     await prisma.challengeStep.upsert({
       where: {
@@ -144,13 +143,11 @@ export async function syncChallengeDirectory(
         title: step.title,
         position: i + 1,
         interactiveLesson: interactiveLessonJson,
-        renderConfig: renderConfigJson,
       },
       update: {
         title: step.title,
         position: i + 1,
         interactiveLesson: interactiveLessonJson,
-        renderConfig: renderConfigJson,
       },
     });
   }

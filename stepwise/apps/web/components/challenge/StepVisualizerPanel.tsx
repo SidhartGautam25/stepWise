@@ -57,40 +57,14 @@ function buildGuideConfig(
   step: ChallengeDetail["steps"][number],
 ): IllustrationConfig | undefined {
   if (step.interactiveLesson?.slides?.length) {
-    const legacyConfig = isRecord(step.renderConfig) ? step.renderConfig : undefined;
-    const legacyType =
-      legacyConfig?.type === "LessonTerminalVisualWorkspace" ||
-      legacyConfig?.type === "LessonSequence"
-        ? legacyConfig
-        : undefined;
-
     return {
-      ...legacyType,
       type: "LessonSequence",
       stepId: step.id,
-      title:
-        readString(legacyType?.title) ??
-        readString(legacyType?.lessonTitle) ??
-        "Interactive Lesson",
-      subtitle:
-        readString(legacyType?.subtitle) ??
-        readString(legacyType?.lessonSubtitle) ??
-        "Explore the idea, then try it.",
+      title: "Interactive Lesson",
+      subtitle: "Explore the idea, then try it.",
       slides: step.interactiveLesson.slides,
     } as IllustrationConfig;
   }
 
-  if (isRecord(step.renderConfig) && step.renderConfig.type !== "VisualWorld") {
-    return step.renderConfig as unknown as IllustrationConfig;
-  }
-
   return undefined;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function readString(value: unknown): string | undefined {
-  return typeof value === "string" && value.length > 0 ? value : undefined;
 }

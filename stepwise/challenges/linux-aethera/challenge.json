@@ -11,106 +11,62 @@
     {
       "id": "00-welcome",
       "title": "Why Learn Linux This Way",
-      "requiresTerminal": false,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {},
-      "renderConfig": {
-        "type": "LessonSequence",
-        "title": "Interactive Lesson",
-        "subtitle": "Read the narrative, then move to the hands-on step."
-      }
+      "tests": {}
     },
     {
       "id": "00-why-os",
       "title": "Storage — Where Your Stuff Lives",
-      "requiresTerminal": false,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {},
-      "renderConfig": {
-        "type": "LessonSequence",
-        "title": "Interactive Lesson",
-        "subtitle": "Understand storage before you touch commands."
-      }
+      "tests": {}
     },
     {
       "id": "00-orientation",
       "title": "How to Read the Visualizer",
-      "requiresTerminal": true,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {},
-      "renderConfig": {
-        "type": "LessonTerminalVisualWorkspace",
-        "lessonTitle": "How to read the Visualizer",
-        "lessonSubtitle": "Lesson + terminal (50/50) · live tree →",
-        "visualPanelWidthPct": 50,
-        "lessonStackTopPct": 50
-      }
+      "tests": {}
     },
     {
       "id": "01-directories",
       "title": "Directories and Listing",
-      "requiresTerminal": true,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {},
-      "renderConfig": {
-        "type": "LessonTerminalVisualWorkspace",
-        "lessonTitle": "Directories & listing",
-        "lessonSubtitle": "Follow the lesson · type commands below",
-        "visualPanelWidthPct": 50,
-        "lessonStackTopPct": 50
-      }
+      "tests": {}
     },
     {
       "id": "02-navigation",
       "title": "Moving Between Directories",
-      "requiresTerminal": true,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {},
-      "renderConfig": {
-        "type": "LessonTerminalVisualWorkspace",
-        "lessonTitle": "Navigation (`cd`, `pwd`)",
-        "lessonSubtitle": "Slides + terminal under · tree on the right",
-        "visualPanelWidthPct": 50,
-        "lessonStackTopPct": 50
-      }
+      "tests": {}
     },
     {
       "id": "03-files-and-listing",
       "title": "Files, Content, and Listing",
-      "requiresTerminal": true,
       "interactiveLesson": {
         "type": "sequence",
         "content": "interactive-sequence.json"
       },
       "workspace": {},
-      "tests": {},
-      "renderConfig": {
-        "type": "LessonTerminalVisualWorkspace",
-        "lessonTitle": "Files & content",
-        "lessonSubtitle": "Create, fill, read — watch the filesystem respond",
-        "visualPanelWidthPct": 50,
-        "lessonStackTopPct": 50
-      }
+      "tests": {}
     }
   ]
 }

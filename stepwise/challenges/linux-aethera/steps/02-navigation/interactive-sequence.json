@@ -6,7 +6,9 @@
       "body": "**`cd`** changes your working directory.\n\n**`pwd`** confirms where you are.\n\n**`cd ..`** climbs one level toward `/`.",
       "bullets": [
         "You built `projects` last step — it's still under `/home/student/projects`"
-      ]
+      ],
+      "requiresTerminal": true,
+      "components": []
     },
     {
       "id": "nav-task",
@@ -16,7 +18,9 @@
       "advanceOnCommand": {
         "mode": "prefix",
         "value": "cd projects"
-      }
+      },
+      "requiresTerminal": true,
+      "components": []
     }
   ]
 }

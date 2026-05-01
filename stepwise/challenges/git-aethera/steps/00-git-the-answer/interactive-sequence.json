@@ -10,38 +10,41 @@
         "git push → sends snapshots to the shared place",
         "git pull → gets others' snapshots from the shared place"
       ],
-      "illustration": {
-        "type": "ClickRevealGrid",
-        "hint": "Tap each idea — see the Git command that does it",
-        "columns": 1,
-        "detailLabel": "The Git command →",
-        "items": [
-          {
-            "id": "g1",
-            "icon": "📸",
-            "label": "Take a labelled snapshot",
-            "detail": "git add (choose what to include) → git commit -m \"your label\" (take the snapshot). That's it. One snapshot taken."
-          },
-          {
-            "id": "g2",
-            "icon": "📜",
-            "label": "See the timeline of all snapshots",
-            "detail": "git log --oneline — shows every snapshot ever taken, newest first, each with its label. Clean, instant, searchable."
-          },
-          {
-            "id": "g3",
-            "icon": "⏪",
-            "label": "Go back to any snapshot",
-            "detail": "git checkout <snapshot-id> — takes you back to any point in history. Your files change to match that exact moment."
-          },
-          {
-            "id": "g4",
-            "icon": "☁️",
-            "label": "Share snapshots with others (remote)",
-            "detail": "git push — your snapshots go to GitHub. git pull — their snapshots come to you. Git merges automatically."
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ClickRevealGrid",
+          "hint": "Tap each idea — see the Git command that does it",
+          "columns": 1,
+          "detailLabel": "The Git command →",
+          "items": [
+            {
+              "id": "g1",
+              "icon": "📸",
+              "label": "Take a labelled snapshot",
+              "detail": "git add (choose what to include) → git commit -m \"your label\" (take the snapshot). That's it. One snapshot taken."
+            },
+            {
+              "id": "g2",
+              "icon": "📜",
+              "label": "See the timeline of all snapshots",
+              "detail": "git log --oneline — shows every snapshot ever taken, newest first, each with its label. Clean, instant, searchable."
+            },
+            {
+              "id": "g3",
+              "icon": "⏪",
+              "label": "Go back to any snapshot",
+              "detail": "git checkout <snapshot-id> — takes you back to any point in history. Your files change to match that exact moment."
+            },
+            {
+              "id": "g4",
+              "icon": "☁️",
+              "label": "Share snapshots with others (remote)",
+              "detail": "git push — your snapshots go to GitHub. git pull — their snapshots come to you. Git merges automatically."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "git-three-zones",
@@ -53,38 +56,41 @@
         "🏛️ Repository = the photo album (all your permanent snapshots)",
         "💡 This lets you make clean, focused snapshots instead of messy all-at-once saves"
       ],
-      "illustration": {
-        "type": "ComparePanel",
-        "hint": "Git's three zones — connected to real life",
-        "left": {
-          "icon": "🧳",
-          "title": "Packing for a trip",
-          "color": "rgba(99,102,241,0.06)",
-          "border": "rgba(99,102,241,0.25)",
-          "locked": false,
-          "closedHint": "The real-life analogy →",
-          "revealContent": [
-            "🗄️ Your wardrobe = everything you own",
-            "🛏️ Clothes laid on the bed = what you've chosen",
-            "🧳 Packed suitcase = locked and ready to go",
-            "You don't pack everything — you choose what's right for this trip"
-          ]
-        },
-        "right": {
-          "icon": "💻",
-          "title": "Git's three zones",
-          "color": "rgba(34,197,94,0.06)",
-          "border": "rgba(34,197,94,0.3)",
-          "closedHint": "The Git equivalent →",
-          "revealContent": [
-            "📁 Working Directory = all your files",
-            "📋 Staging Area = what you've chosen for the next snapshot",
-            "🏛️ Repository = locked permanent snapshot",
-            "Each snapshot is focused — not just 'everything I touched today'"
-          ]
-        },
-        "successMessage": "🎉 Staging lets you make clean, focused snapshots instead of messy saves!"
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ComparePanel",
+          "hint": "Git's three zones — connected to real life",
+          "left": {
+            "icon": "🧳",
+            "title": "Packing for a trip",
+            "color": "rgba(99,102,241,0.06)",
+            "border": "rgba(99,102,241,0.25)",
+            "locked": false,
+            "closedHint": "The real-life analogy →",
+            "revealContent": [
+              "🗄️ Your wardrobe = everything you own",
+              "🛏️ Clothes laid on the bed = what you've chosen",
+              "🧳 Packed suitcase = locked and ready to go",
+              "You don't pack everything — you choose what's right for this trip"
+            ]
+          },
+          "right": {
+            "icon": "💻",
+            "title": "Git's three zones",
+            "color": "rgba(34,197,94,0.06)",
+            "border": "rgba(34,197,94,0.3)",
+            "closedHint": "The Git equivalent →",
+            "revealContent": [
+              "📁 Working Directory = all your files",
+              "📋 Staging Area = what you've chosen for the next snapshot",
+              "🏛️ Repository = locked permanent snapshot",
+              "Each snapshot is focused — not just 'everything I touched today'"
+            ]
+          },
+          "successMessage": "🎉 Staging lets you make clean, focused snapshots instead of messy saves!"
+        }
+      ]
     },
     {
       "id": "git-why-staging",
@@ -96,29 +102,32 @@
         "📖 Your snapshot history becomes readable, like a book",
         "🔍 Finding when something broke becomes easy"
       ],
-      "illustration": {
-        "type": "GitStagingArea",
-        "hint": "See the three zones in action — click files to move them through",
-        "files": [
-          {
-            "name": "login.js",
-            "status": "modified",
-            "icon": "🔐"
-          },
-          {
-            "name": "dashboard.js",
-            "status": "untracked",
-            "icon": "📊"
-          },
-          {
-            "name": "style.css",
-            "status": "untracked",
-            "icon": "🎨"
-          }
-        ],
-        "tip": "Kavya can stage login.js → commit it → then stage dashboard.js → commit separately. Two clean snapshots.",
-        "interactive": true
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "GitStagingArea",
+          "hint": "See the three zones in action — click files to move them through",
+          "files": [
+            {
+              "name": "login.js",
+              "status": "modified",
+              "icon": "🔐"
+            },
+            {
+              "name": "dashboard.js",
+              "status": "untracked",
+              "icon": "📊"
+            },
+            {
+              "name": "style.css",
+              "status": "untracked",
+              "icon": "🎨"
+            }
+          ],
+          "tip": "Kavya can stage login.js → commit it → then stage dashboard.js → commit separately. Two clean snapshots.",
+          "interactive": true
+        }
+      ]
     },
     {
       "id": "git-commands-revealed",
@@ -130,59 +139,62 @@
         "🚀 You're ready for the terminal",
         "→ Click Complete to move to the practice steps!"
       ],
-      "illustration": {
-        "type": "StepSimulator",
-        "hint": "Watch the complete Git workflow — click through each step",
-        "actors": [
-          {
-            "icon": "📁",
-            "label": "Working Dir",
-            "sublabel": "your files",
-            "color": "rgba(100,116,139,0.08)",
-            "border": "rgba(100,116,139,0.3)"
-          },
-          {
-            "icon": "📋",
-            "label": "Staging",
-            "sublabel": "the bag",
-            "color": "rgba(245,158,11,0.08)",
-            "border": "rgba(245,158,11,0.35)",
-            "isManager": true
-          },
-          {
-            "icon": "🏛️",
-            "label": "Repository",
-            "sublabel": "permanent",
-            "color": "rgba(34,197,94,0.08)",
-            "border": "rgba(34,197,94,0.4)"
-          }
-        ],
-        "steps": [
-          {
-            "from": "📁 Working Dir",
-            "to": "📋 Staging",
-            "action": "git add README.md → file moves to staging area"
-          },
-          {
-            "from": "📋 Staging",
-            "to": "🏛️ Repository",
-            "action": "git commit -m 'Start project' → snapshot taken and locked"
-          },
-          {
-            "from": "📁 Working Dir",
-            "to": "📋 Staging",
-            "action": "git add app.js → next file staged for the next snapshot"
-          },
-          {
-            "from": "📋 Staging",
-            "to": "🏛️ Repository",
-            "action": "git commit -m 'Add task logic' → second snapshot, permanent"
-          }
-        ],
-        "startLabel": "▶ Watch the workflow",
-        "nextLabel": "→ Next",
-        "doneMessage": "🎉 That's the complete Git workflow. You're ready for the terminal!"
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "StepSimulator",
+          "hint": "Watch the complete Git workflow — click through each step",
+          "actors": [
+            {
+              "icon": "📁",
+              "label": "Working Dir",
+              "sublabel": "your files",
+              "color": "rgba(100,116,139,0.08)",
+              "border": "rgba(100,116,139,0.3)"
+            },
+            {
+              "icon": "📋",
+              "label": "Staging",
+              "sublabel": "the bag",
+              "color": "rgba(245,158,11,0.08)",
+              "border": "rgba(245,158,11,0.35)",
+              "isManager": true
+            },
+            {
+              "icon": "🏛️",
+              "label": "Repository",
+              "sublabel": "permanent",
+              "color": "rgba(34,197,94,0.08)",
+              "border": "rgba(34,197,94,0.4)"
+            }
+          ],
+          "steps": [
+            {
+              "from": "📁 Working Dir",
+              "to": "📋 Staging",
+              "action": "git add README.md → file moves to staging area"
+            },
+            {
+              "from": "📋 Staging",
+              "to": "🏛️ Repository",
+              "action": "git commit -m 'Start project' → snapshot taken and locked"
+            },
+            {
+              "from": "📁 Working Dir",
+              "to": "📋 Staging",
+              "action": "git add app.js → next file staged for the next snapshot"
+            },
+            {
+              "from": "📋 Staging",
+              "to": "🏛️ Repository",
+              "action": "git commit -m 'Add task logic' → second snapshot, permanent"
+            }
+          ],
+          "startLabel": "▶ Watch the workflow",
+          "nextLabel": "→ Next",
+          "doneMessage": "🎉 That's the complete Git workflow. You're ready for the terminal!"
+        }
+      ]
     }
   ]
 }

@@ -8,7 +8,9 @@
         "Visualizer = filesystem state after each command",
         "Green ✓ succeeded · red ✗ failed",
         "Home is /home/student"
-      ]
+      ],
+      "requiresTerminal": true,
+      "components": []
     },
     {
       "id": "orientation-continue",
@@ -20,7 +22,9 @@
       "advanceOnCommand": {
         "mode": "exact",
         "value": "continue"
-      }
+      },
+      "requiresTerminal": true,
+      "components": []
     }
   ]
 }

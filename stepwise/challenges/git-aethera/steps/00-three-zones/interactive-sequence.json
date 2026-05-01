@@ -8,7 +8,9 @@
         "🗄️ Wardrobe = Working Directory (where you keep everything)",
         "🛏️ Bed = Staging Area (what you're deciding to pack)",
         "🧳 Suitcase = Repository (what's packed and saved forever)"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "zones-working",
@@ -19,7 +21,9 @@
         "✏️ Make changes freely here",
         "👁️ Git can see changes but hasn't saved them",
         "Command: git status — see what's changed"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "zones-staging",
@@ -30,7 +34,9 @@
         "✅ You choose EXACTLY what goes in",
         "🎯 Makes every save clean and focused",
         "Command: git add filename (or git add . for all)"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "zones-repo",
@@ -41,7 +47,9 @@
         "📅 Every snapshot has a timestamp and message",
         "🔒 Once committed, it's safe forever",
         "Command: git commit -m \"your message\""
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "zones-remote",
@@ -52,7 +60,9 @@
         "🤝 The meeting point for teams",
         "📤 git push — send local → remote",
         "📥 git pull — bring remote → local"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "zones-interactive",
@@ -63,7 +73,9 @@
         "Click again to commit it (git commit)",
         "Watch the file move through the three zones",
         "This is the core Git workflow you'll use every day"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     }
   ]
 }

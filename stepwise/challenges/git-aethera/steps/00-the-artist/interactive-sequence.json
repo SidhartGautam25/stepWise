@@ -8,7 +8,9 @@
         "🎨 He has one canvas. One file.",
         "😰 If he paints over it, the blue version is GONE",
         "🤔 What would you do in this situation?"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "artist-reallife",
@@ -19,7 +21,9 @@
         "📸 Checkpoint 2 — colors added, blue version",
         "📸 Checkpoint 3 — red version (new experiment)",
         "↩️ Can return to ANY of these, any time"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "artist-problem-solved",
@@ -30,7 +34,9 @@
         "✅ Every checkpoint labelled with a message",
         "✅ Jump back to any moment, instantly",
         "✅ Try bold experiments — the safe version is always saved"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     },
     {
       "id": "artist-to-code",
@@ -41,7 +47,9 @@
         "🐛 New features can break working code",
         "😱 Without checkpoints, there's no way back",
         "→ Next: See the real problems Priya faces"
-      ]
+      ],
+      "requiresTerminal": false,
+      "components": []
     }
   ]
 }

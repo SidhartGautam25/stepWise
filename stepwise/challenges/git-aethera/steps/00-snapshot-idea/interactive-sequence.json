@@ -10,38 +10,41 @@
         "🎨 A designer's version 3 = a checkpoint",
         "💡 Code can work exactly the same way"
       ],
-      "illustration": {
-        "type": "ClickRevealGrid",
-        "hint": "Tap each creative field — see how they already handle versions",
-        "columns": 2,
-        "detailLabel": "How they save versions →",
-        "items": [
-          {
-            "id": "n1",
-            "icon": "🎨",
-            "label": "Painters",
-            "detail": "Photographers take a photo of the canvas after each major stage. They can always show you what it looked like at step 3 — even if it looks totally different now."
-          },
-          {
-            "id": "n2",
-            "icon": "✍️",
-            "label": "Authors",
-            "detail": "Writers save a new copy of their manuscript at the end of each draft. 'novel-draft-3.docx' is a checkpoint they can return to if they write themselves into a corner."
-          },
-          {
-            "id": "n3",
-            "icon": "🏗️",
-            "label": "Architects",
-            "detail": "Architects keep every version of a blueprint. Client wanted a wall moved? They don't scrap the old blueprint — they keep it and create a new version."
-          },
-          {
-            "id": "n4",
-            "icon": "🎮",
-            "label": "Game players",
-            "detail": "You know save points in games? That's literally the same idea as a commit. The game saves your exact state — health, items, position — so you can return to it."
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ClickRevealGrid",
+          "hint": "Tap each creative field — see how they already handle versions",
+          "columns": 2,
+          "detailLabel": "How they save versions →",
+          "items": [
+            {
+              "id": "n1",
+              "icon": "🎨",
+              "label": "Painters",
+              "detail": "Photographers take a photo of the canvas after each major stage. They can always show you what it looked like at step 3 — even if it looks totally different now."
+            },
+            {
+              "id": "n2",
+              "icon": "✍️",
+              "label": "Authors",
+              "detail": "Writers save a new copy of their manuscript at the end of each draft. 'novel-draft-3.docx' is a checkpoint they can return to if they write themselves into a corner."
+            },
+            {
+              "id": "n3",
+              "icon": "🏗️",
+              "label": "Architects",
+              "detail": "Architects keep every version of a blueprint. Client wanted a wall moved? They don't scrap the old blueprint — they keep it and create a new version."
+            },
+            {
+              "id": "n4",
+              "icon": "🎮",
+              "label": "Game players",
+              "detail": "You know save points in games? That's literally the same idea as a commit. The game saves your exact state — health, items, position — so you can return to it."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "snapshot-the-idea",
@@ -53,44 +56,47 @@
         "🔒 Once taken, a snapshot can never be lost",
         "↩️ You can return to any snapshot, any time"
       ],
-      "illustration": {
-        "type": "JourneyFlow",
-        "hint": "Click through — watch Kavya use snapshots correctly this time",
-        "steps": [
-          {
-            "icon": "✅",
-            "action": "Todo app is working",
-            "result": "📸 Kavya takes a snapshot! Message: 'Working todo app — checkboxes working'",
-            "color": "rgba(34,197,94,0.08)",
-            "border": "rgba(34,197,94,0.35)"
-          },
-          {
-            "icon": "🌙",
-            "action": "She starts adding dark mode",
-            "result": "She edits freely — the previous snapshot is safe, no matter what she does now",
-            "color": "rgba(99,102,241,0.08)",
-            "border": "rgba(99,102,241,0.3)"
-          },
-          {
-            "icon": "💥",
-            "action": "Dark mode breaks everything",
-            "result": "It's broken. But she's not panicking — she has a snapshot from before.",
-            "color": "rgba(239,68,68,0.08)",
-            "border": "rgba(239,68,68,0.3)"
-          },
-          {
-            "icon": "⏪",
-            "action": "She goes back to the snapshot",
-            "result": "✅ ONE command — her working todo app is back. Exactly as it was. Dark mode experiment gone.",
-            "color": "rgba(34,197,94,0.12)",
-            "border": "rgba(34,197,94,0.5)"
-          }
-        ],
-        "startLabel": "▶ Watch how snapshots save her",
-        "nextLabel": "→ Next",
-        "storeIcon": "📸",
-        "storeLabel": "Snapshot saved!"
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "JourneyFlow",
+          "hint": "Click through — watch Kavya use snapshots correctly this time",
+          "steps": [
+            {
+              "icon": "✅",
+              "action": "Todo app is working",
+              "result": "📸 Kavya takes a snapshot! Message: 'Working todo app — checkboxes working'",
+              "color": "rgba(34,197,94,0.08)",
+              "border": "rgba(34,197,94,0.35)"
+            },
+            {
+              "icon": "🌙",
+              "action": "She starts adding dark mode",
+              "result": "She edits freely — the previous snapshot is safe, no matter what she does now",
+              "color": "rgba(99,102,241,0.08)",
+              "border": "rgba(99,102,241,0.3)"
+            },
+            {
+              "icon": "💥",
+              "action": "Dark mode breaks everything",
+              "result": "It's broken. But she's not panicking — she has a snapshot from before.",
+              "color": "rgba(239,68,68,0.08)",
+              "border": "rgba(239,68,68,0.3)"
+            },
+            {
+              "icon": "⏪",
+              "action": "She goes back to the snapshot",
+              "result": "✅ ONE command — her working todo app is back. Exactly as it was. Dark mode experiment gone.",
+              "color": "rgba(34,197,94,0.12)",
+              "border": "rgba(34,197,94,0.5)"
+            }
+          ],
+          "startLabel": "▶ Watch how snapshots save her",
+          "nextLabel": "→ Next",
+          "storeIcon": "📸",
+          "storeLabel": "Snapshot saved!"
+        }
+      ]
     },
     {
       "id": "snapshot-solves-1",
@@ -102,38 +108,41 @@
         "🎯 The snapshot is permanent — even deleting the file won't lose it",
         "→ Try the interactive comparison below!"
       ],
-      "illustration": {
-        "type": "ComparePanel",
-        "hint": "Same situation — totally different outcome",
-        "left": {
-          "icon": "😭",
-          "title": "Without snapshots",
-          "color": "rgba(239,68,68,0.06)",
-          "border": "rgba(239,68,68,0.25)",
-          "locked": false,
-          "closedHint": "Kavya without snapshots →",
-          "revealContent": [
-            "Dark mode breaks everything",
-            "Ctrl+Z goes too far — loses working code too",
-            "Has to rewrite from memory",
-            "😭 2 hours of work gone, plus the original"
-          ]
-        },
-        "right": {
-          "icon": "😌",
-          "title": "With snapshots",
-          "color": "rgba(34,197,94,0.06)",
-          "border": "rgba(34,197,94,0.3)",
-          "closedHint": "Kavya with snapshots →",
-          "revealContent": [
-            "Dark mode breaks everything",
-            "She types one command to go back",
-            "Working version restored instantly",
-            "✅ Zero work lost. The experiment didn't cost her anything."
-          ]
-        },
-        "successMessage": "🎉 Problem #1 completely solved!"
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ComparePanel",
+          "hint": "Same situation — totally different outcome",
+          "left": {
+            "icon": "😭",
+            "title": "Without snapshots",
+            "color": "rgba(239,68,68,0.06)",
+            "border": "rgba(239,68,68,0.25)",
+            "locked": false,
+            "closedHint": "Kavya without snapshots →",
+            "revealContent": [
+              "Dark mode breaks everything",
+              "Ctrl+Z goes too far — loses working code too",
+              "Has to rewrite from memory",
+              "😭 2 hours of work gone, plus the original"
+            ]
+          },
+          "right": {
+            "icon": "😌",
+            "title": "With snapshots",
+            "color": "rgba(34,197,94,0.06)",
+            "border": "rgba(34,197,94,0.3)",
+            "closedHint": "Kavya with snapshots →",
+            "revealContent": [
+              "Dark mode breaks everything",
+              "She types one command to go back",
+              "Working version restored instantly",
+              "✅ Zero work lost. The experiment didn't cost her anything."
+            ]
+          },
+          "successMessage": "🎉 Problem #1 completely solved!"
+        }
+      ]
     },
     {
       "id": "snapshot-labels",
@@ -145,38 +154,41 @@
         "✅ Good label: 'Fix checkbox disappearing on mobile'",
         "✅ Good label: 'Add dark mode toggle — light mode still default'"
       ],
-      "illustration": {
-        "type": "ClickRevealGrid",
-        "hint": "Tap each label — see why good labels change everything",
-        "columns": 1,
-        "detailLabel": "What this label tells you →",
-        "items": [
-          {
-            "id": "l1",
-            "icon": "❌",
-            "label": "todo-backup-WORKING-v2-copy",
-            "detail": "You have no idea what's in this. When was it? What features does it have? What was the last thing changed? Completely useless as a label."
-          },
-          {
-            "id": "l2",
-            "icon": "❌",
-            "label": "changes",
-            "detail": "What changes?! This could be literally anything. You'd have to open the file and compare it manually to figure out what 'changes' means."
-          },
-          {
-            "id": "l3",
-            "icon": "✅",
-            "label": "Fix: checkboxes disappearing on mobile screens",
-            "detail": "Perfect. Anyone reading this immediately knows: this snapshot fixed a specific bug. If that bug appears again, this is the snapshot to look at."
-          },
-          {
-            "id": "l4",
-            "icon": "✅",
-            "label": "Add: search bar for filtering tasks",
-            "detail": "Clear. Descriptive. You know exactly what was added and where. Finding this snapshot in a year? Easy."
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ClickRevealGrid",
+          "hint": "Tap each label — see why good labels change everything",
+          "columns": 1,
+          "detailLabel": "What this label tells you →",
+          "items": [
+            {
+              "id": "l1",
+              "icon": "❌",
+              "label": "todo-backup-WORKING-v2-copy",
+              "detail": "You have no idea what's in this. When was it? What features does it have? What was the last thing changed? Completely useless as a label."
+            },
+            {
+              "id": "l2",
+              "icon": "❌",
+              "label": "changes",
+              "detail": "What changes?! This could be literally anything. You'd have to open the file and compare it manually to figure out what 'changes' means."
+            },
+            {
+              "id": "l3",
+              "icon": "✅",
+              "label": "Fix: checkboxes disappearing on mobile screens",
+              "detail": "Perfect. Anyone reading this immediately knows: this snapshot fixed a specific bug. If that bug appears again, this is the snapshot to look at."
+            },
+            {
+              "id": "l4",
+              "icon": "✅",
+              "label": "Add: search bar for filtering tasks",
+              "detail": "Clear. Descriptive. You know exactly what was added and where. Finding this snapshot in a year? Easy."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "snapshot-timeline",
@@ -188,46 +200,49 @@
         "🔍 Click any snapshot to see exactly what changed",
         "🧭 Find the moment a bug appeared in seconds"
       ],
-      "illustration": {
-        "type": "GitCommitGraph",
-        "hint": "This is what Kavya's project history looks like with good labels — click any snapshot",
-        "commits": [
-          {
-            "id": "a1b2c3d",
-            "message": "Start todo app — basic structure",
-            "branch": "main",
-            "color": "rgba(34,197,94,0.12)",
-            "border": "rgba(34,197,94,0.5)",
-            "detail": "The very first snapshot. Everything from this moment is saved forever."
-          },
-          {
-            "id": "f4e5d6c",
-            "message": "Add: checkbox to mark tasks done",
-            "branch": "main",
-            "color": "rgba(34,197,94,0.12)",
-            "border": "rgba(34,197,94,0.5)",
-            "detail": "Second snapshot. Clear label — you know exactly what this adds."
-          },
-          {
-            "id": "9g8h7i6",
-            "message": "Fix: checkboxes disappearing on mobile",
-            "branch": "main",
-            "color": "rgba(34,197,94,0.12)",
-            "border": "rgba(34,197,94,0.5)",
-            "detail": "Third snapshot. A bug fix. If this bug ever comes back, this is the snapshot to look at."
-          },
-          {
-            "id": "j1k2l3m",
-            "message": "Add: delete button for each task",
-            "branch": "main",
-            "isHead": true,
-            "color": "rgba(34,197,94,0.15)",
-            "border": "rgba(34,197,94,0.6)",
-            "detail": "Most recent snapshot. HEAD points here — this is where you are now."
-          }
-        ],
-        "tip": "No more folder of doom. One project. A clean labelled history."
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "GitCommitGraph",
+          "hint": "This is what Kavya's project history looks like with good labels — click any snapshot",
+          "commits": [
+            {
+              "id": "a1b2c3d",
+              "message": "Start todo app — basic structure",
+              "branch": "main",
+              "color": "rgba(34,197,94,0.12)",
+              "border": "rgba(34,197,94,0.5)",
+              "detail": "The very first snapshot. Everything from this moment is saved forever."
+            },
+            {
+              "id": "f4e5d6c",
+              "message": "Add: checkbox to mark tasks done",
+              "branch": "main",
+              "color": "rgba(34,197,94,0.12)",
+              "border": "rgba(34,197,94,0.5)",
+              "detail": "Second snapshot. Clear label — you know exactly what this adds."
+            },
+            {
+              "id": "9g8h7i6",
+              "message": "Fix: checkboxes disappearing on mobile",
+              "branch": "main",
+              "color": "rgba(34,197,94,0.12)",
+              "border": "rgba(34,197,94,0.5)",
+              "detail": "Third snapshot. A bug fix. If this bug ever comes back, this is the snapshot to look at."
+            },
+            {
+              "id": "j1k2l3m",
+              "message": "Add: delete button for each task",
+              "branch": "main",
+              "isHead": true,
+              "color": "rgba(34,197,94,0.15)",
+              "border": "rgba(34,197,94,0.6)",
+              "detail": "Most recent snapshot. HEAD points here — this is where you are now."
+            }
+          ],
+          "tip": "No more folder of doom. One project. A clean labelled history."
+        }
+      ]
     },
     {
       "id": "snapshot-shared",
@@ -239,38 +254,41 @@
         "📥 pull = get others' snapshots from the shared place",
         "🔀 merge = combine different people's work intelligently"
       ],
-      "illustration": {
-        "type": "ClickRevealGrid",
-        "hint": "Tap to explore the solution for Problem #3 — working with others",
-        "columns": 2,
-        "detailLabel": "How this works →",
-        "items": [
-          {
-            "id": "r1",
-            "icon": "☁️",
-            "label": "A shared place online (Remote)",
-            "detail": "Imagine a shared Google Drive — but just for code snapshots. Kavya and Rohan both connect to the same place. Their changes are stored separately until deliberately merged."
-          },
-          {
-            "id": "r2",
-            "icon": "📤",
-            "label": "Push — send your snapshots",
-            "detail": "When Kavya's search feature is ready, she pushes her snapshots to the shared place. Rohan can see exactly what she changed and when."
-          },
-          {
-            "id": "r3",
-            "icon": "📥",
-            "label": "Pull — get others' snapshots",
-            "detail": "When Rohan pushes his filter feature, Kavya pulls it. Git combines their changes — automatically, if they edited different parts. If they edited the same line, it asks them to decide."
-          },
-          {
-            "id": "r4",
-            "icon": "🔀",
-            "label": "Merge — combine intelligently",
-            "detail": "Git doesn't just overwrite. It looks at what each person changed and merges them together. Kavya's search + Rohan's filters = both in the project, safely combined."
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ClickRevealGrid",
+          "hint": "Tap to explore the solution for Problem #3 — working with others",
+          "columns": 2,
+          "detailLabel": "How this works →",
+          "items": [
+            {
+              "id": "r1",
+              "icon": "☁️",
+              "label": "A shared place online (Remote)",
+              "detail": "Imagine a shared Google Drive — but just for code snapshots. Kavya and Rohan both connect to the same place. Their changes are stored separately until deliberately merged."
+            },
+            {
+              "id": "r2",
+              "icon": "📤",
+              "label": "Push — send your snapshots",
+              "detail": "When Kavya's search feature is ready, she pushes her snapshots to the shared place. Rohan can see exactly what she changed and when."
+            },
+            {
+              "id": "r3",
+              "icon": "📥",
+              "label": "Pull — get others' snapshots",
+              "detail": "When Rohan pushes his filter feature, Kavya pulls it. Git combines their changes — automatically, if they edited different parts. If they edited the same line, it asks them to decide."
+            },
+            {
+              "id": "r4",
+              "icon": "🔀",
+              "label": "Merge — combine intelligently",
+              "detail": "Git doesn't just overwrite. It looks at what each person changed and merges them together. Kavya's search + Rohan's filters = both in the project, safely combined."
+            }
+          ]
+        }
+      ]
     }
   ]
 }

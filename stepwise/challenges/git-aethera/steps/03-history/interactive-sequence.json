@@ -4,7 +4,9 @@
       "id": "history-why",
       "heading": "Why history matters",
       "body": "Every commit stacks on the timeline. **`git log`** scrolls snapshots newest-first.",
-      "bullets": []
+      "bullets": [],
+      "requiresTerminal": true,
+      "components": []
     },
     {
       "id": "history-make-two",
@@ -14,7 +16,9 @@
       "advanceOnCommand": {
         "mode": "prefix",
         "value": "git log"
-      }
+      },
+      "requiresTerminal": true,
+      "components": []
     }
   ]
 }

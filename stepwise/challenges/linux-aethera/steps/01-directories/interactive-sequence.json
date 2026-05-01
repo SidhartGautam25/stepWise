@@ -8,7 +8,9 @@
         "`pwd` asks: where am I right now?",
         "`ls` lists what's inside the current folder",
         "`mkdir projects` creates a folder named **projects** here"
-      ]
+      ],
+      "requiresTerminal": true,
+      "components": []
     },
     {
       "id": "dirs-commands-overview",
@@ -16,7 +18,9 @@
       "body": "| Command | Meaning |\n| --- | --- |\n| pwd | Print the full path you are standing in |\n| ls | List files and folders in the current directory |\n| mkdir projects | Create a new directory called `projects` |",
       "bullets": [
         "Run them in order and watch the Visualizer update after each line"
-      ]
+      ],
+      "requiresTerminal": true,
+      "components": []
     },
     {
       "id": "dirs-do-it",
@@ -28,7 +32,9 @@
       "advanceOnCommand": {
         "mode": "prefix",
         "value": "mkdir projects"
-      }
+      },
+      "requiresTerminal": true,
+      "components": []
     }
   ]
 }

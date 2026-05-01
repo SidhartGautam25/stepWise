@@ -10,12 +10,15 @@
         "💡 What if you could try things in a completely separate copy?",
         "→ That's what a branch is!"
       ],
-      "illustration": {
-        "type": "InfoCallout",
-        "variant": "warning",
-        "icon": "🌙",
-        "text": "Kavya has learned about snapshots. But she's still nervous about trying dark mode. Even with snapshots, making big changes on her main project feels risky. What if she could try it in a completely separate space — without touching the main code at all?"
-      }
+      "requiresTerminal": true,
+      "components": [
+        {
+          "type": "InfoCallout",
+          "variant": "warning",
+          "icon": "🌙",
+          "text": "Kavya has learned about snapshots. But she's still nervous about trying dark mode. Even with snapshots, making big changes on her main project feels risky. What if she could try it in a completely separate space — without touching the main code at all?"
+        }
+      ]
     },
     {
       "id": "branch-parallel",
@@ -27,38 +30,41 @@
         "✅ Merge it into main when it's ready",
         "🗑️ Delete it if it didn't work — main is untouched"
       ],
-      "illustration": {
-        "type": "ComparePanel",
-        "hint": "The book analogy — see why this idea is so powerful",
-        "left": {
-          "icon": "📖",
-          "title": "Writing a book",
-          "color": "rgba(99,102,241,0.06)",
-          "border": "rgba(99,102,241,0.25)",
-          "locked": false,
-          "closedHint": "How authors try alternate endings →",
-          "revealContent": [
-            "Story is done. Ready to try a different ending.",
-            "She makes a COPY of the last chapter",
-            "Writes the alternate ending there",
-            "If she loves it → swap it in | If not → throw the copy away, original is perfect"
-          ]
-        },
-        "right": {
-          "icon": "🌿",
-          "title": "Code branching",
-          "color": "rgba(34,197,94,0.06)",
-          "border": "rgba(34,197,94,0.3)",
-          "closedHint": "How Kavya uses branches →",
-          "revealContent": [
-            "Todo app is working. Wants to try dark mode.",
-            "Creates a branch — a parallel workspace",
-            "Tries dark mode there. Breaks things. Fixes things.",
-            "If it's ready → merge into main | If not → delete branch, main is untouched"
-          ]
-        },
-        "successMessage": "🎉 Branches = parallel universes for your code!"
-      }
+      "requiresTerminal": true,
+      "components": [
+        {
+          "type": "ComparePanel",
+          "hint": "The book analogy — see why this idea is so powerful",
+          "left": {
+            "icon": "📖",
+            "title": "Writing a book",
+            "color": "rgba(99,102,241,0.06)",
+            "border": "rgba(99,102,241,0.25)",
+            "locked": false,
+            "closedHint": "How authors try alternate endings →",
+            "revealContent": [
+              "Story is done. Ready to try a different ending.",
+              "She makes a COPY of the last chapter",
+              "Writes the alternate ending there",
+              "If she loves it → swap it in | If not → throw the copy away, original is perfect"
+            ]
+          },
+          "right": {
+            "icon": "🌿",
+            "title": "Code branching",
+            "color": "rgba(34,197,94,0.06)",
+            "border": "rgba(34,197,94,0.3)",
+            "closedHint": "How Kavya uses branches →",
+            "revealContent": [
+              "Todo app is working. Wants to try dark mode.",
+              "Creates a branch — a parallel workspace",
+              "Tries dark mode there. Breaks things. Fixes things.",
+              "If it's ready → merge into main | If not → delete branch, main is untouched"
+            ]
+          },
+          "successMessage": "🎉 Branches = parallel universes for your code!"
+        }
+      ]
     },
     {
       "id": "branch-visual",
@@ -70,62 +76,65 @@
         "⎇ HEAD = where you are right now",
         "🔀 Merge = bring the experiment back into main"
       ],
-      "illustration": {
-        "type": "GitCommitGraph",
-        "hint": "Two timelines, one project — click any commit to explore",
-        "commits": [
-          {
-            "id": "a1b2c3d",
-            "message": "Working todo app",
-            "branch": "main",
-            "color": "rgba(34,197,94,0.12)",
-            "border": "rgba(34,197,94,0.5)",
-            "detail": "Starting point for both branches — main stayed stable while dark mode was being explored."
-          },
-          {
-            "id": "f4e5d6c",
-            "message": "Add delete feature",
-            "branch": "main",
-            "color": "rgba(34,197,94,0.12)",
-            "border": "rgba(34,197,94,0.5)",
-            "detail": "Kavya continued working on main — adding features while the experiment ran separately."
-          },
-          {
-            "id": "dm1k2l3",
-            "message": "Start dark mode experiment",
-            "branch": "feature/darkmode",
-            "color": "rgba(99,102,241,0.12)",
-            "border": "rgba(99,102,241,0.5)",
-            "detail": "Kavya created this branch from main — her experiment lives here, not in main."
-          },
-          {
-            "id": "dm2o5p6",
-            "message": "Tweak dark mode contrast",
-            "branch": "feature/darkmode",
-            "color": "rgba(99,102,241,0.12)",
-            "border": "rgba(99,102,241,0.5)",
-            "detail": "More iterations — completely safe. Main is untouched throughout."
-          },
-          {
-            "id": "dm3r7s8",
-            "message": "Dark mode working!",
-            "branch": "feature/darkmode",
-            "isHead": true,
-            "color": "rgba(99,102,241,0.15)",
-            "border": "rgba(99,102,241,0.6)",
-            "detail": "HEAD on the feature branch. When Kavya is happy here — she merges into main. If not — delete the branch!"
-          },
-          {
-            "id": "9g8h7i6",
-            "message": "Fix spacing on mobile",
-            "branch": "main",
-            "color": "rgba(34,197,94,0.12)",
-            "border": "rgba(34,197,94,0.5)",
-            "detail": "Main continued evolving independently. Two timelines, zero interference."
-          }
-        ],
-        "tip": "Green = stable main branch. Purple = dark mode experiment. Completely separate until Kavya decides to merge."
-      }
+      "requiresTerminal": true,
+      "components": [
+        {
+          "type": "GitCommitGraph",
+          "hint": "Two timelines, one project — click any commit to explore",
+          "commits": [
+            {
+              "id": "a1b2c3d",
+              "message": "Working todo app",
+              "branch": "main",
+              "color": "rgba(34,197,94,0.12)",
+              "border": "rgba(34,197,94,0.5)",
+              "detail": "Starting point for both branches — main stayed stable while dark mode was being explored."
+            },
+            {
+              "id": "f4e5d6c",
+              "message": "Add delete feature",
+              "branch": "main",
+              "color": "rgba(34,197,94,0.12)",
+              "border": "rgba(34,197,94,0.5)",
+              "detail": "Kavya continued working on main — adding features while the experiment ran separately."
+            },
+            {
+              "id": "dm1k2l3",
+              "message": "Start dark mode experiment",
+              "branch": "feature/darkmode",
+              "color": "rgba(99,102,241,0.12)",
+              "border": "rgba(99,102,241,0.5)",
+              "detail": "Kavya created this branch from main — her experiment lives here, not in main."
+            },
+            {
+              "id": "dm2o5p6",
+              "message": "Tweak dark mode contrast",
+              "branch": "feature/darkmode",
+              "color": "rgba(99,102,241,0.12)",
+              "border": "rgba(99,102,241,0.5)",
+              "detail": "More iterations — completely safe. Main is untouched throughout."
+            },
+            {
+              "id": "dm3r7s8",
+              "message": "Dark mode working!",
+              "branch": "feature/darkmode",
+              "isHead": true,
+              "color": "rgba(99,102,241,0.15)",
+              "border": "rgba(99,102,241,0.6)",
+              "detail": "HEAD on the feature branch. When Kavya is happy here — she merges into main. If not — delete the branch!"
+            },
+            {
+              "id": "9g8h7i6",
+              "message": "Fix spacing on mobile",
+              "branch": "main",
+              "color": "rgba(34,197,94,0.12)",
+              "border": "rgba(34,197,94,0.5)",
+              "detail": "Main continued evolving independently. Two timelines, zero interference."
+            }
+          ],
+          "tip": "Green = stable main branch. Purple = dark mode experiment. Completely separate until Kavya decides to merge."
+        }
+      ]
     },
     {
       "id": "branch-try",
@@ -137,18 +146,21 @@
         "git checkout main — switch back (branch changes are gone — but safe!)",
         "git checkout feature/darkmode — switch back to the experiment"
       ],
-      "illustration": {
-        "type": "SimulatedTerminal",
-        "language": "git",
-        "hint": "Try branching for real — this terminal is fully interactive",
-        "preHistory": [
-          "git init",
-          "echo \"# Kavya's Todo App\" > README.md",
-          "git add .",
-          "git commit -m \"Working todo app\""
-        ],
-        "height": 320
-      }
+      "requiresTerminal": true,
+      "components": [
+        {
+          "type": "SimulatedTerminal",
+          "language": "git",
+          "hint": "Try branching for real — this terminal is fully interactive",
+          "preHistory": [
+            "git init",
+            "echo \"# Kavya's Todo App\" > README.md",
+            "git add .",
+            "git commit -m \"Working todo app\""
+          ],
+          "height": 320
+        }
+      ]
     }
   ]
 }

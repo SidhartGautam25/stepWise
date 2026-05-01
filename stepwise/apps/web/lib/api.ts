@@ -30,8 +30,7 @@ export interface InteractiveLessonSlide {
   heading: string;
   body: string;
   bullets?: string[];
-  illustration?: unknown;
-  renderConfig?: unknown;
+  components?: unknown[];
   requiresTerminal?: boolean;
   advanceOnCommand?: {
     mode: "exact" | "prefix";
@@ -54,8 +53,6 @@ export interface StepInfo {
   position: number;
   codeFiles?: CodeFile[];
   interactiveLesson?: InteractiveLesson;
-  renderConfig?: unknown;
-  requiresTerminal?: boolean;
 }
 
 export interface ChallengeDetail {

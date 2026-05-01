@@ -367,11 +367,10 @@ function buildTerminalAdvanceSignature(history: TerminalLog[]): string | undefin
 }
 
 function slideRequiresTerminal(
-  step: ChallengeDetail["steps"][number] | undefined,
+  _step: ChallengeDetail["steps"][number] | undefined,
   slide: InteractiveLessonSlide | undefined,
 ): boolean {
-  if (typeof slide?.requiresTerminal === "boolean") return slide.requiresTerminal;
-  return step?.requiresTerminal !== false;
+  return slide?.requiresTerminal === true;
 }
 
 function ChallengeTitle({ challenge }: { challenge: ChallengeDetail }) {

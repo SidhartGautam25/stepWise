@@ -20,7 +20,6 @@ export interface ChallengeStepRegistryEntry {
   starterRoot?: string;
   entrypoint?: string;
   free: boolean;
-  requiresTerminal: boolean;
   timeoutMs?: number;
   server?: Record<string, unknown>;
   interactiveLessonId?: string;
@@ -29,7 +28,6 @@ export interface ChallengeStepRegistryEntry {
     contentPath: string;
   };
   interactiveLessonContent?: unknown;
-  renderConfig?: unknown;
   raw: Record<string, unknown>;
 }
 
@@ -120,7 +118,6 @@ function parseStep(step: unknown, index: number): ChallengeStepRegistryEntry {
     ? step.interactiveLesson
     : undefined;
   const interactiveContent = readOptionalString(interactiveLesson?.content);
-  const renderConfig = isRecord(step.renderConfig) ? step.renderConfig : undefined;
 
   return {
     id,
@@ -140,8 +137,6 @@ function parseStep(step: unknown, index: number): ChallengeStepRegistryEntry {
       readOptionalString(workspace?.entrypoint) ??
       readOptionalString(step.entrypoint),
     free: typeof step.free === "boolean" ? step.free : true,
-    requiresTerminal:
-      typeof step.requiresTerminal === "boolean" ? step.requiresTerminal : true,
     timeoutMs: readOptionalNumber(step.timeoutMs),
     server: isRecord(step.server) ? step.server : undefined,
     interactiveLessonId: readOptionalString(step.interactiveLessonId),
@@ -150,9 +145,8 @@ function parseStep(step: unknown, index: number): ChallengeStepRegistryEntry {
         ? {
             type: readOptionalString(interactiveLesson.type) ?? "sequence",
             contentPath: `steps/${id}/${interactiveContent}`,
-          }
+        }
         : undefined,
-    renderConfig,
     raw: step,
   };
 }

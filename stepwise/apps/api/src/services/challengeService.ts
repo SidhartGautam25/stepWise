@@ -32,10 +32,8 @@ export interface StepInfo {
   workspaceRoot?: string;
   entrypoint?: string;
   interactiveLesson?: InteractiveLesson;
-  renderConfig?: unknown;
   position: number;
   codeFiles?: CodeFile[];
-  requiresTerminal?: boolean;
   timeoutMs?: number;
   server?: Record<string, unknown>;
   interactiveLessonId?: string;
@@ -121,7 +119,6 @@ async function getDbStepRenderData(challengeId: string) {
     select: {
       stepKey: true,
       interactiveLesson: true,
-      renderConfig: true,
     },
   });
 
@@ -137,11 +134,6 @@ function buildStepInfo(
   step: ChallengeStepRegistryEntry,
 ): StepInfo {
   const content = manager.loadStep(step);
-  const renderConfig = hydrateRenderConfig(
-    step.renderConfig,
-    content.id,
-    content.interactiveLesson,
-  );
 
   return {
     id: content.id,
@@ -159,40 +151,12 @@ function buildStepInfo(
     workspaceRoot: content.workspaceRoot,
     entrypoint: content.entrypoint,
     interactiveLesson: content.interactiveLesson,
-    renderConfig,
     position: content.position,
     codeFiles: content.codeFiles,
-    requiresTerminal: content.requiresTerminal,
     timeoutMs: step.timeoutMs,
     server: step.server,
     interactiveLessonId: step.interactiveLessonId,
   };
-}
-
-function hydrateRenderConfig(
-  renderConfig: unknown,
-  stepId: string,
-  interactiveLesson?: InteractiveLesson,
-): unknown | undefined {
-  if (!isRecord(renderConfig)) return undefined;
-
-  if (renderConfig.type === "LessonSequence") {
-    return {
-      ...renderConfig,
-      stepId,
-      slides: interactiveLesson?.slides ?? [],
-    };
-  }
-
-  if (renderConfig.type === "LessonTerminalVisualWorkspace") {
-    return {
-      ...renderConfig,
-      stepId,
-      slides: interactiveLesson?.slides ?? [],
-    };
-  }
-
-  return renderConfig;
 }
 
 export async function getChallengeInfo(challengeId: string): Promise<ChallengeInfo> {
@@ -208,8 +172,6 @@ export async function getChallengeInfo(challengeId: string): Promise<ChallengeIn
       ...step,
       interactiveLessonContent:
         jsonOrUndefined(dbStep?.interactiveLesson) ?? step.interactiveLessonContent,
-      renderConfig:
-        jsonOrUndefined(dbStep?.renderConfig) ?? step.renderConfig,
     });
   });
 

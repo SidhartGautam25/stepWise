@@ -90,7 +90,7 @@ function VisualizerCallout({
   onOpenVisualizer,
   onOpenSplitTerminal,
 }: Pick<StepContentPanelProps, "step" | "onOpenVisualizer" | "onOpenSplitTerminal">) {
-  if (!(step?.requiresTerminal !== false || step?.interactiveLesson)) return null;
+  if (!step?.interactiveLesson) return null;
 
   const isLesson = Boolean(step?.interactiveLesson);
 

@@ -9,31 +9,34 @@
         "Click a card to reveal its explanation.",
         "Set multiOpen to true when comparing several revealed items matters."
       ],
-      "renderConfig": {
-        "type": "ExpandableCardList",
-        "hint": "Click a card to reveal more detail.",
-        "multiOpen": false,
-        "items": [
-          {
-            "id": "state",
-            "icon": "box",
-            "label": "State",
-            "reveal": "Data that changes while the learner interacts with the lesson."
-          },
-          {
-            "id": "event",
-            "icon": "click",
-            "label": "Event",
-            "reveal": "A user action, command, or step that updates the model."
-          },
-          {
-            "id": "feedback",
-            "icon": "spark",
-            "label": "Feedback",
-            "reveal": "The visual response that makes the concept feel concrete."
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ExpandableCardList",
+          "hint": "Click a card to reveal more detail.",
+          "multiOpen": false,
+          "items": [
+            {
+              "id": "state",
+              "icon": "box",
+              "label": "State",
+              "reveal": "Data that changes while the learner interacts with the lesson."
+            },
+            {
+              "id": "event",
+              "icon": "click",
+              "label": "Event",
+              "reveal": "A user action, command, or step that updates the model."
+            },
+            {
+              "id": "feedback",
+              "icon": "spark",
+              "label": "Feedback",
+              "reveal": "The visual response that makes the concept feel concrete."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "click-reveal-grid",
@@ -44,38 +47,41 @@
         "Use columns to control density.",
         "Each item can override the global detail label."
       ],
-      "renderConfig": {
-        "type": "ClickRevealGrid",
-        "hint": "Click a tile to inspect its detail.",
-        "columns": 2,
-        "detailLabel": "Input role",
-        "items": [
-          {
-            "id": "props",
-            "icon": "data",
-            "label": "Props",
-            "detail": "Plain JSON values that configure what the component renders."
-          },
-          {
-            "id": "interaction",
-            "icon": "hand",
-            "label": "Interaction",
-            "detail": "The learner clicks one tile and receives immediate local feedback."
-          },
-          {
-            "id": "layout",
-            "icon": "grid",
-            "label": "Layout",
-            "detail": "The columns value controls how many cards appear per row."
-          },
-          {
-            "id": "detail",
-            "icon": "note",
-            "label": "Detail",
-            "detail": "The detail string appears only after the item is selected."
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ClickRevealGrid",
+          "hint": "Click a tile to inspect its detail.",
+          "columns": 2,
+          "detailLabel": "Input role",
+          "items": [
+            {
+              "id": "props",
+              "icon": "data",
+              "label": "Props",
+              "detail": "Plain JSON values that configure what the component renders."
+            },
+            {
+              "id": "interaction",
+              "icon": "hand",
+              "label": "Interaction",
+              "detail": "The learner clicks one tile and receives immediate local feedback."
+            },
+            {
+              "id": "layout",
+              "icon": "grid",
+              "label": "Layout",
+              "detail": "The columns value controls how many cards appear per row."
+            },
+            {
+              "id": "detail",
+              "icon": "note",
+              "label": "Detail",
+              "detail": "The detail string appears only after the item is selected."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "step-simulator",
@@ -86,55 +92,58 @@
         "Actors stay visible while the step log grows.",
         "Use isManager on an actor to highlight a coordinator."
       ],
-      "renderConfig": {
-        "type": "StepSimulator",
-        "hint": "Click through the simulated flow.",
-        "startLabel": "Start flow",
-        "nextLabel": "Next hop",
-        "doneMessage": "Flow complete.",
-        "replayLabel": "Replay",
-        "actors": [
-          {
-            "icon": "user",
-            "label": "Learner",
-            "sublabel": "takes action",
-            "color": "rgba(99,102,241,0.10)",
-            "border": "rgba(99,102,241,0.45)"
-          },
-          {
-            "icon": "engine",
-            "label": "Engine",
-            "sublabel": "updates state",
-            "color": "rgba(34,197,94,0.10)",
-            "border": "rgba(34,197,94,0.45)",
-            "isManager": true
-          },
-          {
-            "icon": "screen",
-            "label": "UI",
-            "sublabel": "shows feedback",
-            "color": "rgba(245,158,11,0.10)",
-            "border": "rgba(245,158,11,0.45)"
-          }
-        ],
-        "steps": [
-          {
-            "from": "Learner",
-            "to": "Engine",
-            "action": "clicks Next"
-          },
-          {
-            "from": "Engine",
-            "to": "UI",
-            "action": "calculates the next visible state"
-          },
-          {
-            "from": "UI",
-            "to": "Learner",
-            "action": "renders the result"
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "StepSimulator",
+          "hint": "Click through the simulated flow.",
+          "startLabel": "Start flow",
+          "nextLabel": "Next hop",
+          "doneMessage": "Flow complete.",
+          "replayLabel": "Replay",
+          "actors": [
+            {
+              "icon": "user",
+              "label": "Learner",
+              "sublabel": "takes action",
+              "color": "rgba(99,102,241,0.10)",
+              "border": "rgba(99,102,241,0.45)"
+            },
+            {
+              "icon": "engine",
+              "label": "Engine",
+              "sublabel": "updates state",
+              "color": "rgba(34,197,94,0.10)",
+              "border": "rgba(34,197,94,0.45)",
+              "isManager": true
+            },
+            {
+              "icon": "screen",
+              "label": "UI",
+              "sublabel": "shows feedback",
+              "color": "rgba(245,158,11,0.10)",
+              "border": "rgba(245,158,11,0.45)"
+            }
+          ],
+          "steps": [
+            {
+              "from": "Learner",
+              "to": "Engine",
+              "action": "clicks Next"
+            },
+            {
+              "from": "Engine",
+              "to": "UI",
+              "action": "calculates the next visible state"
+            },
+            {
+              "from": "UI",
+              "to": "Learner",
+              "action": "renders the result"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "compare-panel",
@@ -145,32 +154,35 @@
         "locked true creates a denied state instead of normal reveal content.",
         "successMessage appears after the right side is opened."
       ],
-      "renderConfig": {
-        "type": "ComparePanel",
-        "hint": "Click both sides to compare behavior.",
-        "left": {
-          "icon": "lock",
-          "title": "Opaque UI",
-          "closedHint": "Click to try it",
-          "locked": true,
-          "lockedMessage": "No model is visible, so the learner has to guess.",
-          "color": "rgba(239,68,68,0.10)",
-          "border": "rgba(239,68,68,0.45)"
-        },
-        "right": {
-          "icon": "window",
-          "title": "Visual model",
-          "closedHint": "Click to inspect",
-          "revealContent": [
-            "Shows structure",
-            "Responds to action",
-            "Makes abstract state visible"
-          ],
-          "color": "rgba(34,197,94,0.10)",
-          "border": "rgba(34,197,94,0.45)"
-        },
-        "successMessage": "Use ComparePanel when the contrast is the lesson."
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "ComparePanel",
+          "hint": "Click both sides to compare behavior.",
+          "left": {
+            "icon": "lock",
+            "title": "Opaque UI",
+            "closedHint": "Click to try it",
+            "locked": true,
+            "lockedMessage": "No model is visible, so the learner has to guess.",
+            "color": "rgba(239,68,68,0.10)",
+            "border": "rgba(239,68,68,0.45)"
+          },
+          "right": {
+            "icon": "window",
+            "title": "Visual model",
+            "closedHint": "Click to inspect",
+            "revealContent": [
+              "Shows structure",
+              "Responds to action",
+              "Makes abstract state visible"
+            ],
+            "color": "rgba(34,197,94,0.10)",
+            "border": "rgba(34,197,94,0.45)"
+          },
+          "successMessage": "Use ComparePanel when the contrast is the lesson."
+        }
+      ]
     },
     {
       "id": "journey-flow",
@@ -181,38 +193,41 @@
         "Each click advances one step.",
         "The optional store marker anchors the idea of a persistent destination."
       ],
-      "renderConfig": {
-        "type": "JourneyFlow",
-        "hint": "Advance through the journey.",
-        "storeIcon": "disk",
-        "storeLabel": "Store",
-        "startLabel": "Begin",
-        "nextLabel": "Next",
-        "replayLabel": "Replay",
-        "steps": [
-          {
-            "icon": "input",
-            "action": "Receive input",
-            "result": "The component gets plain config data.",
-            "color": "rgba(99,102,241,0.10)",
-            "border": "rgba(99,102,241,0.45)"
-          },
-          {
-            "icon": "state",
-            "action": "Track progress",
-            "result": "Internal state records which step is active.",
-            "color": "rgba(245,158,11,0.10)",
-            "border": "rgba(245,158,11,0.45)"
-          },
-          {
-            "icon": "result",
-            "action": "Reveal result",
-            "result": "The learner sees the next outcome in sequence.",
-            "color": "rgba(34,197,94,0.10)",
-            "border": "rgba(34,197,94,0.45)"
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "JourneyFlow",
+          "hint": "Advance through the journey.",
+          "storeIcon": "disk",
+          "storeLabel": "Store",
+          "startLabel": "Begin",
+          "nextLabel": "Next",
+          "replayLabel": "Replay",
+          "steps": [
+            {
+              "icon": "input",
+              "action": "Receive input",
+              "result": "The component gets plain config data.",
+              "color": "rgba(99,102,241,0.10)",
+              "border": "rgba(99,102,241,0.45)"
+            },
+            {
+              "icon": "state",
+              "action": "Track progress",
+              "result": "Internal state records which step is active.",
+              "color": "rgba(245,158,11,0.10)",
+              "border": "rgba(245,158,11,0.45)"
+            },
+            {
+              "icon": "result",
+              "action": "Reveal result",
+              "result": "The learner sees the next outcome in sequence.",
+              "color": "rgba(34,197,94,0.10)",
+              "border": "rgba(34,197,94,0.45)"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "interactive-buckets",
@@ -223,26 +238,33 @@
         "Click source items to move them to the destination.",
         "Click destination items to move them back."
       ],
-      "renderConfig": {
-        "type": "InteractiveBuckets",
-        "hint": "Move ideas into the selected bucket.",
-        "items": ["Props", "State", "Events"],
-        "source": {
-          "label": "Available ideas",
-          "sublabel": "Click one to use it",
-          "icon": "source",
-          "color": "rgba(99,102,241,0.08)",
-          "border": "rgba(99,102,241,0.35)"
-        },
-        "destination": {
-          "label": "Lesson focus",
-          "sublabel": "Chosen ideas",
-          "icon": "target",
-          "color": "rgba(34,197,94,0.08)",
-          "border": "rgba(34,197,94,0.35)"
-        },
-        "destinationTip": "Buckets are good when movement is the mental model."
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "InteractiveBuckets",
+          "hint": "Move ideas into the selected bucket.",
+          "items": [
+            "Props",
+            "State",
+            "Events"
+          ],
+          "source": {
+            "label": "Available ideas",
+            "sublabel": "Click one to use it",
+            "icon": "source",
+            "color": "rgba(99,102,241,0.08)",
+            "border": "rgba(99,102,241,0.35)"
+          },
+          "destination": {
+            "label": "Lesson focus",
+            "sublabel": "Chosen ideas",
+            "icon": "target",
+            "color": "rgba(34,197,94,0.08)",
+            "border": "rgba(34,197,94,0.35)"
+          },
+          "destinationTip": "Buckets are good when movement is the mental model."
+        }
+      ]
     },
     {
       "id": "collapsible-tree",
@@ -253,36 +275,39 @@
         "Each folder keeps its own expanded state.",
         "Use indent to tune the visual depth."
       ],
-      "renderConfig": {
-        "type": "CollapsibleTree",
-        "hint": "Click folders to expand or collapse.",
-        "indent": 20,
-        "tip": "Folders can contain files or more folders.",
-        "tree": {
-          "name": "interactive-engine",
-          "type": "folder",
-          "children": [
-            {
-              "name": "components",
-              "type": "folder",
-              "children": [
-                {
-                  "name": "LessonSequenceShell.tsx",
-                  "type": "file"
-                },
-                {
-                  "name": "VisualWorld.tsx",
-                  "type": "file"
-                }
-              ]
-            },
-            {
-              "name": "renderIllustration.tsx",
-              "type": "file"
-            }
-          ]
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "CollapsibleTree",
+          "hint": "Click folders to expand or collapse.",
+          "indent": 20,
+          "tip": "Folders can contain files or more folders.",
+          "tree": {
+            "name": "interactive-engine",
+            "type": "folder",
+            "children": [
+              {
+                "name": "components",
+                "type": "folder",
+                "children": [
+                  {
+                    "name": "LessonSequenceShell.tsx",
+                    "type": "file"
+                  },
+                  {
+                    "name": "VisualWorld.tsx",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "renderIllustration.tsx",
+                "type": "file"
+              }
+            ]
+          }
         }
-      }
+      ]
     },
     {
       "id": "file-navigator",
@@ -293,23 +318,26 @@
         "Folders are clickable, files are not.",
         "Breadcrumbs let the learner jump back up."
       ],
-      "renderConfig": {
-        "type": "FileNavigator",
-        "hint": "Open folders and use the breadcrumb to go back.",
-        "rootLabel": "project",
-        "tip": "Object values are folders; null values are files.",
-        "tree": {
-          "src": {
-            "components": {
-              "Guide.tsx": null,
-              "VisualWorld.tsx": null
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "FileNavigator",
+          "hint": "Open folders and use the breadcrumb to go back.",
+          "rootLabel": "project",
+          "tip": "Object values are folders; null values are files.",
+          "tree": {
+            "src": {
+              "components": {
+                "Guide.tsx": null,
+                "VisualWorld.tsx": null
+              },
+              "index.ts": null
             },
-            "index.ts": null
-          },
-          "package.json": null,
-          "README.md": null
+            "package.json": null,
+            "README.md": null
+          }
         }
-      }
+      ]
     },
     {
       "id": "info-callout",
@@ -320,12 +348,15 @@
         "It is intentionally small and direct.",
         "Use variant to match the tone of the message."
       ],
-      "renderConfig": {
-        "type": "InfoCallout",
-        "variant": "success",
-        "icon": "ok",
-        "text": "A small callout can make an important idea feel anchored without taking over the slide."
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "InfoCallout",
+          "variant": "success",
+          "icon": "ok",
+          "text": "A small callout can make an important idea feel anchored without taking over the slide."
+        }
+      ]
     },
     {
       "id": "command-table",
@@ -336,22 +367,25 @@
         "Keeps commands in monospace and descriptions in readable cells.",
         "Use note when a command needs a warning or context."
       ],
-      "renderConfig": {
-        "type": "CommandTable",
-        "hint": "Command reference",
-        "rows": [
-          {
-            "command": "git init",
-            "meaning": "Create a hidden .git repository in the current folder.",
-            "note": "Usually run once per project."
-          },
-          {
-            "command": "git status",
-            "meaning": "Show changed, staged, and untracked files.",
-            "note": "Safe to run anytime."
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "CommandTable",
+          "hint": "Command reference",
+          "rows": [
+            {
+              "command": "git init",
+              "meaning": "Create a hidden .git repository in the current folder.",
+              "note": "Usually run once per project."
+            },
+            {
+              "command": "git status",
+              "meaning": "Show changed, staged, and untracked files.",
+              "note": "Safe to run anytime."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "git-commit-graph",
@@ -362,44 +396,52 @@
         "Click a commit to reveal its detail.",
         "Use branch names to split commits into lanes."
       ],
-      "renderConfig": {
-        "type": "GitCommitGraph",
-        "hint": "Click a commit to read its detail.",
-        "tip": "Commit ids are shown as short labels on the graph.",
-        "commits": [
-          {
-            "id": "a1b2c3d",
-            "message": "initial project",
-            "branch": "main",
-            "detail": "The first snapshot creates a baseline."
-          },
-          {
-            "id": "d4e5f6a",
-            "message": "add lesson",
-            "branch": "main",
-            "isHead": true,
-            "detail": "HEAD points at the latest commit on main."
-          },
-          {
-            "id": "b7c8d9e",
-            "message": "try sidebar",
-            "branch": "feature",
-            "detail": "A separate branch can explore a different idea."
-          }
-        ],
-        "branches": [
-          {
-            "name": "main",
-            "color": "rgba(34,197,94,0.6)",
-            "commits": ["a1b2c3d", "d4e5f6a"]
-          },
-          {
-            "name": "feature",
-            "color": "rgba(99,102,241,0.6)",
-            "commits": ["b7c8d9e"]
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "GitCommitGraph",
+          "hint": "Click a commit to read its detail.",
+          "tip": "Commit ids are shown as short labels on the graph.",
+          "commits": [
+            {
+              "id": "a1b2c3d",
+              "message": "initial project",
+              "branch": "main",
+              "detail": "The first snapshot creates a baseline."
+            },
+            {
+              "id": "d4e5f6a",
+              "message": "add lesson",
+              "branch": "main",
+              "isHead": true,
+              "detail": "HEAD points at the latest commit on main."
+            },
+            {
+              "id": "b7c8d9e",
+              "message": "try sidebar",
+              "branch": "feature",
+              "detail": "A separate branch can explore a different idea."
+            }
+          ],
+          "branches": [
+            {
+              "name": "main",
+              "color": "rgba(34,197,94,0.6)",
+              "commits": [
+                "a1b2c3d",
+                "d4e5f6a"
+              ]
+            },
+            {
+              "name": "feature",
+              "color": "rgba(99,102,241,0.6)",
+              "commits": [
+                "b7c8d9e"
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "git-staging-area",
@@ -410,29 +452,32 @@
         "Interactive files move through zones when clicked.",
         "Statuses map to the starting zone."
       ],
-      "renderConfig": {
-        "type": "GitStagingArea",
-        "hint": "Click files to move them through Git's zones.",
-        "interactive": true,
-        "tip": "Working directory to staging area to repository.",
-        "files": [
-          {
-            "name": "Guide.tsx",
-            "status": "modified",
-            "icon": "file"
-          },
-          {
-            "name": "lesson.json",
-            "status": "untracked",
-            "icon": "json"
-          },
-          {
-            "name": "README.md",
-            "status": "committed",
-            "icon": "doc"
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "GitStagingArea",
+          "hint": "Click files to move them through Git's zones.",
+          "interactive": true,
+          "tip": "Working directory to staging area to repository.",
+          "files": [
+            {
+              "name": "Guide.tsx",
+              "status": "modified",
+              "icon": "file"
+            },
+            {
+              "name": "lesson.json",
+              "status": "untracked",
+              "icon": "json"
+            },
+            {
+              "name": "README.md",
+              "status": "committed",
+              "icon": "doc"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "simulated-terminal",
@@ -443,38 +488,44 @@
         "Use linux or git language modes.",
         "For active quest work, prefer the real challenge terminal dock."
       ],
-      "renderConfig": {
-        "type": "SimulatedTerminal",
-        "language": "linux",
-        "hint": "A standalone simulated terminal component.",
-        "preHistory": ["pwd", "ls"],
-        "height": 260,
-        "initialVfs": {
-          "home": {
-            "name": "home",
-            "type": "directory",
-            "owner": "student",
-            "permissions": "755",
-            "children": {
-              "student": {
-                "name": "student",
-                "type": "directory",
-                "owner": "student",
-                "permissions": "755",
-                "children": {
-                  "notes.txt": {
-                    "name": "notes.txt",
-                    "type": "file",
-                    "owner": "student",
-                    "permissions": "644",
-                    "content": "Interactive engine guide"
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "SimulatedTerminal",
+          "language": "linux",
+          "hint": "A standalone simulated terminal component.",
+          "preHistory": [
+            "pwd",
+            "ls"
+          ],
+          "height": 260,
+          "initialVfs": {
+            "home": {
+              "name": "home",
+              "type": "directory",
+              "owner": "student",
+              "permissions": "755",
+              "children": {
+                "student": {
+                  "name": "student",
+                  "type": "directory",
+                  "owner": "student",
+                  "permissions": "755",
+                  "children": {
+                    "notes.txt": {
+                      "name": "notes.txt",
+                      "type": "file",
+                      "owner": "student",
+                      "permissions": "644",
+                      "content": "Interactive engine guide"
+                    }
                   }
                 }
               }
             }
           }
         }
-      }
+      ]
     },
     {
       "id": "visual-world",
@@ -485,34 +536,40 @@
         "In quest UI, Vis now means this component only.",
         "When a slide does not require terminal, the Vis option stays hidden."
       ],
-      "renderConfig": {
-        "type": "VisualWorld",
-        "cwd": ["home", "student"],
-        "vfs": {
-          "home": {
-            "name": "home",
-            "type": "directory",
-            "owner": "root",
-            "permissions": "755",
-            "children": {
-              "student": {
-                "name": "student",
-                "type": "directory",
-                "owner": "student",
-                "permissions": "755",
-                "children": {
-                  "project": {
-                    "name": "project",
-                    "type": "directory",
-                    "owner": "student",
-                    "permissions": "755",
-                    "children": {
-                      "guide.md": {
-                        "name": "guide.md",
-                        "type": "file",
-                        "owner": "student",
-                        "permissions": "644",
-                        "content": "VisualWorld shows the workspace."
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "VisualWorld",
+          "cwd": [
+            "home",
+            "student"
+          ],
+          "vfs": {
+            "home": {
+              "name": "home",
+              "type": "directory",
+              "owner": "root",
+              "permissions": "755",
+              "children": {
+                "student": {
+                  "name": "student",
+                  "type": "directory",
+                  "owner": "student",
+                  "permissions": "755",
+                  "children": {
+                    "project": {
+                      "name": "project",
+                      "type": "directory",
+                      "owner": "student",
+                      "permissions": "755",
+                      "children": {
+                        "guide.md": {
+                          "name": "guide.md",
+                          "type": "file",
+                          "owner": "student",
+                          "permissions": "644",
+                          "content": "VisualWorld shows the workspace."
+                        }
                       }
                     }
                   }
@@ -521,7 +578,7 @@
             }
           }
         }
-      }
+      ]
     },
     {
       "id": "multi",
@@ -532,37 +589,40 @@
         "Each child is a normal IllustrationConfig.",
         "Keep the total height reasonable so the slide remains scannable."
       ],
-      "renderConfig": {
-        "type": "Multi",
-        "gap": 12,
-        "illustrations": [
-          {
-            "type": "InfoCallout",
-            "variant": "info",
-            "icon": "tip",
-            "text": "Multi lets one slide combine simple building blocks."
-          },
-          {
-            "type": "ClickRevealGrid",
-            "hint": "Click a tile in this nested child component.",
-            "columns": 2,
-            "items": [
-              {
-                "id": "child-a",
-                "icon": "a",
-                "label": "Child A",
-                "detail": "This is the first child config."
-              },
-              {
-                "id": "child-b",
-                "icon": "b",
-                "label": "Child B",
-                "detail": "This is the second child config."
-              }
-            ]
-          }
-        ]
-      }
+      "requiresTerminal": false,
+      "components": [
+        {
+          "type": "Multi",
+          "gap": 12,
+          "illustrations": [
+            {
+              "type": "InfoCallout",
+              "variant": "info",
+              "icon": "tip",
+              "text": "Multi lets one slide combine simple building blocks."
+            },
+            {
+              "type": "ClickRevealGrid",
+              "hint": "Click a tile in this nested child component.",
+              "columns": 2,
+              "items": [
+                {
+                  "id": "child-a",
+                  "icon": "a",
+                  "label": "Child A",
+                  "detail": "This is the first child config."
+                },
+                {
+                  "id": "child-b",
+                  "icon": "b",
+                  "label": "Child B",
+                  "detail": "This is the second child config."
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }
