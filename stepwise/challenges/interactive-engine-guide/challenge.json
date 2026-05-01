@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "interactive-engine-guide",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "title": "Interactive Engine Guide",
   "language": "typescript",
   "runtime": "web-terminal",

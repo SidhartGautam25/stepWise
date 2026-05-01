@@ -176,6 +176,7 @@
 .challenge-scroll-panel {
   flex: 1;
   overflow: auto;
+  min-height: 0;
 }
 
 /* Lesson + composite visualizer fills the panel (not a short strip with empty space beside it). */
@@ -205,6 +206,7 @@
 
 .challenge-scroll-panel[data-padded="true"] {
   padding: 16px;
+  box-sizing: border-box;
 }
 
 .challenge-split-panel {

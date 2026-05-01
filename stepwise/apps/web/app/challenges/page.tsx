@@ -2,7 +2,8 @@ import { fetchChallenges, type ChallengeSummary } from "@/lib/api";
 import { ChallengeCard } from "@/components/challengeListing/ChallengeCard";
 
 export const metadata = { title: "Quests — StepWise" };
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 
 
@@ -38,4 +39,3 @@ export default async function ChallengesPage() {
     </div>
   );
 }
-

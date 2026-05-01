@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "git-aethera",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "title": "Git — Version Control for Humans",
   "language": "bash",
   "runtime": "web-terminal",

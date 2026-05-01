@@ -166,6 +166,14 @@ export function LessonSequenceShell({
           >
             {progressLabel}
           </div>
+          <div style={{ display: "flex", gap: 6 }}>
+            <NavButton onClick={back} disabled={slideIndex === 0} tone="muted">
+              Prev
+            </NavButton>
+            <NavButton onClick={advance}>
+              {isLast ? "Done" : "Next"}
+            </NavButton>
+          </div>
         </div>
       </div>
 
@@ -202,33 +210,54 @@ export function LessonSequenceShell({
 
       {/* ── Footer navigation ── */}
       <div style={footerStyle}>
-        <button
-          onClick={back}
-          disabled={slideIndex === 0}
-          style={{
-            padding: "9px 16px", borderRadius: 8,
-            border: `1px solid ${T.cardBorder}`, background: T.cardBg,
-            color: slideIndex === 0 ? T.muted : T.text,
-            cursor: slideIndex === 0 ? "not-allowed" : "pointer",
-            fontWeight: 700, fontSize: 13,
-          }}
-        >
+        <NavButton onClick={back} disabled={slideIndex === 0} tone="muted" size="large">
           Prev
-        </button>
-        <button
-          onClick={advance}
-          style={{
-            padding: "9px 22px", borderRadius: 8,
-            border: `1px solid ${T.emeraldAlpha(0.35)}`,
-            background: isLast ? T.emeraldAlpha(0.18) : T.emeraldAlpha(0.08),
-            color: T.emerald, cursor: "pointer", fontWeight: 800, fontSize: 13,
-            transition: "background 0.2s",
-          }}
-        >
+        </NavButton>
+        <NavButton onClick={advance} size="large">
           {isLast ? "Done" : "Next"}
-        </button>
+        </NavButton>
       </div>
     </div>
+  );
+}
+
+function NavButton({
+  children,
+  disabled = false,
+  onClick,
+  tone = "primary",
+  size = "small",
+}: {
+  children: string;
+  disabled?: boolean;
+  onClick: () => void;
+  tone?: "primary" | "muted";
+  size?: "small" | "large";
+}) {
+  const isMuted = tone === "muted";
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        padding: size === "large" ? "9px 18px" : "6px 10px",
+        minWidth: size === "large" ? 84 : 56,
+        borderRadius: 8,
+        border: isMuted
+          ? `1px solid ${T.cardBorder}`
+          : `1px solid ${T.emeraldAlpha(0.35)}`,
+        background: isMuted ? T.cardBg : T.emeraldAlpha(0.10),
+        color: disabled ? T.muted : isMuted ? T.text : T.emerald,
+        cursor: disabled ? "not-allowed" : "pointer",
+        fontWeight: 800,
+        fontSize: size === "large" ? 13 : 12,
+        transition: "background 0.2s",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -254,9 +283,14 @@ const headerStyle: CSSProperties = {
 
 const footerStyle: CSSProperties = {
   display: "flex", justifyContent: "space-between", alignItems: "center",
-  gap: 12, padding: "12px 18px",
+  gap: 12, padding: "14px 18px",
   borderTop: "1px solid var(--interactive-divider)",
-  flexShrink: 0, background: "var(--interactive-footer-bg)",
+  flexShrink: 0,
+  background: "var(--interactive-footer-bg)",
+  boxShadow: "0 -10px 24px rgba(15,23,42,0.08)",
+  position: "sticky",
+  bottom: 0,
+  zIndex: 2,
 };
 
 const slideContainerStyle: CSSProperties = {

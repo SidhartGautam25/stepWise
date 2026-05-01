@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { fetchChallenge, type ChallengeDetail } from "@/lib/api";
 import { ChallengeViewer } from "@/components/ChallengeViewer";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   try {
