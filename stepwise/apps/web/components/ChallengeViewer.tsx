@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
-import type { ChallengeDetail } from "@/lib/api";
+import type { ChallengeDetail, InteractiveLessonSlide } from "@/lib/api";
 import { useSession } from "next-auth/react";
 import { useTerminal, SimulatedTerminal, type TerminalLog } from "@repo/terminal-engine";
 import { QuestEvaluator } from "./evaluator/QuestEvaluator";
@@ -28,6 +28,9 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
   const [successMessage, setSuccessMessage] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("content");
   const [terminalMode, setTerminalMode] = useState<TerminalMode>("right");
+  const [activeSlideId, setActiveSlideId] = useState<string | undefined>(
+    challenge.steps[0]?.interactiveLesson?.slides[0]?.id,
+  );
 
   const terminalFocusRef = useRef<() => void>(null);
 
@@ -86,20 +89,18 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
 
   const activeStep = challenge.steps.find((s) => s.id === activeStepId) || challenge.steps[0];
   const activeStepIndex = challenge.steps.findIndex((s) => s.id === activeStepId);
-
-  const usesLessonTerminalComposite =
-    activeStep?.renderConfig &&
-    typeof activeStep.renderConfig === "object" &&
-    !Array.isArray(activeStep.renderConfig) &&
-    (activeStep.renderConfig as { type?: string }).type === "LessonTerminalVisualWorkspace";
+  const activeSlide =
+    activeStep?.interactiveLesson?.slides.find((slide) => slide.id === activeSlideId) ??
+    activeStep?.interactiveLesson?.slides[0];
+  const activeSlideRequiresTerminal = slideRequiresTerminal(activeStep, activeSlide);
 
   const viewingVisualizerWorkspace =
     viewMode === "visualizer" || viewMode === "split-v" || viewMode === "split-h";
 
-  const showEmbeddedLessonTerminal =
-    Boolean(usesLessonTerminalComposite && viewingVisualizerWorkspace);
+  const showEmbeddedLessonTerminal = false;
 
-  const showStandaloneTerminalDock = terminalMode !== "hidden" && !showEmbeddedLessonTerminal;
+  const showStandaloneTerminalDock =
+    activeSlideRequiresTerminal && terminalMode !== "hidden" && !showEmbeddedLessonTerminal;
 
   /** When the real terminal lives inside the lesson composite, expand the panel to full workspace width (`right` mode would otherwise keep ~55% and waste the rest). */
   const workspaceTerminalLayout =
@@ -131,11 +132,24 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
 
   // Sync terminal visibility and default panel when step changes
   useEffect(() => {
-    const needsTerminal = activeStep?.requiresTerminal !== false;
+    const firstSlide = activeStep?.interactiveLesson?.slides[0];
+    setActiveSlideId(firstSlide?.id);
+    const needsTerminal = slideRequiresTerminal(activeStep, firstSlide);
     setTerminalMode(needsTerminal ? "right" : "hidden");
-    setViewMode(activeStep?.interactiveLesson ? "visualizer" : "content");
+    setViewMode("content");
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStepId]);
+
+  useEffect(() => {
+    if (!activeSlideRequiresTerminal && viewingVisualizerWorkspace) {
+      setViewMode("content");
+    }
+
+    setTerminalMode((current) => {
+      if (!activeSlideRequiresTerminal) return "hidden";
+      return current === "hidden" ? "right" : current;
+    });
+  }, [activeSlideRequiresTerminal, viewingVisualizerWorkspace]);
 
   const refreshProgressFromServer = useCallback(async () => {
     const token = (session as any)?.fastifyToken;
@@ -233,6 +247,7 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
           isSidebarOpen={isSidebarOpen}
           viewMode={viewMode}
           terminalMode={terminalMode}
+          canShowVisualWorld={activeSlideRequiresTerminal}
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           onViewModeChange={setViewMode}
           onTerminalModeChange={setTerminalMode}
@@ -259,18 +274,38 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                   terminalState={terminal.state}
                   isGit={isGit}
                   onCompleted={handleStepPassed}
+                  mode="visual-world"
                   terminalAdvanceSignature={terminalAdvanceSignature}
                   embeddedTerminalSlot={embeddedLessonTerminalSlot}
+                  onActiveSlideChange={(slide) => setActiveSlideId(slide.id)}
                 />
               </div>
             ) : viewMode === "content" ? (
-              <div className="challenge-scroll-panel">
-                {stepContent}
+              <div className="challenge-scroll-panel challenge-visualizer-root" data-padded>
+                <StepVisualizerPanel
+                  step={activeStep}
+                  terminalState={terminal.state}
+                  isGit={isGit}
+                  onCompleted={handleStepPassed}
+                  mode="guide"
+                  terminalAdvanceSignature={terminalAdvanceSignature}
+                  embeddedTerminalSlot={embeddedLessonTerminalSlot}
+                  onActiveSlideChange={(slide) => setActiveSlideId(slide.id)}
+                />
               </div>
             ) : (
               <div className="challenge-split-panel" data-mode={viewMode}>
                 <div className="challenge-split-pane" data-divider={viewMode === "split-v" ? "bottom" : "right"}>
-                  {stepContent}
+                  <StepVisualizerPanel
+                    step={activeStep}
+                    terminalState={terminal.state}
+                    isGit={isGit}
+                    onCompleted={handleStepPassed}
+                    mode="guide"
+                    terminalAdvanceSignature={terminalAdvanceSignature}
+                    embeddedTerminalSlot={embeddedLessonTerminalSlot}
+                    onActiveSlideChange={(slide) => setActiveSlideId(slide.id)}
+                  />
                 </div>
                 <div className="challenge-split-pane challenge-visualizer-split" data-visualizer>
                   <StepVisualizerPanel
@@ -278,8 +313,10 @@ export function ChallengeViewer({ challenge }: ChallengeViewerProps) {
                     terminalState={terminal.state}
                     isGit={isGit}
                     onCompleted={handleStepPassed}
+                    mode="visual-world"
                     terminalAdvanceSignature={terminalAdvanceSignature}
                     embeddedTerminalSlot={embeddedLessonTerminalSlot}
+                    onActiveSlideChange={(slide) => setActiveSlideId(slide.id)}
                   />
                 </div>
               </div>
@@ -327,6 +364,14 @@ function buildTerminalAdvanceSignature(history: TerminalLog[]): string | undefin
   const cmd = last?.command?.trim();
   if (!cmd) return undefined;
   return `${ok.length}:${cmd}`;
+}
+
+function slideRequiresTerminal(
+  step: ChallengeDetail["steps"][number] | undefined,
+  slide: InteractiveLessonSlide | undefined,
+): boolean {
+  if (typeof slide?.requiresTerminal === "boolean") return slide.requiresTerminal;
+  return step?.requiresTerminal !== false;
 }
 
 function ChallengeTitle({ challenge }: { challenge: ChallengeDetail }) {
@@ -379,6 +424,7 @@ function ChallengeTopBar({
   isSidebarOpen,
   viewMode,
   terminalMode,
+  canShowVisualWorld,
   onToggleSidebar,
   onViewModeChange,
   onTerminalModeChange,
@@ -387,10 +433,23 @@ function ChallengeTopBar({
   isSidebarOpen: boolean;
   viewMode: ViewMode;
   terminalMode: TerminalMode;
+  canShowVisualWorld: boolean;
   onToggleSidebar: () => void;
   onViewModeChange: (mode: ViewMode) => void;
   onTerminalModeChange: (mode: TerminalMode) => void;
 }) {
+  const viewOptions: Array<{ id: ViewMode; label: string }> = [
+    { id: "content", label: "Guide" },
+  ];
+
+  if (canShowVisualWorld) {
+    viewOptions.push(
+      { id: "visualizer", label: "Vis" },
+      { id: "split-v", label: "Top/Bot" },
+      { id: "split-h", label: "Side" },
+    );
+  }
+
   return (
     <header className="challenge-topbar">
       <button className="btn btn-ghost" onClick={onToggleSidebar}>
@@ -402,23 +461,20 @@ function ChallengeTopBar({
       <SegmentedControl
         value={viewMode}
         onChange={onViewModeChange}
-        options={[
-          { id: "visualizer", label: "Vis" },
-          { id: "content", label: "Guide" },
-          { id: "split-v", label: "Top/Bot" },
-          { id: "split-h", label: "Side" },
-        ]}
+        options={viewOptions}
       />
-      <SegmentedControl
-        value={terminalMode}
-        tone="emerald"
-        onChange={onTerminalModeChange}
-        options={[
-          { id: "right", label: "Right" },
-          { id: "bottom", label: "Bottom" },
-          { id: "hidden", label: "Hide" },
-        ]}
-      />
+      {canShowVisualWorld && (
+        <SegmentedControl
+          value={terminalMode}
+          tone="emerald"
+          onChange={onTerminalModeChange}
+          options={[
+            { id: "right", label: "Right" },
+            { id: "bottom", label: "Bottom" },
+            { id: "hidden", label: "Hide" },
+          ]}
+        />
+      )}
     </header>
   );
 }

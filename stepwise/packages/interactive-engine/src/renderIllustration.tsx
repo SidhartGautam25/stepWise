@@ -16,6 +16,7 @@
 import type { ReactNode } from "react";
 import { Fragment } from "react";
 import type { IllustrationConfig } from "./IllustrationConfig";
+import type { LessonSlide } from "./components/LessonSequenceShell";
 
 import { ExpandableCardList }  from "./components/ExpandableCardList";
 import { ClickRevealGrid }     from "./components/ClickRevealGrid";
@@ -46,6 +47,8 @@ export interface RenderIllustrationRuntime {
   terminalAdvanceSignature?: string;
   /** Embed the real SimulatedTerminal inside composite layouts */
   terminalSlot?: ReactNode;
+  /** Emits the current slide for consumers that need slide-level layout decisions. */
+  onActiveSlideChange?: (slide: LessonSlide) => void;
 }
 
 export function renderIllustration(
@@ -203,10 +206,12 @@ export function renderIllustration(
           subtitle={config.subtitle}
           terminalAdvanceSignature={runtime.terminalAdvanceSignature}
           onCompleted={config.onCompleted ?? runtime.onCompleted}
+          onActiveSlideChange={runtime.onActiveSlideChange}
           renderIllustration={(slideId) => {
             const slide = config.slides.find((candidate) => candidate.id === slideId);
             const illustration =
               config.slideIllustrations?.[slideId] ??
+              (slide?.renderConfig as IllustrationConfig | undefined) ??
               (slide?.illustration as IllustrationConfig | undefined) ??
               config.fallbackIllustration;
 
@@ -250,10 +255,12 @@ export function renderIllustration(
                 subtitle={config.lessonSubtitle ?? "Explore the idea, then try it."}
                 terminalAdvanceSignature={runtime.terminalAdvanceSignature}
                 onCompleted={config.onCompleted ?? runtime.onCompleted}
+                onActiveSlideChange={runtime.onActiveSlideChange}
                 renderIllustration={(slideId) => {
                   const slide = config.slides.find((candidate) => candidate.id === slideId);
                   const illustration =
                     config.slideIllustrations?.[slideId] ??
+                    (slide?.renderConfig as IllustrationConfig | undefined) ??
                     (slide?.illustration as IllustrationConfig | undefined) ??
                     config.fallbackIllustration;
 

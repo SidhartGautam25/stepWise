@@ -44,6 +44,8 @@ export interface LessonSlide {
   body: string;
   bullets?: string[];
   illustration?: unknown;
+  renderConfig?: unknown;
+  requiresTerminal?: boolean;
   /** Match against the learner's latest successful simulated-terminal command */
   advanceOnCommand?: SlideAdvanceOnCommand;
 }
@@ -60,6 +62,8 @@ export interface LessonSequenceShellProps {
   title?: string;
   /** Subtitle shown in the header */
   subtitle?: string;
+  /** Emits the current slide when navigation or step reset changes it. */
+  onActiveSlideChange?: (slide: LessonSlide) => void;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -72,6 +76,7 @@ export function LessonSequenceShell({
   renderIllustration,
   title = "Interactive Lesson",
   subtitle = "Explore the idea, then try it.",
+  onActiveSlideChange,
 }: LessonSequenceShellProps) {
   useEngineStyles();
 
@@ -86,6 +91,10 @@ export function LessonSequenceShell({
     setSlideIndex(0);
     consumedAdvanceSig.current = "";
   }, [stepId]);
+
+  useEffect(() => {
+    if (active) onActiveSlideChange?.(active);
+  }, [active, onActiveSlideChange]);
 
   // Successful terminal commands can advance slides when the current slide defines `advanceOnCommand`.
   useEffect(() => {

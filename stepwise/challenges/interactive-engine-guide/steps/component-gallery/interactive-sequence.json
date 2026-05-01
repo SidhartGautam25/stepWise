@@ -1,0 +1,542 @@
+{
+  "slides": [
+    {
+      "id": "expandable-card-list",
+      "heading": "ExpandableCardList",
+      "body": "ExpandableCardList is useful when you want a compact set of ideas that reveal details one at a time. The input is an items array with id, icon, label, and reveal text, plus an optional multiOpen flag.\n\nExample input: { type: \"ExpandableCardList\", multiOpen: false, items: [{ id: \"state\", icon: \"box\", label: \"State\", reveal: \"State is data that can change over time.\" }] }",
+      "bullets": [
+        "Best for glossary entries, conceptual checkpoints, and progressive disclosure.",
+        "Click a card to reveal its explanation.",
+        "Set multiOpen to true when comparing several revealed items matters."
+      ],
+      "renderConfig": {
+        "type": "ExpandableCardList",
+        "hint": "Click a card to reveal more detail.",
+        "multiOpen": false,
+        "items": [
+          {
+            "id": "state",
+            "icon": "box",
+            "label": "State",
+            "reveal": "Data that changes while the learner interacts with the lesson."
+          },
+          {
+            "id": "event",
+            "icon": "click",
+            "label": "Event",
+            "reveal": "A user action, command, or step that updates the model."
+          },
+          {
+            "id": "feedback",
+            "icon": "spark",
+            "label": "Feedback",
+            "reveal": "The visual response that makes the concept feel concrete."
+          }
+        ]
+      }
+    },
+    {
+      "id": "click-reveal-grid",
+      "heading": "ClickRevealGrid",
+      "body": "ClickRevealGrid shows several choices at once, then reveals a detail panel inside the selected tile. The input is an items array with id, icon, label, and detail, plus optional columns and detailLabel.\n\nExample input: { type: \"ClickRevealGrid\", columns: 2, detailLabel: \"Why it matters\", items: [{ id: \"props\", icon: \"data\", label: \"Props\", detail: \"Props configure the component.\" }] }",
+      "bullets": [
+        "Best for categories, misconceptions, or pick-to-inspect moments.",
+        "Use columns to control density.",
+        "Each item can override the global detail label."
+      ],
+      "renderConfig": {
+        "type": "ClickRevealGrid",
+        "hint": "Click a tile to inspect its detail.",
+        "columns": 2,
+        "detailLabel": "Input role",
+        "items": [
+          {
+            "id": "props",
+            "icon": "data",
+            "label": "Props",
+            "detail": "Plain JSON values that configure what the component renders."
+          },
+          {
+            "id": "interaction",
+            "icon": "hand",
+            "label": "Interaction",
+            "detail": "The learner clicks one tile and receives immediate local feedback."
+          },
+          {
+            "id": "layout",
+            "icon": "grid",
+            "label": "Layout",
+            "detail": "The columns value controls how many cards appear per row."
+          },
+          {
+            "id": "detail",
+            "icon": "note",
+            "label": "Detail",
+            "detail": "The detail string appears only after the item is selected."
+          }
+        ]
+      }
+    },
+    {
+      "id": "step-simulator",
+      "heading": "StepSimulator",
+      "body": "StepSimulator is for processes that unfold over several hops. The input has actors and steps: actors define the nodes, steps define messages moving from one actor to another.\n\nExample input: { type: \"StepSimulator\", actors: [{ icon: \"user\", label: \"User\", sublabel: \"clicks\", color: \"...\", border: \"...\" }], steps: [{ from: \"User\", to: \"App\", action: \"click button\" }] }",
+      "bullets": [
+        "Best for request flows, lifecycle sequences, and cause-effect chains.",
+        "Actors stay visible while the step log grows.",
+        "Use isManager on an actor to highlight a coordinator."
+      ],
+      "renderConfig": {
+        "type": "StepSimulator",
+        "hint": "Click through the simulated flow.",
+        "startLabel": "Start flow",
+        "nextLabel": "Next hop",
+        "doneMessage": "Flow complete.",
+        "replayLabel": "Replay",
+        "actors": [
+          {
+            "icon": "user",
+            "label": "Learner",
+            "sublabel": "takes action",
+            "color": "rgba(99,102,241,0.10)",
+            "border": "rgba(99,102,241,0.45)"
+          },
+          {
+            "icon": "engine",
+            "label": "Engine",
+            "sublabel": "updates state",
+            "color": "rgba(34,197,94,0.10)",
+            "border": "rgba(34,197,94,0.45)",
+            "isManager": true
+          },
+          {
+            "icon": "screen",
+            "label": "UI",
+            "sublabel": "shows feedback",
+            "color": "rgba(245,158,11,0.10)",
+            "border": "rgba(245,158,11,0.45)"
+          }
+        ],
+        "steps": [
+          {
+            "from": "Learner",
+            "to": "Engine",
+            "action": "clicks Next"
+          },
+          {
+            "from": "Engine",
+            "to": "UI",
+            "action": "calculates the next visible state"
+          },
+          {
+            "from": "UI",
+            "to": "Learner",
+            "action": "renders the result"
+          }
+        ]
+      }
+    },
+    {
+      "id": "compare-panel",
+      "heading": "ComparePanel",
+      "body": "ComparePanel presents two sides that can be opened independently. The input has left and right objects with icon, title, colors, and optional revealContent or locked state.\n\nExample input: { type: \"ComparePanel\", left: { title: \"Before\", locked: true }, right: { title: \"After\", revealContent: [\"Clearer\", \"Faster\"] } }",
+      "bullets": [
+        "Best for before-after, open-closed, or wrong-right comparisons.",
+        "locked true creates a denied state instead of normal reveal content.",
+        "successMessage appears after the right side is opened."
+      ],
+      "renderConfig": {
+        "type": "ComparePanel",
+        "hint": "Click both sides to compare behavior.",
+        "left": {
+          "icon": "lock",
+          "title": "Opaque UI",
+          "closedHint": "Click to try it",
+          "locked": true,
+          "lockedMessage": "No model is visible, so the learner has to guess.",
+          "color": "rgba(239,68,68,0.10)",
+          "border": "rgba(239,68,68,0.45)"
+        },
+        "right": {
+          "icon": "window",
+          "title": "Visual model",
+          "closedHint": "Click to inspect",
+          "revealContent": [
+            "Shows structure",
+            "Responds to action",
+            "Makes abstract state visible"
+          ],
+          "color": "rgba(34,197,94,0.10)",
+          "border": "rgba(34,197,94,0.45)"
+        },
+        "successMessage": "Use ComparePanel when the contrast is the lesson."
+      }
+    },
+    {
+      "id": "journey-flow",
+      "heading": "JourneyFlow",
+      "body": "JourneyFlow renders a vertical sequence where each step has an action and result. The input is steps with icon, action, result, color, and border, plus optional storeIcon and labels.\n\nExample input: { type: \"JourneyFlow\", steps: [{ icon: \"file\", action: \"Write file\", result: \"File appears\" }], storeIcon: \"disk\" }",
+      "bullets": [
+        "Best for persistence, pipelines, and ordered transformations.",
+        "Each click advances one step.",
+        "The optional store marker anchors the idea of a persistent destination."
+      ],
+      "renderConfig": {
+        "type": "JourneyFlow",
+        "hint": "Advance through the journey.",
+        "storeIcon": "disk",
+        "storeLabel": "Store",
+        "startLabel": "Begin",
+        "nextLabel": "Next",
+        "replayLabel": "Replay",
+        "steps": [
+          {
+            "icon": "input",
+            "action": "Receive input",
+            "result": "The component gets plain config data.",
+            "color": "rgba(99,102,241,0.10)",
+            "border": "rgba(99,102,241,0.45)"
+          },
+          {
+            "icon": "state",
+            "action": "Track progress",
+            "result": "Internal state records which step is active.",
+            "color": "rgba(245,158,11,0.10)",
+            "border": "rgba(245,158,11,0.45)"
+          },
+          {
+            "icon": "result",
+            "action": "Reveal result",
+            "result": "The learner sees the next outcome in sequence.",
+            "color": "rgba(34,197,94,0.10)",
+            "border": "rgba(34,197,94,0.45)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "interactive-buckets",
+      "heading": "InteractiveBuckets",
+      "body": "InteractiveBuckets lets learners move items between two named containers. The input has items, source bucket metadata, destination bucket metadata, and an optional destinationTip.\n\nExample input: { type: \"InteractiveBuckets\", items: [\"cache\", \"db\"], source: { label: \"Available\" }, destination: { label: \"Selected\" } }",
+      "bullets": [
+        "Best for classification, memory vs storage, staging, and selection.",
+        "Click source items to move them to the destination.",
+        "Click destination items to move them back."
+      ],
+      "renderConfig": {
+        "type": "InteractiveBuckets",
+        "hint": "Move ideas into the selected bucket.",
+        "items": ["Props", "State", "Events"],
+        "source": {
+          "label": "Available ideas",
+          "sublabel": "Click one to use it",
+          "icon": "source",
+          "color": "rgba(99,102,241,0.08)",
+          "border": "rgba(99,102,241,0.35)"
+        },
+        "destination": {
+          "label": "Lesson focus",
+          "sublabel": "Chosen ideas",
+          "icon": "target",
+          "color": "rgba(34,197,94,0.08)",
+          "border": "rgba(34,197,94,0.35)"
+        },
+        "destinationTip": "Buckets are good when movement is the mental model."
+      }
+    },
+    {
+      "id": "collapsible-tree",
+      "heading": "CollapsibleTree",
+      "body": "CollapsibleTree renders a nested tree where folder nodes expand and file nodes sit at the leaves. The input is one root tree node with name, type, and optional children.\n\nExample input: { type: \"CollapsibleTree\", tree: { name: \"root\", type: \"folder\", children: [{ name: \"notes.md\", type: \"file\" }] } }",
+      "bullets": [
+        "Best for hierarchical concepts.",
+        "Each folder keeps its own expanded state.",
+        "Use indent to tune the visual depth."
+      ],
+      "renderConfig": {
+        "type": "CollapsibleTree",
+        "hint": "Click folders to expand or collapse.",
+        "indent": 20,
+        "tip": "Folders can contain files or more folders.",
+        "tree": {
+          "name": "interactive-engine",
+          "type": "folder",
+          "children": [
+            {
+              "name": "components",
+              "type": "folder",
+              "children": [
+                {
+                  "name": "LessonSequenceShell.tsx",
+                  "type": "file"
+                },
+                {
+                  "name": "VisualWorld.tsx",
+                  "type": "file"
+                }
+              ]
+            },
+            {
+              "name": "renderIllustration.tsx",
+              "type": "file"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "file-navigator",
+      "heading": "FileNavigator",
+      "body": "FileNavigator renders a breadcrumb-driven folder browser. The input is a nested object: each key is a name, null means file, and an object means folder.\n\nExample input: { type: \"FileNavigator\", rootLabel: \"project\", tree: { src: { \"index.ts\": null }, \"README.md\": null } }",
+      "bullets": [
+        "Best for teaching navigation and nested project structure.",
+        "Folders are clickable, files are not.",
+        "Breadcrumbs let the learner jump back up."
+      ],
+      "renderConfig": {
+        "type": "FileNavigator",
+        "hint": "Open folders and use the breadcrumb to go back.",
+        "rootLabel": "project",
+        "tip": "Object values are folders; null values are files.",
+        "tree": {
+          "src": {
+            "components": {
+              "Guide.tsx": null,
+              "VisualWorld.tsx": null
+            },
+            "index.ts": null
+          },
+          "package.json": null,
+          "README.md": null
+        }
+      }
+    },
+    {
+      "id": "info-callout",
+      "heading": "InfoCallout",
+      "body": "InfoCallout is a compact highlighted message. The input is text, optional icon, and variant. Variants include info, success, warning, error, and neutral.\n\nExample input: { type: \"InfoCallout\", variant: \"warning\", icon: \"!\", text: \"This step changes state.\" }",
+      "bullets": [
+        "Best for tips, warnings, conclusions, and short guidance.",
+        "It is intentionally small and direct.",
+        "Use variant to match the tone of the message."
+      ],
+      "renderConfig": {
+        "type": "InfoCallout",
+        "variant": "success",
+        "icon": "ok",
+        "text": "A small callout can make an important idea feel anchored without taking over the slide."
+      }
+    },
+    {
+      "id": "git-commit-graph",
+      "heading": "GitCommitGraph",
+      "body": "GitCommitGraph renders commits grouped by branch lane. The input is commits with id, message, branch, optional HEAD flag, and optional detail; branches can provide line metadata.\n\nExample input: { type: \"GitCommitGraph\", commits: [{ id: \"a1b2\", message: \"init\", branch: \"main\", isHead: true }] }",
+      "bullets": [
+        "Best for Git history and branch mental models.",
+        "Click a commit to reveal its detail.",
+        "Use branch names to split commits into lanes."
+      ],
+      "renderConfig": {
+        "type": "GitCommitGraph",
+        "hint": "Click a commit to read its detail.",
+        "tip": "Commit ids are shown as short labels on the graph.",
+        "commits": [
+          {
+            "id": "a1b2c3d",
+            "message": "initial project",
+            "branch": "main",
+            "detail": "The first snapshot creates a baseline."
+          },
+          {
+            "id": "d4e5f6a",
+            "message": "add lesson",
+            "branch": "main",
+            "isHead": true,
+            "detail": "HEAD points at the latest commit on main."
+          },
+          {
+            "id": "b7c8d9e",
+            "message": "try sidebar",
+            "branch": "feature",
+            "detail": "A separate branch can explore a different idea."
+          }
+        ],
+        "branches": [
+          {
+            "name": "main",
+            "color": "rgba(34,197,94,0.6)",
+            "commits": ["a1b2c3d", "d4e5f6a"]
+          },
+          {
+            "name": "feature",
+            "color": "rgba(99,102,241,0.6)",
+            "commits": ["b7c8d9e"]
+          }
+        ]
+      }
+    },
+    {
+      "id": "git-staging-area",
+      "heading": "GitStagingArea",
+      "body": "GitStagingArea shows the three Git zones: working directory, staging area, and repository. The input is files with name and status, plus optional interactive and tip.\n\nExample input: { type: \"GitStagingArea\", interactive: true, files: [{ name: \"app.ts\", status: \"modified\" }] }",
+      "bullets": [
+        "Best for explaining git add and git commit.",
+        "Interactive files move through zones when clicked.",
+        "Statuses map to the starting zone."
+      ],
+      "renderConfig": {
+        "type": "GitStagingArea",
+        "hint": "Click files to move them through Git's zones.",
+        "interactive": true,
+        "tip": "Working directory to staging area to repository.",
+        "files": [
+          {
+            "name": "Guide.tsx",
+            "status": "modified",
+            "icon": "file"
+          },
+          {
+            "name": "lesson.json",
+            "status": "untracked",
+            "icon": "json"
+          },
+          {
+            "name": "README.md",
+            "status": "committed",
+            "icon": "doc"
+          }
+        ]
+      }
+    },
+    {
+      "id": "simulated-terminal",
+      "heading": "SimulatedTerminal",
+      "body": "SimulatedTerminal embeds the terminal UI as an illustration. The input can set language, hint, initialVfs, preHistory, and height.\n\nExample input: { type: \"SimulatedTerminal\", language: \"linux\", preHistory: [\"pwd\", \"ls\"], height: 280 }",
+      "bullets": [
+        "Best when the terminal itself is the object of study.",
+        "Use linux or git language modes.",
+        "For active quest work, prefer the real challenge terminal dock."
+      ],
+      "renderConfig": {
+        "type": "SimulatedTerminal",
+        "language": "linux",
+        "hint": "A standalone simulated terminal component.",
+        "preHistory": ["pwd", "ls"],
+        "height": 260,
+        "initialVfs": {
+          "home": {
+            "name": "home",
+            "type": "directory",
+            "owner": "student",
+            "permissions": "755",
+            "children": {
+              "student": {
+                "name": "student",
+                "type": "directory",
+                "owner": "student",
+                "permissions": "755",
+                "children": {
+                  "notes.txt": {
+                    "name": "notes.txt",
+                    "type": "file",
+                    "owner": "student",
+                    "permissions": "644",
+                    "content": "Interactive engine guide"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "visual-world",
+      "heading": "VisualWorld",
+      "body": "VisualWorld renders a live filesystem-style view. The input can provide vfs and cwd directly, or it can read terminalState from the runtime when used beside the real terminal.\n\nExample input: { type: \"VisualWorld\", cwd: [\"home\", \"student\"], vfs: { home: { type: \"directory\", children: { ... } } } }",
+      "bullets": [
+        "Best for filesystem and Git workspace visualization.",
+        "In quest UI, Vis now means this component only.",
+        "When a slide does not require terminal, the Vis option stays hidden."
+      ],
+      "renderConfig": {
+        "type": "VisualWorld",
+        "cwd": ["home", "student"],
+        "vfs": {
+          "home": {
+            "name": "home",
+            "type": "directory",
+            "owner": "root",
+            "permissions": "755",
+            "children": {
+              "student": {
+                "name": "student",
+                "type": "directory",
+                "owner": "student",
+                "permissions": "755",
+                "children": {
+                  "project": {
+                    "name": "project",
+                    "type": "directory",
+                    "owner": "student",
+                    "permissions": "755",
+                    "children": {
+                      "guide.md": {
+                        "name": "guide.md",
+                        "type": "file",
+                        "owner": "student",
+                        "permissions": "644",
+                        "content": "VisualWorld shows the workspace."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "multi",
+      "heading": "Multi",
+      "body": "Multi stacks several illustration configs vertically. The input is an illustrations array and an optional gap. It is useful when one slide needs a callout plus a small interaction.\n\nExample input: { type: \"Multi\", gap: 12, illustrations: [{ type: \"InfoCallout\", text: \"First\" }, { type: \"ClickRevealGrid\", items: [...] }] }",
+      "bullets": [
+        "Best for composed slides.",
+        "Each child is a normal IllustrationConfig.",
+        "Keep the total height reasonable so the slide remains scannable."
+      ],
+      "renderConfig": {
+        "type": "Multi",
+        "gap": 12,
+        "illustrations": [
+          {
+            "type": "InfoCallout",
+            "variant": "info",
+            "icon": "tip",
+            "text": "Multi lets one slide combine simple building blocks."
+          },
+          {
+            "type": "ClickRevealGrid",
+            "hint": "Click a tile in this nested child component.",
+            "columns": 2,
+            "items": [
+              {
+                "id": "child-a",
+                "icon": "a",
+                "label": "Child A",
+                "detail": "This is the first child config."
+              },
+              {
+                "id": "child-b",
+                "icon": "b",
+                "label": "Child B",
+                "detail": "This is the second child config."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

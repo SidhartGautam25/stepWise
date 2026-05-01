@@ -35,6 +35,8 @@ export interface InteractiveLessonSlide {
   body: string;
   bullets?: string[];
   illustration?: unknown;
+  renderConfig?: unknown;
+  requiresTerminal?: boolean;
   advanceOnCommand?: InteractiveLessonSlideAdvance;
 }
 
@@ -201,6 +203,11 @@ export class StepContentManager {
             ? slide.bullets.filter((bullet): bullet is string => typeof bullet === "string")
             : undefined,
           illustration: isRecord(slide.illustration) ? slide.illustration : undefined,
+          renderConfig: isRecord(slide.renderConfig) ? slide.renderConfig : undefined,
+          requiresTerminal:
+            typeof slide.requiresTerminal === "boolean"
+              ? slide.requiresTerminal
+              : undefined,
           advanceOnCommand: advance,
         };
       }),

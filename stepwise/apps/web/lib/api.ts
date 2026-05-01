@@ -31,6 +31,8 @@ export interface InteractiveLessonSlide {
   body: string;
   bullets?: string[];
   illustration?: unknown;
+  renderConfig?: unknown;
+  requiresTerminal?: boolean;
   advanceOnCommand?: {
     mode: "exact" | "prefix";
     value: string;
